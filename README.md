@@ -5,8 +5,9 @@ Utah State University.
 
 # Building the compiler
 This project uses:
-- [CMake](https://cmake.org/) as a build tool.
-- [Flex](http://flex.sourceforge.net/) to generate the CPSL lexical analyzer.
+
+* [CMake](https://cmake.org/) as a build tool.
+* [Flex](http://flex.sourceforge.net/) to generate the CPSL lexical analyzer.
 
 Once you have the above installed, you can run
 ```
