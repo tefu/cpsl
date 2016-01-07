@@ -60,12 +60,12 @@ write|WRITE { print_term("write",yytext); }
   /* Operators
   ------------------------------------------------------------------ */
 "+" { print_term("Plus Operator", yytext); }
-"−" { print_term("Minus Operator", yytext); }
-"∗" { print_term("Multiplication Operator", yytext); }
+"-" { print_term("Minus Operator", yytext); }
+"*" { print_term("Multiplication Operator", yytext); }
 "/" { print_term("Division Operator", yytext); }
-"&" { print_term("Bitwise And", yytext); }
-"|" { print_term("Bitwise Or", yytext); }
-"˜" { print_term("Bitwise Negation", yytext); }
+"&" { print_term("And Operator", yytext); }
+"|" { print_term("Or Operator", yytext); }
+"~" { print_term("Negation Operator", yytext); }
 "=" { print_term("Equality Operator", yytext); }
 "<>" { print_term("Inequality Operator", yytext); }
 "<" { print_term("Less Than Operator", yytext); }
@@ -89,7 +89,7 @@ write|WRITE { print_term("write",yytext); }
 0(0|[1-7][0-7]*) { print_term("Octal Integer Constant", yytext); }
 0x(0|[1-9a-fA-F][0-9a-fA-F]*) { print_term("Hex Integer Constant", yytext); }
 (0|[1-9][0-9]*) { print_term("Integer Constant", yytext); }
-'[^\n]' { print_term("Character Constant", yytext); }
+'\\?[^\n]' { print_term("Character Constant", yytext); }
 
 \"[^\"\n]*\" { print_term("String Constant", yytext); }
 
