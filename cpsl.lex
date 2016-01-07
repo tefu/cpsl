@@ -81,11 +81,14 @@ write|WRITE { print_term("write",yytext); }
 "[" { print_term("Left Bracket", yytext); }
 "]" { print_term("Right Bracket", yytext); }
 ":=" { print_term("Assignment Operator", yytext); }
+"%" { print_term("Modulus Operator", yytext); }
 
 
   /* Constants
   ------------------------------------------------------------------ */
-0[0-7]+|0x[0-9]+|[0-9]+ { print_term("Integer Constant", yytext); }
+0(0|[1-7][0-7]*) { print_term("Octal Integer Constant", yytext); }
+0x(0|[1-9a-fA-F][0-9a-fA-F]*) { print_term("Hex Integer Constant", yytext); }
+(0|[1-9][0-9]*) { print_term("Integer Constant", yytext); }
 '[^\n]' { print_term("Character Constant", yytext); }
 
 \"[^\"\n]*\" { print_term("String Constant", yytext); }
