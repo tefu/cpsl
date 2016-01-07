@@ -1,90 +1,102 @@
 %{
 #include <iostream>
-void print_term(std::string term) {
-  std::cout << "I found " << term << "!" << std::endl;
+
+void print_term(std::string term, std::string value)
+{
+  std::cout << "I found:  " << term << " (" << value << ")  ";
+  std::cout << "at line: " << yylineno << std::endl;
 }
+void print_error(std::string error)
+{
+  std::cout << "Error: I don't know what " << error << " is. ";
+  std::cout << "Line: " << yylineno << std::endl;
+}
+
 %}
 
 %option noyywrap
+%option yylineno
 
 %%
 
   /* Keywords
   ------------------------------------------------------------------ */
-array|ARRAY { print_term(yytext); }
-begin|BEGIN { print_term(yytext); }
-chr|CHR { print_term(yytext); }
-const|CONST { print_term(yytext); }
-do|DO { print_term(yytext); }
-downto|DOWNTO { print_term(yytext); }
-else|ELSE { print_term(yytext); }
-elseif|ELSEIF { print_term(yytext); }
-end|END { print_term(yytext); }
-for|FOR { print_term(yytext); }
-forward|FORWARD { print_term(yytext); }
-function|FUNCTION { print_term(yytext); }
-if|IF { print_term(yytext); }
-of|OF { print_term(yytext); }
-ord|ORD { print_term(yytext); }
-pred|PRED { print_term(yytext); }
-procedure|PROCEDURE { print_term(yytext); }
-read|READ { print_term(yytext); }
-record|RECORD { print_term(yytext); }
-ref|REF { print_term(yytext); }
-repeat|REPEAT { print_term(yytext); }
-return|RETURN { print_term(yytext); }
-stop|STOP { print_term(yytext); }
-succ|SUCC { print_term(yytext); }
-then|THEN { print_term(yytext); }
-to|TO { print_term(yytext); }
-type|TYPE { print_term(yytext); }
-until|UNTIL { print_term(yytext); }
-var|VAR { print_term(yytext); }
-while|WHILE { print_term(yytext); }
-write|WRITE { print_term(yytext); }
+array|ARRAY { print_term("array", yytext); }
+begin|BEGIN { print_term("begin", yytext); }
+chr|CHR { print_term("chr",yytext); }
+const|CONST { print_term("const",yytext); }
+do|DO { print_term("do",yytext); }
+downto|DOWNTO { print_term("downto",yytext); }
+else|ELSE { print_term("else",yytext); }
+elseif|ELSEIF { print_term("elseif",yytext); }
+end|END { print_term("end",yytext); }
+for|FOR { print_term("for",yytext); }
+forward|FORWARD { print_term("forward",yytext); }
+function|FUNCTION { print_term("function",yytext); }
+if|IF { print_term("if",yytext); }
+of|OF { print_term("of",yytext); }
+ord|ORD { print_term("ord",yytext); }
+pred|PRED { print_term("pred",yytext); }
+procedure|PROCEDURE { print_term("procedure",yytext); }
+read|READ { print_term("read",yytext); }
+record|RECORD { print_term("record",yytext); }
+ref|REF { print_term("ref",yytext); }
+repeat|REPEAT { print_term("repeat",yytext); }
+return|RETURN { print_term("return",yytext); }
+stop|STOP { print_term("stop",yytext); }
+succ|SUCC { print_term("succ",yytext); }
+then|THEN { print_term("then",yytext); }
+to|TO { print_term("to",yytext); }
+type|TYPE { print_term("type",yytext); }
+until|UNTIL { print_term("until",yytext); }
+var|VAR { print_term("var",yytext); }
+while|WHILE { print_term("while",yytext); }
+write|WRITE { print_term("write",yytext); }
 
+  /* Identifiers
+  ------------------------------------------------------------------ */
+[a-zA-Z][a-zA-Z0-9_]* { print_term("Identifier", yytext); }
 
   /* Operators
   ------------------------------------------------------------------ */
-
-"+" { print_term("Plus Operator"); }
-"−" { print_term("Minus Operator"); }
-"∗" { print_term("Multiplication Operator"); }
-"/" { print_term("Division Operator"); }
-"&" { print_term("Bitwise And"); }
-"|" { print_term("Bitwise Or"); }
-"˜" { print_term("Bitwise Negation"); }
-"=" { print_term("Equality Operator"); }
-"<>" { print_term("Inequality Operator"); }
-"<" { print_term("Less Than Operator"); }
-"<=" { print_term("Less Than or Equal to Operator"); }
-">" { print_term("Greater Than Operator"); }
-">=" { print_term("Greater Than or Equal to Operator"); }
-"." { print_term("End Program Delimiter"); }
-"," { print_term("Comma Delimiter"); }
-":" { print_term("Colon Delimiter"); }
-";" { print_term("Semicolon Delimiter"); }
-"(" { print_term("Left Parenthesis"); }
-")" { print_term("Right Parenthesis"); }
-"[" { print_term("Left Bracket"); }
-"]" { print_term("Right Bracket"); }
-":=" { print_term("Assignment Operator"); }
+"+" { print_term("Plus Operator", yytext); }
+"−" { print_term("Minus Operator", yytext); }
+"∗" { print_term("Multiplication Operator", yytext); }
+"/" { print_term("Division Operator", yytext); }
+"&" { print_term("Bitwise And", yytext); }
+"|" { print_term("Bitwise Or", yytext); }
+"˜" { print_term("Bitwise Negation", yytext); }
+"=" { print_term("Equality Operator", yytext); }
+"<>" { print_term("Inequality Operator", yytext); }
+"<" { print_term("Less Than Operator", yytext); }
+"<=" { print_term("Less Than or Equal to Operator", yytext); }
+">" { print_term("Greater Than Operator", yytext); }
+">=" { print_term("Greater Than or Equal to Operator", yytext); }
+"." { print_term("End Program Delimiter", yytext); }
+"," { print_term("Comma Delimiter", yytext); }
+":" { print_term("Colon Delimiter", yytext); }
+";" { print_term("Semicolon Delimiter", yytext); }
+"(" { print_term("Left Parenthesis", yytext); }
+")" { print_term("Right Parenthesis", yytext); }
+"[" { print_term("Left Bracket", yytext); }
+"]" { print_term("Right Bracket", yytext); }
+":=" { print_term("Assignment Operator", yytext); }
 
 
   /* Constants
   ------------------------------------------------------------------ */
+0[0-7]+|0x[0-9]+|[0-9]+ { print_term("Integer Constant", yytext); }
+'[^\n]' { print_term("Character Constant", yytext); }
 
-0[0-7]+|0x[0-9]+|[0-9]+ { print_term("Integer Constant"); }
-'[a-zA-Z]' { print_term("Character Constant"); }
-
-\"[^\"\n]*\" { print_term("String Constant"); }
+\"[^\"\n]*\" { print_term("String Constant", yytext); }
 
   /* Other
   ------------------------------------------------------------------ */
+\$.*$ { print_term("Comment", yytext); }
 
-\$.*$ { print_term("Comment"); }
+[\t\n ]+
 
-.|\n    { ECHO; }
+.    { print_error(yytext); }
 
 %
 %%
