@@ -1,4 +1,5 @@
 %{
+#include "parser.hpp"
 #include <iostream>
 
 void print_term(std::string term, std::string value)
@@ -101,7 +102,7 @@ write|WRITE { print_term("write",yytext); }
 
 .    { print_error(yytext); }
 
-%
+
 %%
 
 int main(void)
