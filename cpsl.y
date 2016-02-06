@@ -15,7 +15,7 @@ void yyerror(const char* message)
 
 void parsed(std::string term)
 {
-  std::cout << std::setw(22) << term << " at line " << std::setw(5) << yylineno << "!\n";
+  std::cout << "I parsed " << std::setw(28) << term << " at line " << std::setw(5) << yylineno << " (!)\n";
 }
 
 %}
@@ -99,9 +99,9 @@ program : optional_constant_decl
           optional_type_decl
           optional_var_decl
           optional_proc_or_func_decls
-          block
+          block {parsed("Block");}
           DOT
-          {parsed("program");}
+          {parsed("Program");}
 		  ;
 
 optional_constant_decl : constant_decl
@@ -120,13 +120,13 @@ optional_proc_or_func_decls : proc_or_func_decls
                             | %empty
                             ;
 
-proc_or_func_decls : func_decl
-                   | proc_decl
+proc_or_func_decls : func_decl {parsed("Function Declaration");}
+                   | proc_decl {parsed("Procedure Declaration");}
                    | func_decl proc_or_func_decls
                    | proc_decl proc_or_func_decls
                    ;
 
-constant_decl : CONST definitions
+constant_decl : CONST definitions {parsed("Constant Declaration");}
               ;
 
 definitions : definition
@@ -175,18 +175,16 @@ block : BEGIN_KW statement_sequence END
       ;
 
 
-type_decl : TYPE type_definitions {parsed("TypeDecl"); }
+type_decl : TYPE type_definitions {parsed("Type Declaration"); }
           ;
 
-type_definitions : IDENT EQUALITY type SEMICOLON 
-                  { parsed("TypeDef Ident"); }
-                 | type_definitions IDENT EQUALITY type SEMICOLON 
-                  {parsed("TypeDef Multi"); }
+type_definitions : IDENT EQUALITY type SEMICOLON
+                 | type_definitions IDENT EQUALITY type SEMICOLON
                  ;
 
-type : simple_type { parsed("SimpleType");}
-     | record_type { parsed("RecordType");}
-     | array_type { parsed("ArrayType");}
+type : simple_type
+     | record_type
+     | array_type
      ;
 
 simple_type : IDENT
@@ -215,7 +213,7 @@ ident_list : IDENT
            | ident_list COMMA IDENT
            ;
 
-var_decl : VAR members {parsed("VarDecl");}
+var_decl : VAR members {parsed("Variable Declaration");}
          ;
 
 
