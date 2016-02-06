@@ -2,15 +2,20 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 extern int yylex();
 extern int yylineno;
 extern char* yytext;
  
 void yyerror(const char* message)
 {
-  std::cout << "Build failed: " << message << " at line " << yylineno << "." << std::endl;
-  std::cout << "Something's up with:" << std::endl;
-  std::cout << yytext << std::endl;
+  std::cout << "Build failed: " << message << " at line " << yylineno << " with "
+  << yytext << "." << std::endl;
+}
+
+void parsed(std::string term)
+{
+  std::cout << std::setw(22) << term << " at line " << std::setw(5) << yylineno << "!\n";
 }
 
 %}
@@ -96,6 +101,7 @@ program : optional_constant_decl
           optional_proc_or_func_decls
           block
           DOT
+          {parsed("program");}
 		  ;
 
 optional_constant_decl : constant_decl
@@ -169,16 +175,18 @@ block : BEGIN_KW statement_sequence END
       ;
 
 
-type_decl : TYPE type_definitions
+type_decl : TYPE type_definitions {parsed("TypeDecl"); }
           ;
 
-type_definitions : IDENT EQUALITY type
-                 | type_definitions SEMICOLON IDENT EQUALITY type
+type_definitions : IDENT EQUALITY type SEMICOLON 
+                  { parsed("TypeDef Ident"); }
+                 | type_definitions IDENT EQUALITY type SEMICOLON 
+                  {parsed("TypeDef Multi"); }
                  ;
 
-type : simple_type
-     | record_type
-     | array_type
+type : simple_type { parsed("SimpleType");}
+     | record_type { parsed("RecordType");}
+     | array_type { parsed("ArrayType");}
      ;
 
 simple_type : IDENT
@@ -186,6 +194,9 @@ simple_type : IDENT
 
 record_type : RECORD optional_members END
             ;
+
+array_type : ARRAY LEFT_BRACKET range RIGHT_BRACKET OF type
+           ;
 
 optional_members : members
                  | %empty
@@ -195,8 +206,7 @@ members : ident_list COLON type SEMICOLON
         | members ident_list COLON type SEMICOLON
         ;
 
-array_type : ARRAY LEFT_BRACKET range RIGHT_BRACKET OF type
-           ;
+
 
 range : expression COLON expression
       ;
@@ -205,7 +215,7 @@ ident_list : IDENT
            | ident_list COMMA IDENT
            ;
 
-var_decl : VAR members
+var_decl : VAR members {parsed("VarDecl");}
          ;
 
 
@@ -314,7 +324,7 @@ expression : expression OR expression
            | expression DIVIDE expression
            | expression MODULUS expression
            | NEGATION expression
-           | UNARY_MINUS expression
+           | MINUS expression %prec UNARY_MINUS
            | LEFT_PAREN expression RIGHT_PAREN
            | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
            | CHR LEFT_PAREN expression RIGHT_PAREN
@@ -322,7 +332,6 @@ expression : expression OR expression
            | PRED LEFT_PAREN expression RIGHT_PAREN
            | SUCC LEFT_PAREN expression RIGHT_PAREN
            | l_value
-
            ;
 
 l_value_list : l_value

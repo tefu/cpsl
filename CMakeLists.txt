@@ -9,3 +9,25 @@ flex_target(scanner cpsl.lex ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp)
 bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp COMPILE_FLAGS "-d -W")
 set(SOURCES parser scanner)
 add_executable(cpsl ${SOURCES})
+
+add_custom_command(TARGET cpsl
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/language-tests/language_test.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/language_test.sh"
+        DEPENDS "${CMAKE_SOURCE_DIR}/language-tests/language_test.sh")
+
+file(GLOB language_tests ${CMAKE_SOURCE_DIR}/language-tests/test-files/*.cpsl)
+foreach (language_test_dir ${language_tests})
+    get_filename_component(language_test ${language_test_dir} NAME)
+    add_custom_command(TARGET cpsl
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${language_test_dir}
+        "${CMAKE_CURRENT_BINARY_DIR}/test-files/${language_test}"
+        DEPENDS "${CMAKE_SOURCE_DIR}/language-tests/test-files")
+endforeach(language_test_dir ${language_tests})
+
+add_custom_target(language_test
+        COMMAND ./language_test.sh)
+
