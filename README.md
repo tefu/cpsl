@@ -17,5 +17,26 @@ cmake ..
 make
 ./cpsl
 ```
-to run the compiler. I've tested this build process on Ubuntu with GCC 4.8 and
+to start the compiler. I tested this build process on Ubuntu with GCC 4.8 and
 Arch Linux with GCC 5.3.
+
+# Language Tests
+
+I added some language tests that run my compiler on the CPSL programs from
+[ksundberg/CS6300](https://github.com/ksundberg/CS6300). Same steps as before,
+but now we run `make language_test` instead of starting the compiler with
+`./cpsl`. The full process for running the language tests would look like:
+
+``` 
+mkdir build 
+cd build 
+cmake .. 
+make 
+make language_test 
+```
+
+# Bison Output
+
+After running `make` in your CMake build directory, the file `bison.output` will
+be generated. This contains information about the parser's states (also
+warnings, conflicts, useless rules, etc.)
