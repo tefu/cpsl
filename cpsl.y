@@ -1,14 +1,28 @@
 %{
+#include <string>
+#include <vector>
 #include <iostream>
-
 extern int yylex();
+extern int yylineno;
+extern char* yytext;
+ 
 void yyerror(const char* message)
 {
-  std::cout << message;
-  std::exit(1);
+  std::cout << "Build failed: " << message << " at line " << yylineno << "." << std::endl;
+  std::cout << "Something's up with:" << std::endl;
+  std::cout << yytext << std::endl;
 }
 
 %}
+
+/* Types
+------------------------------------------------------------------ */
+%union {
+  int integer;
+  std::string* string_constant;
+}
+
+%start program
 
 /* Keywords
 ------------------------------------------------------------------ */
@@ -59,16 +73,18 @@ void yyerror(const char* message)
 
 %left OR
 %left AND
-%right NEGATION
+%precedence NEGATION
 %nonassoc EQUALITY INEQUALITY LESS_THAN LESS_THAN_OR_EQUAL GREATER_THAN GREATER_THAN_OR_EQUAL
 %left PLUS MINUS
 %left MULT DIVIDE MODULUS
-%right UNARY_MINUS
+%precedence UNARY_MINUS
 
 /* Other
 ------------------------------------------------------------------ */
 %token IDENT
-
+%token <integer> INTEGER
+%token <string_constant> STRING
+%token <string_constant> CHAR
 
 
 %%
@@ -80,34 +96,39 @@ program : optional_constant_decl
           optional_proc_or_func_decls
           block
           DOT
-		    ;
+		  ;
 
 optional_constant_decl : constant_decl
-                       |
+                       | %empty
                        ;
 
 optional_type_decl : type_decl
-                   |
+                   | %empty
                    ;
 
 optional_var_decl : var_decl
-                   |
+                   | %empty
                    ;
 
 optional_proc_or_func_decls : proc_or_func_decls
-                            |
+                            | %empty
                             ;
 
-proc_or_func_decls : func_decl proc_or_func_decls
-                            | proc_decl proc_or_func_decls
-                            ;
+proc_or_func_decls : func_decl
+                   | proc_decl
+                   | func_decl proc_or_func_decls
+                   | proc_decl proc_or_func_decls
+                   ;
 
 constant_decl : CONST definitions
               ;
 
-definitions : IDENT EQUALITY expression
-            | IDENT EQUALITY expression SEMICOLON definitions
+definitions : definition
+            | definitions definition
             ;
+
+definition : IDENT EQUALITY expression SEMICOLON
+           ;
 
 proc_decl : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
             SEMICOLON FORWARD SEMICOLON
@@ -123,19 +144,19 @@ func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
 
 
 formal_parameters : some_formal_parameters
-                  |
+                  | %empty
                   ;
 
 some_formal_parameters : formal_parameter
                        | some_formal_parameters SEMICOLON formal_parameter
                        ;
 
-formal_parameter : optional_var_or_ref ident_list COLON type 
+formal_parameter : optional_var_or_ref ident_list COLON type
                  ;
 
 optional_var_or_ref : VAR
                     | REF
-                    |
+                    | %empty
                     ;
 
 body : optional_constant_decl
@@ -167,7 +188,7 @@ record_type : RECORD optional_members END
             ;
 
 optional_members : members
-                 | 
+                 | %empty
                  ;
 
 members : ident_list COLON type SEMICOLON
@@ -211,18 +232,18 @@ if_statement : IF expression THEN statement_sequence optional_else_ifs optional_
              ;
 
 optional_else_ifs : else_ifs
-                  |
+                  | %empty
                   ;
 
 else_ifs : else_if
-         : else_ifs else_if
+         | else_ifs else_if
          ;
 
 else_if : ELSEIF expression THEN statement_sequence
         ;
 
 optional_else : else
-              |
+              | %empty
               ;
 
 else : ELSE statement_sequence
@@ -259,7 +280,7 @@ write_statement : WRITE LEFT_PAREN expression_list RIGHT_PAREN
 procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
                ;
 
-null_statement :
+null_statement : %empty
                ;
 
 
@@ -268,7 +289,7 @@ definitions : IDENT EQUALITY expression
             ;
 
 optional_expression_list : expression_list
-                         |
+                         | %empty
                          ;
 
 expression_list : expression
@@ -276,7 +297,7 @@ expression_list : expression
                 ;
 
 optional_expression : expression
-                    |
+                    | %empty
                     ;
 
 expression : expression OR expression
@@ -301,13 +322,17 @@ expression : expression OR expression
            | PRED LEFT_PAREN expression RIGHT_PAREN
            | SUCC LEFT_PAREN expression RIGHT_PAREN
            | l_value
+
            ;
-		
+
 l_value_list : l_value
              | l_value_list COMMA l_value
              ;
 
 l_value : IDENT
+        | CHAR
+        | STRING
+        | INTEGER
         | l_value DOT IDENT
         | l_value LEFT_BRACKET expression RIGHT_BRACKET
         ;
@@ -315,3 +340,9 @@ l_value : IDENT
 
 
 %%
+
+int main()
+{
+  yyparse();
+}
+
