@@ -291,11 +291,6 @@ procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
 null_statement : %empty
                ;
 
-
-definitions : IDENT EQUALITY expression
-            | IDENT EQUALITY expression SEMICOLON definitions
-            ;
-
 optional_expression_list : expression_list
                          | %empty
                          ;
