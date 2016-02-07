@@ -78,11 +78,11 @@ void parsed(std::string term)
 
 %left OR
 %left AND
-%precedence NEGATION
+%nonassoc NEGATION
 %nonassoc EQUALITY INEQUALITY LESS_THAN LESS_THAN_OR_EQUAL GREATER_THAN GREATER_THAN_OR_EQUAL
 %left PLUS MINUS
 %left MULT DIVIDE MODULUS
-%precedence UNARY_MINUS
+%nonassoc UNARY_MINUS
 
 /* Other
 ------------------------------------------------------------------ */
@@ -105,19 +105,19 @@ program : optional_constant_decl
 		  ;
 
 optional_constant_decl : constant_decl
-                       | %empty
+                       |
                        ;
 
 optional_type_decl : type_decl
-                   | %empty
+                   |
                    ;
 
 optional_var_decl : var_decl
-                   | %empty
+                   |
                    ;
 
 optional_proc_or_func_decls : proc_or_func_decls
-                            | %empty
+                            |
                             ;
 
 proc_or_func_decls : func_decl {parsed("Function Declaration");}
@@ -150,7 +150,7 @@ func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
 
 
 formal_parameters : some_formal_parameters
-                  | %empty
+                  |
                   ;
 
 some_formal_parameters : formal_parameter
@@ -162,7 +162,7 @@ formal_parameter : optional_var_or_ref ident_list COLON type
 
 optional_var_or_ref : VAR
                     | REF
-                    | %empty
+                    |
                     ;
 
 body : optional_constant_decl
@@ -197,7 +197,7 @@ array_type : ARRAY LEFT_BRACKET range RIGHT_BRACKET OF type
            ;
 
 optional_members : members
-                 | %empty
+                 |
                  ;
 
 members : ident_list COLON type SEMICOLON
@@ -240,7 +240,7 @@ if_statement : IF expression THEN statement_sequence optional_else_ifs optional_
              ;
 
 optional_else_ifs : else_ifs
-                  | %empty
+                  |
                   ;
 
 else_ifs : else_if
@@ -251,7 +251,7 @@ else_if : ELSEIF expression THEN statement_sequence
         ;
 
 optional_else : else
-              | %empty
+              |
               ;
 
 else : ELSE statement_sequence
@@ -288,11 +288,11 @@ write_statement : WRITE LEFT_PAREN expression_list RIGHT_PAREN
 procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
                ;
 
-null_statement : %empty
+null_statement :
                ;
 
 optional_expression_list : expression_list
-                         | %empty
+                         |
                          ;
 
 expression_list : expression
@@ -300,7 +300,7 @@ expression_list : expression
                 ;
 
 optional_expression : expression
-                    | %empty
+                    |
                     ;
 
 expression : expression OR expression
