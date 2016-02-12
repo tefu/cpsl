@@ -8,8 +8,18 @@ find_package(BISON)
 flex_target(scanner cpsl.lex ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp)
 bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
         COMPILE_FLAGS "-d -W -v --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.output")
-set(SOURCES parser scanner)
+set(SOURCES
+        parser
+        scanner)
+
+include_directories(
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests)
+
 add_executable(cpsl ${SOURCES})
+add_executable(unit_tests unit-tests/main.cpp)
+enable_testing(true)
 
 add_custom_command(TARGET cpsl
         POST_BUILD
@@ -30,5 +40,6 @@ foreach (language_test_dir ${language_tests})
 endforeach()
 
 add_custom_target(language_test
-        COMMAND ./language_test.sh)
+        COMMAND ./language_test.sh
+        DEPENDS cpsl)
 
