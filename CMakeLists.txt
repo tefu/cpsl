@@ -28,6 +28,12 @@ add_custom_command(TARGET cpsl
         "${CMAKE_CURRENT_BINARY_DIR}/language_test.sh"
         DEPENDS "${CMAKE_SOURCE_DIR}/language-tests/language_test.sh")
 
+add_custom_command(TARGET cpsl
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/language-tests/Mars4_4.jar"
+        "${CMAKE_CURRENT_BINARY_DIR}/Mars4_4.jar")
+
 file(GLOB language_tests ${CMAKE_SOURCE_DIR}/language-tests/test-files/*.cpsl)
 foreach (language_test_dir ${language_tests})
     get_filename_component(language_test ${language_test_dir} NAME)
