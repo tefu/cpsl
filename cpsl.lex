@@ -1,5 +1,7 @@
 %{
 #include <string>
+#include "Expression.hpp"
+#include "ProgramNode.hpp"
 #include "parser.hpp"
 #include <iostream>
 

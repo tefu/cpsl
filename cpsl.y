@@ -5,6 +5,8 @@
 #include <iostream>
 #include <iomanip>
 #include "instructions.hpp"
+#include "ProgramNode.hpp"
+#include "Expression.hpp"
 
 extern int yylex();
 extern int yylineno;
@@ -28,7 +30,11 @@ void parsed(std::string term)
 ------------------------------------------------------------------ */
 %union {
   int integer;
+  bool boolean;
   std::string* string_constant;
+  Expression* expr;
+  ProgramNode* node;
+  std::vector<Expression*>* exprList;
 }
 
 %start program
@@ -94,6 +100,15 @@ void parsed(std::string term)
 %token <integer> INTEGER
 %token <string_constant> STRING
 %token <string_constant> CHAR
+
+/* Nonterminals
+------------------------------------------------------------------ */
+%type <node> program
+%type <expr> expression
+%type <expr> optional_expression
+%type <exprList> optional_expression_list
+%type <exprList> expression_list
+
 
 
 %%
@@ -296,40 +311,43 @@ procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
 null_statement :
                ;
 
-optional_expression_list : expression_list
-                         |
+optional_expression_list : expression_list { $$ = $1; }
+                         | { $$ = nullptr; }
                          ;
 
-expression_list : expression
-                | expression_list COMMA expression
+expression_list : expression { $$ = new std::vector<Expression*>(); $$->push_back($1); }
+                | expression_list COMMA expression { $$ = $1; $$->push_back($3); }
                 ;
 
-optional_expression : expression
-                    |
+optional_expression : expression { $$ = $1; }
+                    | { $$ = nullptr; }
                     ;
 
-expression : expression OR expression
-           | expression AND expression
-           | expression EQUALITY expression
-           | expression INEQUALITY expression
-           | expression LESS_THAN_OR_EQUAL expression
-           | expression LESS_THAN expression
-           | expression GREATER_THAN_OR_EQUAL expression
-           | expression GREATER_THAN expression
-           | expression PLUS expression
-           | expression MINUS expression
-           | expression MULT expression
-           | expression DIVIDE expression
-           | expression MODULUS expression
-           | NEGATION expression
-           | MINUS expression %prec UNARY_MINUS
-           | LEFT_PAREN expression RIGHT_PAREN
-           | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
-           | CHR LEFT_PAREN expression RIGHT_PAREN
-           | ORD LEFT_PAREN expression RIGHT_PAREN
-           | PRED LEFT_PAREN expression RIGHT_PAREN
-           | SUCC LEFT_PAREN expression RIGHT_PAREN
-           | l_value
+expression : expression OR expression { $$ = new LogicalOr{$1, $3}; }
+           | expression AND expression { $$ = new LogicalAnd{$1, $3}; }
+           | expression EQUALITY expression { $$ = new Equality{$1, $3}; }
+           | expression INEQUALITY expression { $$ = new Inequality{$1, $3}; }
+           | expression LESS_THAN_OR_EQUAL expression { $$ = new LessThanOrEqual{$1, $3}; }
+           | expression LESS_THAN expression { $$ = new LessThan{$1, $3}; }
+           | expression GREATER_THAN_OR_EQUAL expression { $$ = new GreaterThanOrEqual{$1, $3}; }
+           | expression GREATER_THAN expression { $$ = new GreaterThan{$1, $3}; }
+           | expression PLUS expression { $$ = new OperatorPlus{$1, $3}; }
+           | expression MINUS expression { $$ = new OperatorMinus{$1, $3}; }
+           | expression MULT expression { $$ = new OperatorMult{$1, $3}; }
+           | expression DIVIDE expression { $$ = new OperatorDivide{$1, $3}; }
+           | expression MODULUS expression { $$ = new OperatorModulus{$1, $3}; }
+           | NEGATION expression { $$ = new Negation{$2}; }
+           | MINUS expression %prec UNARY_MINUS { $$ = new UnaryMinus{$2}; }
+           | LEFT_PAREN expression RIGHT_PAREN { $$ = $2; }
+           | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN { $$ = new FunctionCall{$3}; }
+           | CHR LEFT_PAREN expression RIGHT_PAREN { $$ = new ToChar{$3}; }
+           | ORD LEFT_PAREN expression RIGHT_PAREN { $$ = new ToInt{$3}; }
+           | PRED LEFT_PAREN expression RIGHT_PAREN { $$ = new Predecessor{$3}; }
+           | SUCC LEFT_PAREN expression RIGHT_PAREN { $$ = new Successor{$3}; }
+           | CHAR { $$ = new StringLiteral{$1}; }
+           | STRING { $$ = new StringLiteral{$1}; }
+           | INTEGER { $$ = new IntLiteral{$1}; }
+           | l_value { $$ = new LValue(); }
            ;
 
 l_value_list : l_value
@@ -337,9 +355,6 @@ l_value_list : l_value
              ;
 
 l_value : IDENT
-        | CHAR
-        | STRING
-        | INTEGER
         | l_value DOT IDENT
         | l_value LEFT_BRACKET expression RIGHT_BRACKET
         ;
