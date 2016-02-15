@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(FLEX)
 find_package(BISON)
+find_package(Boost COMPONENTS program_options)
 flex_target(scanner cpsl.lex ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp)
 bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
         COMPILE_FLAGS "-d -W -v --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.output")
@@ -16,7 +17,7 @@ set(COMMON_SOURCES
 
 set(COMPILER_SOURCES
         parser
-        scanner)
+        scanner src/main.cpp)
 
 set(TEST_SOURCES
         unit-tests/main.cpp unit-tests/mips_test.cpp)
@@ -58,5 +59,5 @@ endforeach()
 
 add_custom_target(language_test
         COMMAND ./language_test.sh
-        DEPENDS cpsl)
+        DEPENDS cpsl "${CMAKE_CURRENT_BINARY_DIR}/language_test.sh" )
 

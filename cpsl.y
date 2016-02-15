@@ -1,10 +1,14 @@
 %{
 #include <string>
 #include <vector>
+#include <sstream>
 #include <iostream>
 #include <iomanip>
+#include "instructions.hpp"
+
 extern int yylex();
 extern int yylineno;
+extern std::stringstream sout;
 extern char* yytext;
  
 void yyerror(const char* message)
@@ -225,7 +229,8 @@ statement : assignment
           | while_statement
           | repeat_statement
           | for_statement
-          | stop_statement
+          | stop_statement { std::cout << "I parsed a stop statement, ya bastard!" << std::endl;
+                             sout << MIPS::system_call(10) << std::endl; }
           | return_statement
           | read_statement
           | write_statement
@@ -343,8 +348,4 @@ l_value : IDENT
 
 %%
 
-int main()
-{
-  yyparse();
-}
 
