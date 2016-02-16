@@ -26,7 +26,7 @@ chr|CHR { return CHR; }
 const|CONST { return CONST; }
 do|DO { return DO; }
 downto|DOWNTO { return DOWNTO; }
- else|ELSE { return ELSE; }
+else|ELSE { return ELSE; }
 elseif|ELSEIF { return ELSEIF; }
 end|END { return END; }
 for|FOR { return FOR; }

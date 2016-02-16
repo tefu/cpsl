@@ -13,7 +13,7 @@ bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 
 set(COMMON_SOURCES
         src/instructions.hpp
-        src/instructions.cpp src/Expression.cpp src/Expression.hpp src/ProgramNode.hpp)
+        src/instructions.cpp src/Expression.cpp src/Expression.hpp src/ProgramNode.hpp src/Statement.cpp src/Statement.hpp src/Block.cpp src/Block.hpp src/ParseTree.cpp src/ParseTree.hpp)
 
 set(COMPILER_SOURCES
         parser

@@ -3,20 +3,42 @@
 
 #include <sstream>
 #include <string>
-
-struct instruction {
-  std::string op_code;
-  int src1;
-  int src2;
-  int dest;
-};
+#include "Expression.hpp"
 
 namespace MIPS {
-  std::string push_on_stack(std::string);
-  std::string pop_off_stack(std::string);
+  const int ZERO=0;
+  const int AT=1;
+  const int V0=2;
+  const int V1=3;
+  const int A0=4;
+  const int A1=5;
+  const int A2=6;
+  const int A3=7;
+  const int GP=28;
+  const int SP=29;
+
+  std::string li(int, int);
+  std::string li(int, std::string);
+  std::string la(int, std::string);
+  std::string add(int, int, int);
+  std::string addi(int, int, int);
+  std::string beq(int, int, std::string);
+  std::string bne(int, int, std::string);
+  std::string blt(int, int, std::string);
+  std::string bgt(int, int, std::string);
+  std::string branch(std::string);
+  std::string store_word(int, int, int);
+  std::string load_word(int, int, int);
+
+  std::string push_on_stack(int);
+  std::string pop_off_stack(int);
   std::string system_call(int);
-  std::string print_string(std::string);
-  std::string print_int(int);
+  std::string write_out(Expression::Type, int);
+
+  std::string data();
+  std::string asciiz(std::string, std::string);
+  std::string text();
+
 }
 
 

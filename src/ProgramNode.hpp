@@ -4,7 +4,7 @@
 
 struct ProgramNode
 {
-  virtual std::string gen_asm() const=0;
+  virtual std::string gen_asm()=0;
 };
 
 #endif //CPSL_PROGRAMNODE_H

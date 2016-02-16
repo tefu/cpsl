@@ -6,7 +6,12 @@
 #include <iomanip>
 #include "instructions.hpp"
 #include "ProgramNode.hpp"
+#include "Statement.hpp"
 #include "Expression.hpp"
+#include "ParseTree.hpp"
+#include "Block.hpp"
+
+namespace PT = ParseTree;
 
 extern int yylex();
 extern int yylineno;
@@ -21,7 +26,9 @@ void yyerror(const char* message)
 
 void parsed(std::string term)
 {
-  std::cout << "I parsed " << std::setw(28) << term << " at line " << std::setw(5) << yylineno << " (!)\n";
+  std::cout << "I parsed " << std::setw(28) << term
+            << " at line " << std::setw(5) << yylineno << " with val: "
+            << yytext << "\n";
 }
 
 %}
@@ -33,8 +40,9 @@ void parsed(std::string term)
   bool boolean;
   std::string* string_constant;
   Expression* expr;
-  ProgramNode* node;
   std::vector<Expression*>* exprList;
+  ProgramNode* node;
+  std::vector<ProgramNode*>* nodeList;
 }
 
 %start program
@@ -104,6 +112,20 @@ void parsed(std::string term)
 /* Nonterminals
 ------------------------------------------------------------------ */
 %type <node> program
+%type <node> block
+%type <node> statement
+%type <node> assignment
+%type <node> if_statement
+%type <node> while_statement
+%type <node> repeat_statement
+%type <node> for_statement
+%type <node> stop_statement
+%type <node> return_statement
+%type <node> read_statement
+%type <node> write_statement
+%type <node> procedure_call
+%type <node> null_statement
+%type <nodeList> statement_sequence
 %type <expr> expression
 %type <expr> optional_expression
 %type <exprList> optional_expression_list
@@ -118,9 +140,9 @@ program : optional_constant_decl
           optional_type_decl
           optional_var_decl
           optional_proc_or_func_decls
-          block {parsed("Block");}
+          block
           DOT
-          {parsed("Program");}
+          {$$ = PT::program($5);}
 		  ;
 
 optional_constant_decl : constant_decl
@@ -139,13 +161,13 @@ optional_proc_or_func_decls : proc_or_func_decls
                             |
                             ;
 
-proc_or_func_decls : func_decl {parsed("Function Declaration");}
-                   | proc_decl {parsed("Procedure Declaration");}
+proc_or_func_decls : func_decl
+                   | proc_decl
                    | func_decl proc_or_func_decls
                    | proc_decl proc_or_func_decls
                    ;
 
-constant_decl : CONST definitions {parsed("Constant Declaration");}
+constant_decl : CONST definitions
               ;
 
 definitions : definition
@@ -190,11 +212,11 @@ body : optional_constant_decl
        block
        ;
 
-block : BEGIN_KW statement_sequence END
+block : BEGIN_KW statement_sequence END { $$ = PT::block($2); }
       ;
 
 
-type_decl : TYPE type_definitions {parsed("Type Declaration"); }
+type_decl : TYPE type_definitions
           ;
 
 type_definitions : IDENT EQUALITY type SEMICOLON
@@ -232,32 +254,38 @@ ident_list : IDENT
            | ident_list COMMA IDENT
            ;
 
-var_decl : VAR members {parsed("Variable Declaration");}
+var_decl : VAR members
          ;
 
 
 statement_sequence : statement
+                     { $$ = new std::vector<ProgramNode*>(); $$->push_back($1); }
                    | statement_sequence SEMICOLON statement
+                     { $$ = $1; $$->push_back($3); }
 
-statement : assignment
-          | if_statement
-          | while_statement
-          | repeat_statement
-          | for_statement
-          | stop_statement { std::cout << "I parsed a stop statement, ya bastard!" << std::endl;
-                             sout << MIPS::system_call(10) << std::endl; }
-          | return_statement
-          | read_statement
-          | write_statement
-          | procedure_call
-          | null_statement
+statement : assignment {$$=nullptr;}
+          | if_statement {$$=nullptr;}
+          | while_statement {$$=nullptr;}
+          | repeat_statement {$$=nullptr;}
+          | for_statement {$$=nullptr;}
+          | stop_statement { $$ = $1; }
+          | return_statement {$$=nullptr;}
+          | read_statement {$$=nullptr;}
+          | write_statement { $$ = $1; }
+          | procedure_call {$$=nullptr;}
+          | null_statement { $$=nullptr; }
           ;
 
 assignment : l_value ASSIGNMENT expression
            ;
 
-if_statement : IF expression THEN statement_sequence optional_else_ifs optional_else END
+if_statement : IF expression
+               THEN statement_sequence
+               optional_else_ifs
+               optional_else
+               END
              ;
+
 
 optional_else_ifs : else_ifs
                   |
@@ -291,7 +319,7 @@ polarity : TO
          | DOWNTO
          ;
 
-stop_statement : STOP
+stop_statement : STOP { $$ = new StopStatement(); }
                ;
 
 return_statement : RETURN optional_expression
@@ -302,6 +330,7 @@ read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN
 
 
 write_statement : WRITE LEFT_PAREN expression_list RIGHT_PAREN
+                  { $$ = new WriteStatement($3) ; }
                  ;
 
 
@@ -312,7 +341,7 @@ null_statement :
                ;
 
 optional_expression_list : expression_list { $$ = $1; }
-                         | { $$ = nullptr; }
+                         | { $$ = new std::vector<Expression*>(); }
                          ;
 
 expression_list : expression { $$ = new std::vector<Expression*>(); $$->push_back($1); }
@@ -323,31 +352,33 @@ optional_expression : expression { $$ = $1; }
                     | { $$ = nullptr; }
                     ;
 
-expression : expression OR expression { $$ = new LogicalOr{$1, $3}; }
-           | expression AND expression { $$ = new LogicalAnd{$1, $3}; }
-           | expression EQUALITY expression { $$ = new Equality{$1, $3}; }
-           | expression INEQUALITY expression { $$ = new Inequality{$1, $3}; }
-           | expression LESS_THAN_OR_EQUAL expression { $$ = new LessThanOrEqual{$1, $3}; }
-           | expression LESS_THAN expression { $$ = new LessThan{$1, $3}; }
-           | expression GREATER_THAN_OR_EQUAL expression { $$ = new GreaterThanOrEqual{$1, $3}; }
-           | expression GREATER_THAN expression { $$ = new GreaterThan{$1, $3}; }
-           | expression PLUS expression { $$ = new OperatorPlus{$1, $3}; }
-           | expression MINUS expression { $$ = new OperatorMinus{$1, $3}; }
-           | expression MULT expression { $$ = new OperatorMult{$1, $3}; }
-           | expression DIVIDE expression { $$ = new OperatorDivide{$1, $3}; }
-           | expression MODULUS expression { $$ = new OperatorModulus{$1, $3}; }
-           | NEGATION expression { $$ = new Negation{$2}; }
-           | MINUS expression %prec UNARY_MINUS { $$ = new UnaryMinus{$2}; }
-           | LEFT_PAREN expression RIGHT_PAREN { $$ = $2; }
-           | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN { $$ = new FunctionCall{$3}; }
-           | CHR LEFT_PAREN expression RIGHT_PAREN { $$ = new ToChar{$3}; }
-           | ORD LEFT_PAREN expression RIGHT_PAREN { $$ = new ToInt{$3}; }
-           | PRED LEFT_PAREN expression RIGHT_PAREN { $$ = new Predecessor{$3}; }
-           | SUCC LEFT_PAREN expression RIGHT_PAREN { $$ = new Successor{$3}; }
-           | CHAR { $$ = new StringLiteral{$1}; }
-           | STRING { $$ = new StringLiteral{$1}; }
-           | INTEGER { $$ = new IntLiteral{$1}; }
-           | l_value { $$ = new LValue(); }
+expression : expression OR expression                  { $$ = PT::logical_or($1,$3); }
+           | expression AND expression                 { $$ = PT::logical_and($1,$3); }
+           | expression EQUALITY expression            { $$ = PT::equality($1, $3); }
+           | expression INEQUALITY expression          { $$ = PT::inequality($1, $3); }
+           | expression LESS_THAN_OR_EQUAL expression  { $$ = PT::less_than_or_equal($1, $3); }
+           | expression LESS_THAN expression           { $$ = PT::less_than($1, $3); }
+           | expression GREATER_THAN_OR_EQUAL expression
+                                                       { $$ = PT::greater_than_or_equal($1, $3); }
+           | expression GREATER_THAN expression        { $$ = PT::greater_than($1, $3); }
+           | expression PLUS expression                { $$ = PT::plus($1, $3); }
+           | expression MINUS expression               { $$ = PT::minus($1, $3); }
+           | expression MULT expression                { $$ = PT::mult($1, $3); }
+           | expression DIVIDE expression              { $$ = PT::divide($1, $3); }
+           | expression MODULUS expression             { $$ = PT::modulus($1, $3); }
+           | NEGATION expression                       { $$ = PT::negation($2);}
+           | MINUS expression %prec UNARY_MINUS        { $$ = PT::unary_minus($2);}
+           | LEFT_PAREN expression RIGHT_PAREN         { $$ = $2; }
+           | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
+                                                       { $$ = PT::function_call($3); }
+           | CHR LEFT_PAREN expression RIGHT_PAREN     { $$ = PT::CHR($3); }
+           | ORD LEFT_PAREN expression RIGHT_PAREN     { $$ = PT::ORD($3); }
+           | PRED LEFT_PAREN expression RIGHT_PAREN    { $$ = PT::PRED($3); }
+           | SUCC LEFT_PAREN expression RIGHT_PAREN    { $$ = PT::SUCC($3); }
+           | CHAR                                      { $$ = PT::char_literal($1); }
+           | STRING                                    { $$ = PT::string_literal($1); }
+           | INTEGER                                   { $$ = PT::integer_literal($1); }
+           | l_value                                   { $$ = PT::l_value(); }
            ;
 
 l_value_list : l_value

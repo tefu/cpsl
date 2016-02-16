@@ -1,4 +1,6 @@
+#include <set>
 #include "Expression.hpp"
+#include "instructions.hpp"
 
 namespace
 {
@@ -6,9 +8,46 @@ namespace
   {
     return left->is_constant() && right->is_constant();
   }
+
+  std::set<int> registers_taken = {};
+  const int starting_register=8;
+
+  int allocate_register()
+  {
+    int winning_register = starting_register;
+    while(registers_taken.find(winning_register) != registers_taken.end())
+    {
+      winning_register++;
+    }
+    registers_taken.insert(winning_register);
+
+    return winning_register;
+  }
+
+  void release_register(int reg)
+  {
+    registers_taken.erase(reg);
+  }
 }
 
-std::string LogicalOr::gen_asm() const
+int Expression::result() const
+{
+  return result_reg;
+}
+
+void Expression::allocate()
+{
+  if (result_reg == NULL_REGISTER)
+    result_reg = allocate_register();
+}
+
+void Expression::release()
+{
+  release_register(result_reg);
+  result_reg = NULL_REGISTER;
+}
+
+std::string LogicalOr::gen_asm()
 {
   return "";
 }
@@ -24,7 +63,9 @@ Expression::Type LogicalOr::data_type() const
 
 
 
-std::string LogicalAnd::gen_asm() const
+/* Binary Operators
+   ------------------------------------------------------------------- */
+std::string LogicalAnd::gen_asm()
 {
   return "";
 }
@@ -38,7 +79,7 @@ Expression::Type LogicalAnd::data_type() const
 }
 
 
-std::string Equality::gen_asm() const
+std::string Equality::gen_asm()
 {
   return "";
 }
@@ -52,7 +93,7 @@ Expression::Type Equality::data_type() const
 }
 
 
-std::string Inequality::gen_asm() const
+std::string Inequality::gen_asm()
 {
   return "";
 }
@@ -66,7 +107,7 @@ Expression::Type Inequality::data_type() const
 }
 
 
-std::string LessThanOrEqual::gen_asm() const
+std::string LessThanOrEqual::gen_asm()
 {
   return "";
 }
@@ -80,7 +121,7 @@ Expression::Type LessThanOrEqual::data_type() const
 }
 
 
-std::string LessThan::gen_asm() const
+std::string LessThan::gen_asm()
 {
   return "";
 }
@@ -94,7 +135,7 @@ Expression::Type LessThan::data_type() const
 }
 
 
-std::string GreaterThanOrEqual::gen_asm() const
+std::string GreaterThanOrEqual::gen_asm()
 {
   return "";
 }
@@ -108,7 +149,7 @@ Expression::Type GreaterThanOrEqual::data_type() const
 }
 
 
-std::string GreaterThan::gen_asm() const
+std::string GreaterThan::gen_asm()
 {
   return "";
 }
@@ -122,7 +163,7 @@ Expression::Type GreaterThan::data_type() const
 }
 
 
-std::string OperatorPlus::gen_asm() const
+std::string OperatorPlus::gen_asm()
 {
   return "";
 }
@@ -136,7 +177,7 @@ Expression::Type OperatorPlus::data_type() const
 }
 
 
-std::string OperatorMinus::gen_asm() const
+std::string OperatorMinus::gen_asm()
 {
   return "";
 }
@@ -150,7 +191,7 @@ Expression::Type OperatorMinus::data_type() const
 }
 
 
-std::string OperatorMult::gen_asm() const
+std::string OperatorMult::gen_asm()
 {
   return "";
 }
@@ -164,7 +205,7 @@ Expression::Type OperatorMult::data_type() const
 }
 
 
-std::string OperatorDivide::gen_asm() const
+std::string OperatorDivide::gen_asm()
 {
   return "";
 }
@@ -177,7 +218,7 @@ Expression::Type OperatorDivide::data_type() const
   return Expression::INTEGER;
 }
 
-std::string OperatorModulus::gen_asm() const
+std::string OperatorModulus::gen_asm()
 {
   return "";
 }
@@ -190,7 +231,9 @@ Expression::Type OperatorModulus::data_type() const
   return Expression::INTEGER;
 }
 
-std::string Negation::gen_asm() const
+/* Unary Operators
+   ------------------------------------------------------------------- */
+std::string Negation::gen_asm()
 {
   return "";
 }
@@ -203,7 +246,7 @@ Expression::Type Negation::data_type() const
   return Expression::BOOL;
 }
 
-std::string UnaryMinus::gen_asm() const
+std::string UnaryMinus::gen_asm()
 {
   return "";
 }
@@ -217,7 +260,7 @@ Expression::Type UnaryMinus::data_type() const
 }
 
 
-std::string FunctionCall::gen_asm() const
+std::string FunctionCall::gen_asm()
 {
   return "";
 }
@@ -238,7 +281,7 @@ Expression::Type FunctionCall::data_type() const
 }
 
 
-std::string ToChar::gen_asm() const
+std::string ToChar::gen_asm()
 {
   return "";
 }
@@ -252,7 +295,7 @@ Expression::Type ToChar::data_type() const
 }
 
 
-std::string ToInt::gen_asm() const
+std::string ToInt::gen_asm()
 {
   return "";
 }
@@ -266,7 +309,7 @@ Expression::Type ToInt::data_type() const
 }
 
 
-std::string Predecessor::gen_asm() const
+std::string Predecessor::gen_asm()
 {
   return "";
 }
@@ -280,7 +323,7 @@ Expression::Type Predecessor::data_type() const
 }
 
 
-std::string Successor::gen_asm() const
+std::string Successor::gen_asm()
 {
   return "";
 }
@@ -294,48 +337,79 @@ Expression::Type Successor ::data_type() const
 }
 
 
-std::string StringLiteral::gen_asm() const
+/* Literals
+   ------------------------------------------------------------------- */
+std::string StringLiteral::gen_asm()
 {
-  
+  allocate();
+  std::stringstream s;
+  std::string label = "string";
+
+  s << MIPS::data()
+    << MIPS::asciiz(label, *literal)
+    << MIPS::text()
+    << MIPS::la(result_reg, label);
+  return s.str();
 }
 
 bool StringLiteral::is_constant() const
 {
-  
+  return true;
 }
 Expression::Type StringLiteral::data_type() const
 {
-  
+  return Expression::STRING;
 }
 
-std::string IntLiteral::gen_asm() const
+
+std::string CharLiteral::gen_asm() {
+  allocate();
+  return MIPS::li(result_reg, *literal );
+}
+
+bool CharLiteral::is_constant() const
 {
-  
+  return true;
+}
+
+Expression::Type CharLiteral::data_type() const
+{
+  return Expression::CHAR;
+}
+
+std::string IntLiteral::gen_asm()
+{
+  allocate();
+  return MIPS::li(result_reg, literal);
 }
 bool IntLiteral::is_constant() const
 {
-  
+  return true;
 }
 Expression::Type IntLiteral::data_type() const
 {
-  
+  return Expression::INTEGER;
 }
 
-std::string BoolLiteral::gen_asm() const
+std::string BoolLiteral::gen_asm()
 {
-  
+  allocate();
+  return MIPS::li(result_reg, literal ? 1 : 0);
 }
 bool BoolLiteral::is_constant() const
 {
-  
+  return true;
 }
 Expression::Type BoolLiteral::data_type() const
 {
-  
+  return Expression::BOOL;
 }
 
 
-std::string LValue::gen_asm() const
+
+
+
+std::string LValue::gen_asm()
 {
   return "";
 }
@@ -348,3 +422,4 @@ Expression::Type LValue::data_type() const
 {
   return Expression::INTEGER;
 }
+
