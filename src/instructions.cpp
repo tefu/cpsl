@@ -109,6 +109,22 @@ std::string MIPS::inequality(int dest, int src1, int src2, std::string note) {
   return three_args("sne", dress_up(dest), dress_up(src1), dress_up(src2), note);
 }
 
+std::string MIPS::less_than_or_equal(int dest, int src1, int src2, std::string note) {
+  return three_args("sle", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
+std::string MIPS::less_than(int dest, int src1, int src2, std::string note) {
+  return three_args("slt", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
+std::string MIPS::greater_than_or_equal(int dest, int src1, int src2, std::string note) {
+  return three_args("sge", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
+std::string MIPS::greater_than(int dest, int src1, int src2, std::string note) {
+  return three_args("sgt", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
 std::string MIPS::branch(std::string label, std::string note) {
   return one_arg("b", label, note);
 }

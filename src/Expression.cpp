@@ -126,7 +126,7 @@ Expression::Type Inequality::data_type() const
 
 std::string LessThanOrEqual::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::less_than_or_equal, this, left, right, "Performing <= check");
 }
 bool LessThanOrEqual::is_constant() const
 {
@@ -140,7 +140,7 @@ Expression::Type LessThanOrEqual::data_type() const
 
 std::string LessThan::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::less_than, this, left, right, "Performing < check");
 }
 bool LessThan::is_constant() const
 {
@@ -154,7 +154,7 @@ Expression::Type LessThan::data_type() const
 
 std::string GreaterThanOrEqual::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::greater_than_or_equal, this, left, right, "Performing >= check");;
 }
 bool GreaterThanOrEqual::is_constant() const
 {
@@ -168,7 +168,7 @@ Expression::Type GreaterThanOrEqual::data_type() const
 
 std::string GreaterThan::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::greater_than, this, left, right, "Performing > check");;
 }
 bool GreaterThan::is_constant() const
 {
