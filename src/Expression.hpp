@@ -161,7 +161,7 @@ struct Negation : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 struct UnaryMinus : Expression
@@ -170,7 +170,7 @@ struct UnaryMinus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 
@@ -180,7 +180,7 @@ struct FunctionCall : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const std::vector<Expression*>* exprList;
+  std::vector<Expression*>* exprList;
 };
 
 
@@ -190,7 +190,7 @@ struct ToChar : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 struct ToInt : Expression
@@ -199,7 +199,7 @@ struct ToInt : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 struct Predecessor : Expression
@@ -208,7 +208,7 @@ struct Predecessor : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 struct Successor : Expression
@@ -217,7 +217,7 @@ struct Successor : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* expr;
+  Expression* expr;
 };
 
 struct StringLiteral : Expression
@@ -226,7 +226,7 @@ struct StringLiteral : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const std::string* literal;
+  std::string* literal;
 };
 
 struct CharLiteral : Expression
@@ -235,7 +235,7 @@ struct CharLiteral : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const std::string* literal;
+  std::string* literal;
 };
 
 struct IntLiteral : Expression
@@ -244,7 +244,7 @@ struct IntLiteral : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const int literal;
+  int literal;
 };
 
 struct BoolLiteral : Expression
@@ -253,7 +253,7 @@ struct BoolLiteral : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const bool literal;
+  bool literal;
 };
 
 struct LValue : Expression

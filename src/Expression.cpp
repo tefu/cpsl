@@ -252,7 +252,14 @@ Expression::Type OperatorModulus::data_type() const
    ------------------------------------------------------------------- */
 std::string Negation::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  s << expr->gen_asm();
+  allocate();
+
+  s << MIPS::bit_flip(result(), expr->result(), "Bitwise Negating a number");
+  expr->release();
+
+  return s.str();
 }
 bool Negation::is_constant() const
 {

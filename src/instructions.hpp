@@ -39,6 +39,9 @@ namespace MIPS {
   std::string less_than(int, int, int, std::string);
   std::string greater_than_or_equal(int, int, int, std::string);
   std::string greater_than(int, int, int, std::string);
+
+  std::string bit_flip(int, int, std::string);
+
   std::string branch(std::string, std::string);
   std::string store_word(int, int, int, std::string);
   std::string load_word(int, int, int, std::string);

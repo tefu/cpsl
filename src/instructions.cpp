@@ -116,6 +116,10 @@ std::string MIPS::rem(int dest, int src1, int src2, std::string note) {
   return three_args("rem", dress_up(dest), dress_up(src1), dress_up(src2), note);
 }
 
+std::string MIPS::bit_flip(int dest, int src, std::string note) {
+  return two_args("not",dress_up(dest),dress_up(src),note);
+}
+
 
 
 
