@@ -22,6 +22,8 @@ namespace MIPS {
   std::string la(int, std::string, std::string);
   std::string add(int, int, int, std::string);
   std::string addi(int, int, int, std::string);
+  std::string sub(int, int, int, std::string);
+  std::string subi(int, int, int, std::string);
   std::string beq(int, int, std::string, std::string);
   std::string bne(int, int, std::string, std::string);
   std::string blt(int, int, std::string, std::string);

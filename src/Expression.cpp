@@ -154,7 +154,7 @@ Expression::Type LessThan::data_type() const
 
 std::string GreaterThanOrEqual::gen_asm()
 {
-  return binary_operation(MIPS::greater_than_or_equal, this, left, right, "Performing >= check");;
+  return binary_operation(MIPS::greater_than_or_equal, this, left, right, "Performing >= check");
 }
 bool GreaterThanOrEqual::is_constant() const
 {
@@ -168,7 +168,7 @@ Expression::Type GreaterThanOrEqual::data_type() const
 
 std::string GreaterThan::gen_asm()
 {
-  return binary_operation(MIPS::greater_than, this, left, right, "Performing > check");;
+  return binary_operation(MIPS::greater_than, this, left, right, "Performing > check");
 }
 bool GreaterThan::is_constant() const
 {
@@ -182,7 +182,7 @@ Expression::Type GreaterThan::data_type() const
 
 std::string OperatorPlus::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::add, this, left, right, "Adding two numbers");
 }
 bool OperatorPlus::is_constant() const
 {
@@ -196,7 +196,7 @@ Expression::Type OperatorPlus::data_type() const
 
 std::string OperatorMinus::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::sub, this, left, right, "Subtracting two numbers");
 }
 bool OperatorMinus::is_constant() const
 {

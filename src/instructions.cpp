@@ -69,13 +69,24 @@ std::string MIPS::li(int reg, std::string character, std::string note)
 
 std::string MIPS::add(int dest, int src, int value, std::string note)
 {
-  return three_args("add",dress_up(dest), dress_up(src), stringify(value), note);
+  return three_args("add",dress_up(dest), dress_up(src), dress_up(value), note);
 }
 
 std::string MIPS::addi(int dest, int src, int to_add, std::string note)
 {
   return three_args("addi", dress_up(dest), dress_up(src), stringify(to_add), note);
 }
+
+std::string MIPS::sub(int dest, int src, int value, std::string note)
+{
+  return three_args("sub",dress_up(dest), dress_up(src), dress_up(value), note);
+}
+
+std::string MIPS::subi(int dest, int src, int to_add, std::string note)
+{
+  return three_args("subi", dress_up(dest), dress_up(src), stringify(to_add), note);
+}
+
 
 std::string MIPS::beq(int dest, int src, std::string label, std::string note) {
   return three_args("beq", dress_up(dest), dress_up(src), label, note);
@@ -186,7 +197,7 @@ std::string MIPS::write_out(Expression::Type data_type, int register_location)
 {
   std::stringstream s;
 
-  s << add(A0, register_location, 0, "Writing out data");
+  s << addi(A0, register_location, 0, "Writing out data");
   switch (data_type)
   {
     case Expression::STRING:
