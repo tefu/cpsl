@@ -17,18 +17,18 @@ namespace MIPS {
   const int GP=28;
   const int SP=29;
 
-  std::string li(int, int);
-  std::string li(int, std::string);
-  std::string la(int, std::string);
-  std::string add(int, int, int);
-  std::string addi(int, int, int);
-  std::string beq(int, int, std::string);
-  std::string bne(int, int, std::string);
-  std::string blt(int, int, std::string);
-  std::string bgt(int, int, std::string);
-  std::string branch(std::string);
-  std::string store_word(int, int, int);
-  std::string load_word(int, int, int);
+  std::string li(int, int, std::string);
+  std::string li(int, std::string, std::string);
+  std::string la(int, std::string, std::string);
+  std::string add(int, int, int, std::string);
+  std::string addi(int, int, int, std::string);
+  std::string beq(int, int, std::string, std::string);
+  std::string bne(int, int, std::string, std::string);
+  std::string blt(int, int, std::string, std::string);
+  std::string bgt(int, int, std::string, std::string);
+  std::string branch(std::string, std::string);
+  std::string store_word(int, int, int, std::string);
+  std::string load_word(int, int, int, std::string);
 
   std::string push_on_stack(int);
   std::string pop_off_stack(int);

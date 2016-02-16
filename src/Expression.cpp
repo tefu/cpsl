@@ -348,7 +348,7 @@ std::string StringLiteral::gen_asm()
   s << MIPS::data()
     << MIPS::asciiz(label, *literal)
     << MIPS::text()
-    << MIPS::la(result_reg, label);
+    << MIPS::la(result_reg, label, "Loading a string's address");
   return s.str();
 }
 
@@ -364,7 +364,7 @@ Expression::Type StringLiteral::data_type() const
 
 std::string CharLiteral::gen_asm() {
   allocate();
-  return MIPS::li(result_reg, *literal );
+  return MIPS::li(result_reg, *literal, "Loading a character");
 }
 
 bool CharLiteral::is_constant() const
@@ -380,7 +380,7 @@ Expression::Type CharLiteral::data_type() const
 std::string IntLiteral::gen_asm()
 {
   allocate();
-  return MIPS::li(result_reg, literal);
+  return MIPS::li(result_reg, literal, "Loading an integer");
 }
 bool IntLiteral::is_constant() const
 {
@@ -394,7 +394,7 @@ Expression::Type IntLiteral::data_type() const
 std::string BoolLiteral::gen_asm()
 {
   allocate();
-  return MIPS::li(result_reg, literal ? 1 : 0);
+  return MIPS::li(result_reg, literal ? 1 : 0, "Loading a boolean");
 }
 bool BoolLiteral::is_constant() const
 {
