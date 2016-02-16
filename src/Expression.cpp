@@ -112,7 +112,7 @@ Expression::Type Equality::data_type() const
 
 std::string Inequality::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::inequality, this, left, right, "Performing inequality check");
 }
 bool Inequality::is_constant() const
 {

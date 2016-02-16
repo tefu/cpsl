@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "instructions.hpp"
 
 namespace
@@ -7,23 +8,32 @@ namespace
   {
     std::stringstream s;
     if(note != "")
-      s << " # " << note;
+      s << "\t" << " # " << note;
     s << "\n";
     return s.str();
   }
   std::string one_arg(std::string op_code, std::string a, std::string note)
   {
-    return "\t" + op_code + " " + a + comment(note);
+    std::stringstream s;
+    std::string instruction = "\t" + op_code + " " + a;
+    s << std::left << std::setw(18) << instruction << comment(note);
+    return  s.str();
   }
 
   std::string two_args(std::string op_code, std::string a, std::string b, std::string note)
   {
-    return "\t" + op_code + " " + a + ", " + b + comment(note);
+    std::stringstream s;
+    std::string instruction = "\t" + op_code + " " + a + ", " + b;
+    s << std::left << std::setw(18) << instruction << comment(note);
+    return  s.str();
   }
 
   std::string three_args(std::string op_code, std::string a, std::string b, std::string c, std::string note)
   {
-    return "\t" + op_code + " " + a + ", " + b + ", " + c + comment(note);
+    std::stringstream s;
+    std::string instruction = "\t" + op_code + " " + a + ", " + b + ", " + c;
+    s << std::left << std::setw(18) << instruction << comment(note);
+    return  s.str();
   }
 
   std::string stringify(int val)
@@ -93,6 +103,10 @@ std::string MIPS::logical_and(int dest, int src1, int src2, std::string note) {
 
 std::string MIPS::equality(int dest, int src1, int src2, std::string note) {
   return three_args("seq", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
+std::string MIPS::inequality(int dest, int src1, int src2, std::string note) {
+  return three_args("sne", dress_up(dest), dress_up(src1), dress_up(src2), note);
 }
 
 std::string MIPS::branch(std::string label, std::string note) {

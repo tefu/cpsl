@@ -29,6 +29,7 @@ namespace MIPS {
   std::string logical_or(int, int, int, std::string);
   std::string logical_and(int, int, int, std::string);
   std::string equality(int, int, int, std::string);
+  std::string inequality(int, int, int, std::string);
   std::string branch(std::string, std::string);
   std::string store_word(int, int, int, std::string);
   std::string load_word(int, int, int, std::string);
