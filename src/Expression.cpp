@@ -210,7 +210,7 @@ Expression::Type OperatorMinus::data_type() const
 
 std::string OperatorMult::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::mulo, this, left, right, "Multiplying two numbers");
 }
 bool OperatorMult::is_constant() const
 {
@@ -224,7 +224,7 @@ Expression::Type OperatorMult::data_type() const
 
 std::string OperatorDivide::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::div, this, left, right, "Dividing two numbers");
 }
 bool OperatorDivide::is_constant() const
 {
@@ -237,7 +237,7 @@ Expression::Type OperatorDivide::data_type() const
 
 std::string OperatorModulus::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::rem, this, left, right, "Modding two numbers");
 }
 bool OperatorModulus::is_constant() const
 {

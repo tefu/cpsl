@@ -28,6 +28,9 @@ namespace MIPS {
   std::string bne(int, int, std::string, std::string);
   std::string blt(int, int, std::string, std::string);
   std::string bgt(int, int, std::string, std::string);
+  std::string mulo(int, int, int, std::string);
+  std::string div(int, int, int, std::string);
+  std::string rem(int, int, int, std::string);
   std::string logical_or(int, int, int, std::string);
   std::string logical_and(int, int, int, std::string);
   std::string equality(int, int, int, std::string);
