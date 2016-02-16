@@ -36,9 +36,9 @@ namespace
     s << left->gen_asm();
     s << right->gen_asm();
     head->allocate();
-    int dest = head->result();
-    int src1 = left->result();
-    int src2 = right->result();
+    auto dest = head->result();
+    auto src1 = left->result();
+    auto src2 = right->result();
     s << func(dest, src1, src2, note);
     left->release();
     right->release();
@@ -248,18 +248,27 @@ Expression::Type OperatorModulus::data_type() const
   return Expression::INTEGER;
 }
 
+namespace
+{
+  template <typename F>
+  std::string unary_operation(F operation, Expression* dest, Expression* src, std::string note)
+  {
+    std::stringstream s;
+    s << src->gen_asm();
+    dest->allocate();
+    auto dest_reg = dest->result();
+    auto src_reg = src->result();
+    s << operation(dest_reg,src_reg,note);
+    src->release();
+    return s.str();
+  }
+}
+
 /* Unary Operators
    ------------------------------------------------------------------- */
 std::string Negation::gen_asm()
 {
-  std::stringstream s;
-  s << expr->gen_asm();
-  allocate();
-
-  s << MIPS::bit_flip(result(), expr->result(), "Bitwise Negating a number");
-  expr->release();
-
-  return s.str();
+  return unary_operation(MIPS::bit_flip, this, expr, "Bitwise Negating a number");
 }
 bool Negation::is_constant() const
 {
@@ -272,7 +281,7 @@ Expression::Type Negation::data_type() const
 
 std::string UnaryMinus::gen_asm()
 {
-  return "";
+  return unary_operation(MIPS::unary_minus, this, expr, "Taking the negative of a number");
 }
 bool UnaryMinus::is_constant() const
 {

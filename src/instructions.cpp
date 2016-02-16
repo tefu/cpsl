@@ -120,6 +120,10 @@ std::string MIPS::bit_flip(int dest, int src, std::string note) {
   return two_args("not",dress_up(dest),dress_up(src),note);
 }
 
+std::string MIPS::unary_minus(int dest, int src, std::string note) {
+  return two_args("neg",dress_up(dest),dress_up(src),note);
+}
+
 
 
 
