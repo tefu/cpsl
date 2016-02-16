@@ -13,17 +13,17 @@ namespace
   }
   std::string one_arg(std::string op_code, std::string a, std::string note)
   {
-    return op_code + " " + a + comment(note);
+    return "\t" + op_code + " " + a + comment(note);
   }
 
   std::string two_args(std::string op_code, std::string a, std::string b, std::string note)
   {
-    return op_code + " " + a + ", " + b + comment(note);
+    return "\t" + op_code + " " + a + ", " + b + comment(note);
   }
 
   std::string three_args(std::string op_code, std::string a, std::string b, std::string c, std::string note)
   {
-    return op_code + " " + a + ", " + b + ", " + c + comment(note);
+    return "\t" + op_code + " " + a + ", " + b + ", " + c + comment(note);
   }
 
   std::string stringify(int val)
@@ -91,6 +91,9 @@ std::string MIPS::logical_and(int dest, int src1, int src2, std::string note) {
   return three_args("and", dress_up(dest), dress_up(src1), dress_up(src2), note);
 }
 
+std::string MIPS::equality(int dest, int src1, int src2, std::string note) {
+  return three_args("seq", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
 
 std::string MIPS::branch(std::string label, std::string note) {
   return one_arg("b", label, note);
@@ -144,7 +147,7 @@ std::string MIPS::system_call(int call_number)
 {
   std::stringstream s;
   s << li(V0, call_number, "")
-    << "syscall\n";
+    << "\tsyscall\n";
   return s.str();
 }
 

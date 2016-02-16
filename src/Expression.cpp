@@ -98,7 +98,7 @@ Expression::Type LogicalAnd::data_type() const
 
 std::string Equality::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::equality, this, left, right, "Performing equality check");
 }
 bool Equality::is_constant() const
 {
