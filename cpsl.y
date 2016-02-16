@@ -142,7 +142,8 @@ program : optional_constant_decl
           optional_proc_or_func_decls
           block
           DOT
-          {$$ = PT::program($5);}
+          {$$ = PT::program($5);
+           sout << $$->gen_asm();}
 		  ;
 
 optional_constant_decl : constant_decl

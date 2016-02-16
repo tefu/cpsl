@@ -20,7 +20,7 @@ set(COMPILER_SOURCES
         scanner src/main.cpp)
 
 set(TEST_SOURCES
-        unit-tests/main.cpp unit-tests/mips_test.cpp unit-tests/expression_test.cpp)
+        unit-tests/main.cpp unit-tests/mips_test.cpp unit-tests/expression_test.cpp unit-tests/register_test.cpp)
 
 
 include_directories(

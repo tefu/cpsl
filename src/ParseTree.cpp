@@ -5,7 +5,6 @@ extern std::stringstream sout;
 
 ProgramNode* ParseTree::program(ProgramNode* b)
 {
-  sout << b->gen_asm();
   return b;
 }
 
