@@ -30,8 +30,8 @@ struct LogicalOr : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct LogicalAnd : Expression
@@ -40,8 +40,8 @@ struct LogicalAnd : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct Equality : Expression
@@ -50,8 +50,8 @@ struct Equality : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct Inequality : Expression
@@ -60,8 +60,8 @@ struct Inequality : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct LessThanOrEqual : Expression
@@ -70,8 +70,8 @@ struct LessThanOrEqual : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct LessThan : Expression
@@ -80,8 +80,8 @@ struct LessThan : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 
@@ -91,8 +91,8 @@ struct GreaterThanOrEqual : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct GreaterThan : Expression
@@ -101,8 +101,8 @@ struct GreaterThan : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct OperatorPlus : Expression
@@ -111,8 +111,8 @@ struct OperatorPlus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct OperatorMinus : Expression
@@ -121,8 +121,8 @@ struct OperatorMinus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct OperatorMult : Expression
@@ -131,8 +131,8 @@ struct OperatorMult : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct OperatorDivide : Expression
@@ -141,8 +141,8 @@ struct OperatorDivide : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct OperatorModulus : Expression
@@ -151,8 +151,8 @@ struct OperatorModulus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type data_type() const;
-  const Expression* left;
-  const Expression* right;
+  Expression* left;
+  Expression* right;
 };
 
 struct Negation : Expression

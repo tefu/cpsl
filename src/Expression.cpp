@@ -28,6 +28,23 @@ namespace
   {
     registers_taken.erase(reg);
   }
+
+  template <typename F>
+  std::string binary_operation(F func, Expression* head, Expression* left, Expression* right, std::string note)
+  {
+    std::stringstream s;
+    s << left->gen_asm();
+    s << right->gen_asm();
+    head->allocate();
+    int dest = head->result();
+    int src1 = left->result();
+    int src2 = right->result();
+    s << func(dest, src1, src2, note);
+    left->release();
+    right->release();
+
+    return s.str();
+  }
 }
 
 int Expression::result() const
@@ -47,9 +64,13 @@ void Expression::release()
   result_reg = NULL_REGISTER;
 }
 
+
+
+/* Binary Operators
+   ------------------------------------------------------------------- */
 std::string LogicalOr::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::logical_or, this, left, right, "Performing logical OR");
 }
 bool LogicalOr::is_constant() const
 {
@@ -61,13 +82,9 @@ Expression::Type LogicalOr::data_type() const
 }
 
 
-
-
-/* Binary Operators
-   ------------------------------------------------------------------- */
 std::string LogicalAnd::gen_asm()
 {
-  return "";
+  return binary_operation(MIPS::logical_and, this, left, right, "Performing logical AND");
 }
 bool LogicalAnd::is_constant() const
 {
