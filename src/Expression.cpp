@@ -316,7 +316,7 @@ Expression::Type FunctionCall::data_type() const
 
 std::string ToChar::gen_asm()
 {
-  return "";
+  return expr->gen_asm();
 }
 bool ToChar::is_constant() const
 {
@@ -330,7 +330,7 @@ Expression::Type ToChar::data_type() const
 
 std::string ToInt::gen_asm()
 {
-  return "";
+  return expr->gen_asm();
 }
 bool ToInt::is_constant() const
 {
@@ -341,10 +341,26 @@ Expression::Type ToInt::data_type() const
   return Expression::INTEGER;
 }
 
+namespace
+{
+  std::string add_or_flip(Expression* dest, Expression* src, int to_add, std::string int_note)
+  {
+    std::stringstream s;
+    s << src->gen_asm();
+    dest->allocate();
+    s << ((src->data_type() == Expression::INTEGER) ?
+         MIPS::addi(dest->result(), src->result(), to_add, int_note) :
+         MIPS::bit_flip(dest->result(), src->result(), "Flipping a boolean"));
+
+    src->release();
+    return s.str();
+  }
+}
+
 
 std::string Predecessor::gen_asm()
 {
-  return "";
+  return add_or_flip(this, expr, -1, "Decrementing an integer");
 }
 bool Predecessor::is_constant() const
 {
@@ -358,7 +374,7 @@ Expression::Type Predecessor::data_type() const
 
 std::string Successor::gen_asm()
 {
-  return "";
+  return add_or_flip(this, expr, 1, "Incrementing an integer");
 }
 bool Successor::is_constant() const
 {

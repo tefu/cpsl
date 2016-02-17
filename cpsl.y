@@ -312,13 +312,13 @@ while_statement : WHILE expression DO statement_sequence END
 repeat_statement : REPEAT statement_sequence UNTIL expression
                  ;
 
-for_statement : FOR IDENT ASSIGNMENT expression polarity expression
+for_statement : FOR IDENT ASSIGNMENT expression direction expression
                 DO statement_sequence END
               ;
 
-polarity : TO
-         | DOWNTO
-         ;
+direction : TO
+          | DOWNTO
+          ;
 
 stop_statement : STOP { $$ = new StopStatement(); }
                ;
