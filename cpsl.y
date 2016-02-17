@@ -39,6 +39,7 @@ void parsed(std::string term)
   int integer;
   bool boolean;
   std::string* string_constant;
+  std::vector<std::string>* string_list;
   Expression* expr;
   std::vector<Expression*>* exprList;
   ProgramNode* node;
@@ -104,7 +105,7 @@ void parsed(std::string term)
 
 /* Other
 ------------------------------------------------------------------ */
-%token IDENT
+%token <string_constant> IDENT
 %token <integer> INTEGER
 %token <string_constant> STRING
 %token <string_constant> CHAR
@@ -130,6 +131,15 @@ void parsed(std::string term)
 %type <expr> optional_expression
 %type <exprList> optional_expression_list
 %type <exprList> expression_list
+
+%type <string_constant> simple_type
+%type <string_constant> type
+%type <string_list> ident_list
+
+%type <node> var_decl
+%type <node> var_members
+
+
 
 
 
@@ -224,12 +234,12 @@ type_definitions : IDENT EQUALITY type SEMICOLON
                  | type_definitions IDENT EQUALITY type SEMICOLON
                  ;
 
-type : simple_type
-     | record_type
-     | array_type
+type : simple_type {$$=$1;}
+     | record_type {$$=nullptr;}
+     | array_type {$$=nullptr;}
      ;
 
-simple_type : IDENT
+simple_type : IDENT { $$ = $1; }
             ;
 
 record_type : RECORD optional_members END
@@ -251,11 +261,15 @@ members : ident_list COLON type SEMICOLON
 range : expression COLON expression
       ;
 
-ident_list : IDENT
-           | ident_list COMMA IDENT
+ident_list : IDENT { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
+           | ident_list COMMA IDENT { $$ = $1; $$->push_back(*$3); }
            ;
 
-var_decl : VAR members
+var_members : ident_list COLON type SEMICOLON { $$=nullptr; PT::VarDecl($1,$3); }
+            | var_members ident_list COLON type SEMICOLON { $$=nullptr; PT::VarDecl($2,$4); }
+            ;
+
+var_decl : VAR var_members
          ;
 
 

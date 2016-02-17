@@ -64,8 +64,6 @@ void Expression::release()
   result_reg = NULL_REGISTER;
 }
 
-
-
 /* Binary Operators
    ------------------------------------------------------------------- */
 std::string LogicalOr::gen_asm()

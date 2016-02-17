@@ -3,11 +3,13 @@
 #include "Expression.hpp"
 #include "Statement.hpp"
 #include "Block.hpp"
+#include "SymbolTable.hpp"
 
 
 namespace ParseTree {
   ProgramNode* program(ProgramNode*);
   Block* block(std::vector<ProgramNode*>*);
+  void VarDecl(std::vector<std::string>*, std::string*);
   LogicalOr* logical_or(Expression*, Expression*);
   LogicalAnd* logical_and(Expression*, Expression*);
   Equality* equality(Expression*, Expression*);

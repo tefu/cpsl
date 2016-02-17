@@ -54,7 +54,8 @@ write|WRITE { return WRITE; }
 
   /* Identifiers
   ------------------------------------------------------------------ */
-[a-zA-Z][a-zA-Z0-9_]* { return IDENT; }
+[a-zA-Z][a-zA-Z0-9_]* { yylval.string_constant = new std::string(yytext);
+                        return IDENT; }
 
   /* Operators
   ------------------------------------------------------------------ */

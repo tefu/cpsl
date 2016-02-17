@@ -10,4 +10,5 @@ TEST_CASE("Push pushes a register", "[MIPS::push_on_stack]")
   std::cout << MIPS::branch("main", "");
   std::cout << MIPS::add(9, 10, 100, "");
 
+
 }
