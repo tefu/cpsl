@@ -383,6 +383,18 @@ Expression::Type Successor ::data_type() const
   return expr->data_type();
 }
 
+namespace
+{
+  int label_count = 0;
+
+  std::string get_unique_string_label()
+  {
+    std::stringstream s;
+    s << "string_friend_" << label_count;
+    label_count++;
+    return s.str();
+  }
+}
 
 /* Literals
    ------------------------------------------------------------------- */
@@ -390,7 +402,7 @@ std::string StringLiteral::gen_asm()
 {
   allocate();
   std::stringstream s;
-  std::string label = "string";
+  auto label = get_unique_string_label();
 
   s << MIPS::data()
     << MIPS::asciiz(label, *literal)
