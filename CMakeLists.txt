@@ -13,14 +13,14 @@ bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 
 set(COMMON_SOURCES
         src/instructions.hpp
-        src/instructions.cpp src/Expression.cpp src/Expression.hpp src/ProgramNode.hpp src/Statement.cpp src/Statement.hpp src/Block.cpp src/Block.hpp src/ParseTree.cpp src/ParseTree.hpp src/SymbolTable.hpp src/SymbolTable.cpp)
+        src/instructions.cpp src/Expression.cpp src/Expression.hpp src/ProgramNode.hpp src/Statement.cpp src/Statement.hpp src/Block.cpp src/Block.hpp src/ParseTree.cpp src/ParseTree.hpp src/SymbolTable.hpp src/SymbolTable.cpp src/Type.cpp src/Type.hpp)
 
 set(COMPILER_SOURCES
         parser
         scanner src/main.cpp)
 
 set(TEST_SOURCES
-        unit-tests/main.cpp unit-tests/mips_test.cpp unit-tests/expression_test.cpp)
+        unit-tests/main.cpp unit-tests/mips_test.cpp unit-tests/expression_test.cpp unit-tests/type_test.cpp)
 
 
 include_directories(
