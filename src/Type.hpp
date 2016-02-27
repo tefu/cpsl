@@ -8,12 +8,11 @@ struct Type {
     BOOL,
     STRING,
     INTEGER,
-    CHAR,
-    NONE
+    CHAR
   };
 
-  virtual std::string write_out(int register) const;
-  virtual Basic type() const;
+  virtual std::string write_out(int register) const=0;
+  virtual Basic type() const=0;
   virtual int word_size() const;
 };
 

@@ -74,9 +74,9 @@ bool LogicalOr::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type LogicalOr::data_type() const
+std::shared_ptr<Type> LogicalOr::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -88,9 +88,9 @@ bool LogicalAnd::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type LogicalAnd::data_type() const
+std::shared_ptr<Type> LogicalAnd::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -102,9 +102,9 @@ bool Equality::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type Equality::data_type() const
+std::shared_ptr<Type> Equality::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -116,9 +116,9 @@ bool Inequality::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type Inequality::data_type() const
+std::shared_ptr<Type> Inequality::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -130,9 +130,9 @@ bool LessThanOrEqual::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type LessThanOrEqual::data_type() const
+std::shared_ptr<Type> LessThanOrEqual::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -144,9 +144,9 @@ bool LessThan::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type LessThan::data_type() const
+std::shared_ptr<Type> LessThan::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -158,9 +158,9 @@ bool GreaterThanOrEqual::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type GreaterThanOrEqual::data_type() const
+std::shared_ptr<Type> GreaterThanOrEqual::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -172,9 +172,9 @@ bool GreaterThan::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type GreaterThan::data_type() const
+std::shared_ptr<Type> GreaterThan::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -186,9 +186,9 @@ bool OperatorPlus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type OperatorPlus::data_type() const
+std::shared_ptr<Type> OperatorPlus::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 
@@ -200,9 +200,9 @@ bool OperatorMinus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type OperatorMinus::data_type() const
+std::shared_ptr<Type> OperatorMinus::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 
@@ -214,9 +214,9 @@ bool OperatorMult::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type OperatorMult::data_type() const
+std::shared_ptr<Type> OperatorMult::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 
@@ -228,9 +228,9 @@ bool OperatorDivide::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type OperatorDivide::data_type() const
+std::shared_ptr<Type> OperatorDivide::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 std::string OperatorModulus::gen_asm()
@@ -241,9 +241,9 @@ bool OperatorModulus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Type OperatorModulus::data_type() const
+std::shared_ptr<Type> OperatorModulus::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 namespace
@@ -272,9 +272,9 @@ bool Negation::is_constant() const
 {
   return expr->is_constant();
 }
-Type Negation::data_type() const
+std::shared_ptr<Type> Negation::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 std::string UnaryMinus::gen_asm()
@@ -285,9 +285,9 @@ bool UnaryMinus::is_constant() const
 {
   return expr->is_constant();
 }
-Type UnaryMinus::data_type() const
+std::shared_ptr<Type> UnaryMinus::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 
@@ -304,10 +304,10 @@ bool FunctionCall::is_constant() const
   }
   return true;
 }
-Type FunctionCall::data_type() const
+std::shared_ptr<Type> FunctionCall::data_type() const
 {
   // TODO: look up type declaration.
-  return Integer{};
+  return std::make_shared<Integer>();
 
 }
 
@@ -320,9 +320,9 @@ bool ToChar::is_constant() const
 {
   return expr->is_constant();
 }
-Type ToChar::data_type() const
+std::shared_ptr<Type> ToChar::data_type() const
 {
-  return Character{};
+  return std::make_shared<Character>();
 }
 
 
@@ -334,9 +334,9 @@ bool ToInt::is_constant() const
 {
   return expr->is_constant();
 }
-Type ToInt::data_type() const
+std::shared_ptr<Type> ToInt::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 namespace
@@ -346,7 +346,7 @@ namespace
     std::stringstream s;
     s << src->gen_asm();
     dest->allocate();
-    s << ((src->data_type().type() == Type::INTEGER) ?
+    s << ((src->data_type()->type() == Type::INTEGER) ?
          MIPS::addi(dest->result(), src->result(), to_add, int_note) :
          MIPS::bit_flip(dest->result(), src->result(), "Flipping a boolean"));
 
@@ -364,7 +364,7 @@ bool Predecessor::is_constant() const
 {
   return expr->is_constant();
 }
-Type Predecessor::data_type() const
+std::shared_ptr<Type> Predecessor::data_type() const
 {
   return expr->data_type();
 }
@@ -378,7 +378,7 @@ bool Successor::is_constant() const
 {
   return expr->is_constant();
 }
-Type Successor ::data_type() const
+std::shared_ptr<Type> Successor ::data_type() const
 {
   return expr->data_type();
 }
@@ -415,9 +415,9 @@ bool StringLiteral::is_constant() const
 {
   return true;
 }
-Type StringLiteral::data_type() const
+std::shared_ptr<Type> StringLiteral::data_type() const
 {
-  return StringConstant{};
+  return std::make_shared<StringConstant>();
 }
 
 
@@ -431,9 +431,9 @@ bool CharLiteral::is_constant() const
   return true;
 }
 
-Type CharLiteral::data_type() const
+std::shared_ptr<Type> CharLiteral::data_type() const
 {
-  return Character{};
+  return std::make_shared<Character>();
 }
 
 std::string IntLiteral::gen_asm()
@@ -445,9 +445,9 @@ bool IntLiteral::is_constant() const
 {
   return true;
 }
-Type IntLiteral::data_type() const
+std::shared_ptr<Type> IntLiteral::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 
 std::string BoolLiteral::gen_asm()
@@ -459,9 +459,9 @@ bool BoolLiteral::is_constant() const
 {
   return true;
 }
-Type BoolLiteral::data_type() const
+std::shared_ptr<Type> BoolLiteral::data_type() const
 {
-  return Boolean{};
+  return std::make_shared<Boolean>();
 }
 
 
@@ -477,8 +477,8 @@ bool LValue::is_constant() const
   return false;
 }
 
-Type LValue::data_type() const
+std::shared_ptr<Type> LValue::data_type() const
 {
-  return Integer{};
+  return std::make_shared<Integer>();
 }
 

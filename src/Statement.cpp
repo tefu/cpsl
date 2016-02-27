@@ -48,7 +48,7 @@ std::string WriteStatement::gen_asm()
   for (auto &expr: *exprList)
   {
     s << expr->gen_asm();
-    s << expr->data_type().write_out(expr->result());
+    s << expr->data_type()->write_out(expr->result());
     expr->release();
   }
   return s.str();
