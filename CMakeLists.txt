@@ -5,7 +5,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(FLEX)
 find_package(BISON)
-find_package(Boost COMPONENTS program_options)
 flex_target(scanner cpsl.lex ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp)
 bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
         COMPILE_FLAGS "-d -W -v --report-file=${CMAKE_CURRENT_BINARY_DIR}/bison.output")
@@ -13,14 +12,32 @@ bison_target(parser cpsl.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 
 set(COMMON_SOURCES
         src/instructions.hpp
-        src/instructions.cpp src/Expression.cpp src/Expression.hpp src/ProgramNode.hpp src/Statement.cpp src/Statement.hpp src/Block.cpp src/Block.hpp src/ParseTree.cpp src/ParseTree.hpp src/SymbolTable.hpp src/SymbolTable.cpp src/Type.cpp src/Type.hpp)
+        src/instructions.cpp
+        src/SymbolTable.hpp
+        src/SymbolTable.cpp
+        src/Expression.cpp
+        src/Expression.hpp
+        src/ProgramNode.hpp
+        src/Statement.cpp
+        src/Statement.hpp
+        src/Block.cpp
+        src/Block.hpp
+        src/ParseTree.cpp
+        src/ParseTree.hpp
+
+        src/Type.cpp
+        src/Type.hpp)
 
 set(COMPILER_SOURCES
         parser
         scanner src/main.cpp)
 
 set(TEST_SOURCES
-        unit-tests/main.cpp unit-tests/mips_test.cpp unit-tests/expression_test.cpp unit-tests/type_test.cpp unit-tests/symbol_table_test.cpp)
+  unit-tests/main.cpp
+  unit-tests/mips_test.cpp
+  unit-tests/expression_test.cpp
+  unit-tests/type_test.cpp
+  unit-tests/symbol_table_test.cpp)
 
 
 include_directories(
@@ -29,8 +46,8 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests
         ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_executable(cpsl ${COMPILER_SOURCES} ${COMMON_SOURCES})
-add_executable(unit_tests ${TEST_SOURCES} ${COMMON_SOURCES})
+add_executable(cpsl ${COMMON_SOURCES} ${COMPILER_SOURCES})
+add_executable(unit_tests ${COMMON_SOURCES} ${TEST_SOURCES} )
 enable_testing(true)
 
 add_custom_command(TARGET cpsl

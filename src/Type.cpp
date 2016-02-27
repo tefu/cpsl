@@ -17,6 +17,16 @@ int Type::word_size() const
   return 4;
 }
 
+std::string Type::write_out(int register_location) const {
+  return std::string("# Could not print out typeless data");
+}
+
+Type::Basic Type::type() const {
+  return Basic::NONE;
+}
+
+
+
 std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
 }

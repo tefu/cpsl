@@ -8,33 +8,33 @@ struct Type {
     BOOL,
     STRING,
     INTEGER,
-    CHAR
+    CHAR,
+    NONE
   };
 
-
-  virtual std::string write_out(int register) const=0;
-  virtual Basic type() const=0;
+  virtual std::string write_out(int register) const;
+  virtual Basic type() const;
   virtual int word_size() const;
 };
 
 struct Integer : Type {
-  std::string write_out(int) const;
-  Basic type() const;
+  virtual std::string write_out(int) const;
+  virtual Basic type() const;
 };
 
 struct Character : Type {
-  std::string write_out(int) const;
-  Basic type() const;
+  virtual std::string write_out(int) const;
+  virtual Basic type() const;
 };
 
 struct StringConstant : Type {
-  std::string write_out(int) const;
-  Basic type() const;
+  virtual std::string write_out(int) const;
+  virtual Basic type() const;
 };
 
 struct Boolean : Type {
-  std::string write_out(int) const;
-  Basic type() const;
+  virtual std::string write_out(int) const;
+  virtual Basic type() const;
 };
 
 #endif //CPSL_TYPE_HPP

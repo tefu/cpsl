@@ -274,7 +274,7 @@ bool Negation::is_constant() const
 }
 Type Negation::data_type() const
 {
-  return Boolean;
+  return Boolean{};
 }
 
 std::string UnaryMinus::gen_asm()
@@ -479,6 +479,6 @@ bool LValue::is_constant() const
 
 Type LValue::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
