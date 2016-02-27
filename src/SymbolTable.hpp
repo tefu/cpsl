@@ -7,8 +7,8 @@
 
 struct Variable
 {
-  Variable(Type t, int a) : type(t), address_offset(a) {}
-  const Type type;
+  Variable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
+  const std::shared_ptr<Type> type;
   const int address_offset;
 };
 

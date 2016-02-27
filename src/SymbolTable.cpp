@@ -43,10 +43,10 @@ namespace
 
 void Symbol::add_variable(std::string ident, std::string supposed_type) {
   init_check();
-  auto type = *parse_type(supposed_type);
+  auto type = parse_type(supposed_type);
   auto var = std::shared_ptr<Variable>{new Variable{type, global_offset}};
   variables->emplace(std::string(ident), var);
-  global_offset += type.word_size();
+  global_offset += type->word_size();
 }
 
 void Symbol::add_constant(std::string ident, Expression* expr)
