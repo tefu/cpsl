@@ -6,27 +6,6 @@ extern std::stringstream sout;
 
 ProgramNode* ParseTree::program(ProgramNode* b)
 {
-  for(auto &pair: *Symbol::get_table())
-  {
-    auto printType = [](Expression::Type t) {
-      switch (t)
-      {
-        case Expression::INTEGER:
-          return "Integer";
-        case Expression::BOOL:
-          return "Bool";
-        case Expression::CHAR:
-          return "Char";
-        case Expression::STRING:
-        default:
-          return "String";
-      }
-    };
-    std::cout << "Identifier: " << pair.first << std::endl;
-    std::cout << "Type: " << printType(pair.second.type) << std::endl;
-    std::cout << "Address offset: " << pair.second.address_offset << std::endl;
-    std::cout << "Constant: " << (pair.second.is_constant ? "true" : "false") << std::endl;
-  }
   return b;
 }
 
@@ -37,12 +16,9 @@ Block* ParseTree::block(std::vector<ProgramNode*>* statements)
 
 void ParseTree::VarDecl(std::vector<std::string>* identList, std::string* type)
 {
-  auto eType = Symbol::parse_type(*type);
   for(auto &ident: *identList)
   {
-    auto address_offset = Symbol::available_address_offset();
-    auto var = Variable{eType, address_offset, false};
-    Symbol::get_table()->insert({ident,var});
+    Symbol::add_variable(ident, *type);
   }
 }
 

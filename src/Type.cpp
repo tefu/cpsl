@@ -12,34 +12,39 @@ namespace
   }
 }
 
-std::string Integer::write_out(int register_location) {
+int Type::word_size() const
+{
+  return 4;
+}
+
+std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
 }
 
-Type::Basic Integer::type() {
+Type::Basic Integer::type() const {
   return Basic::INTEGER;
 }
 
-std::string StringConstant::write_out(int register_location) {
+std::string StringConstant::write_out(int register_location) const {
   return write_with_call(register_location, 4, "Writing out a string");
 }
 
-Type::Basic StringConstant::type() {
+Type::Basic StringConstant::type() const {
   return Basic::STRING;
 }
 
-std::string Character::write_out(int register_location) {
+std::string Character::write_out(int register_location) const {
   return write_with_call(register_location, 11, "Writing out a character");
 }
 
-Type::Basic Character::type() {
+Type::Basic Character::type() const {
   return Basic::CHAR;
 }
 
-std::string Boolean::write_out(int register_location) {
+std::string Boolean::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out a boolean");
 }
 
-Type::Basic Boolean::type() {
+Type::Basic Boolean::type() const {
   return Basic::BOOL;
 }

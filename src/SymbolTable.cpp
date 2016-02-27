@@ -2,56 +2,74 @@
 
 namespace
 {
-  std::shared_ptr<std::map<std::string, Variable>> SymbolTable;
-  std::map<std::string, Expression::Type> types = {
-          {"integer", Expression::INTEGER},
-          {"char", Expression::CHAR},
-          {"boolean", Expression::BOOL},
-          {"string", Expression::STRING}
+  auto global_offset = 0;
+  auto variables = std::make_shared<std::map<std::string, std::shared_ptr<Variable>>>();
+  auto constants = std::make_shared<std::map<std::string, std::shared_ptr<Constant>>>();
+  std::map<std::string, Type> types = {
+          {"integer", Integer{}},
+          {"char", Character{}},
+          {"boolean", Boolean{}},
+          {"string", StringConstant{}}
   };
-}
 
-
-std::shared_ptr<std::map<std::string, Variable>> Symbol::get_table()
-{
-  if (SymbolTable == nullptr)
+  Type parse_type(std::string raw_type)
   {
-    SymbolTable = std::make_shared<std::map<std::string, Variable>>();
-  }
-  return SymbolTable;
-}
-
-int Symbol::available_address_offset()
-{
-  auto winning_address = starting_address;
-  bool unique_found = false;
-  while(!unique_found)
-  {
-    unique_found = true;
-    for(auto &ident_var_pair: *get_table())
+    if(types.find(raw_type) != types.end())
     {
-      auto var = ident_var_pair.second;
-      if (var.address_offset == winning_address)
-      {
-        winning_address += 4;
-        unique_found = false;
-      }
+      return types[raw_type];
     }
-
+    else
+    {
+      return Integer{};
+    }
   }
 
-  return winning_address;
+  void init_check()
+  {
+    if (constants->empty())
+    {
+      constants->emplace(std::string("true"), std::make_shared<Constant>(new BoolLiteral(true)));
+      constants->emplace(std::string("True"), std::make_shared<Constant>(new BoolLiteral(true)));
+      constants->emplace(std::string("false"), std::make_shared<Constant>(new BoolLiteral(false)));
+      constants->emplace(std::string("False"), std::make_shared<Constant>(new BoolLiteral(false)));
+    }
+  }
+
 }
 
 
-Expression::Type Symbol::parse_type(std::string raw_type)
+void Symbol::add_variable(std::string ident, std::string supposed_type) {
+  auto type = types[supposed_type];
+  auto var = std::shared_ptr{new Variable{type, global_offset}};
+  variables->emplace(std::string(ident), var);
+  global_offset += type.word_size();
+}
+
+void Symbol::add_constant(std::string ident, Expression* expr)
 {
-  if(types.find(raw_type) != types.end())
+  constants->emplace(std::string(ident), expr);
+}
+
+std::shared_ptr<Variable> lookup_variable(std::string ident)
+{
+  if (variables->find(ident) != variables->end())
   {
-    return types[raw_type];
+    return (*variables)[ident];
   }
   else
   {
-    return Expression::INTEGER;
+    return nullptr;
+  }
+}
+
+std::shared_ptr<Constant> lookup_constant(std::string ident)
+{
+  if (constants->find(ident) != constants->end())
+  {
+    return (*constants)[ident];
+  }
+  else
+  {
+    return nullptr;
   }
 }

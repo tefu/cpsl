@@ -16,7 +16,7 @@ namespace
   {
     std::stringstream s;
     std::string instruction = "\t" + op_code + " " + a;
-    s << std::left << std::setw(18) << instruction << comment(note);
+    s << std::left << std::setw(23) << instruction << comment(note);
     return  s.str();
   }
 
@@ -212,28 +212,5 @@ std::string MIPS::system_call(int call_number)
   std::stringstream s;
   s << li(V0, call_number, "")
     << "\tsyscall\n";
-  return s.str();
-}
-
-
-std::string MIPS::write_out(Expression::Type data_type, int register_location)
-{
-  std::stringstream s;
-
-  s << addi(A0, register_location, 0, "Writing out data");
-  switch (data_type)
-  {
-    case Expression::STRING:
-      s << system_call(4);
-      break;
-    case Expression::CHAR:
-      s << system_call(11);
-      break;
-    case Expression::INTEGER:
-    case Expression::BOOL:
-    default:
-      s << system_call(1);
-      break;
-  }
   return s.str();
 }

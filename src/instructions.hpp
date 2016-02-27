@@ -50,7 +50,6 @@ namespace MIPS {
   std::string push_on_stack(int);
   std::string pop_off_stack(int);
   std::string system_call(int);
-  std::string write_out(Expression::Type, int);
 
   std::string data();
   std::string asciiz(std::string, std::string);

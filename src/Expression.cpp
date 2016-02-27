@@ -74,9 +74,9 @@ bool LogicalOr::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type LogicalOr::data_type() const
+Type LogicalOr::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -88,9 +88,9 @@ bool LogicalAnd::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type LogicalAnd::data_type() const
+Type LogicalAnd::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -102,9 +102,9 @@ bool Equality::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type Equality::data_type() const
+Type Equality::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -116,9 +116,9 @@ bool Inequality::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type Inequality::data_type() const
+Type Inequality::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -130,9 +130,9 @@ bool LessThanOrEqual::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type LessThanOrEqual::data_type() const
+Type LessThanOrEqual::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -144,9 +144,9 @@ bool LessThan::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type LessThan::data_type() const
+Type LessThan::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -158,9 +158,9 @@ bool GreaterThanOrEqual::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type GreaterThanOrEqual::data_type() const
+Type GreaterThanOrEqual::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -172,9 +172,9 @@ bool GreaterThan::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type GreaterThan::data_type() const
+Type GreaterThan::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -186,9 +186,9 @@ bool OperatorPlus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type OperatorPlus::data_type() const
+Type OperatorPlus::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 
@@ -200,9 +200,9 @@ bool OperatorMinus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type OperatorMinus::data_type() const
+Type OperatorMinus::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 
@@ -214,9 +214,9 @@ bool OperatorMult::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type OperatorMult::data_type() const
+Type OperatorMult::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 
@@ -228,9 +228,9 @@ bool OperatorDivide::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type OperatorDivide::data_type() const
+Type OperatorDivide::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 std::string OperatorModulus::gen_asm()
@@ -241,9 +241,9 @@ bool OperatorModulus::is_constant() const
 {
   return is_binary_operation_constant(left, right);
 }
-Expression::Type OperatorModulus::data_type() const
+Type OperatorModulus::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 namespace
@@ -272,9 +272,9 @@ bool Negation::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type Negation::data_type() const
+Type Negation::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean;
 }
 
 std::string UnaryMinus::gen_asm()
@@ -285,9 +285,9 @@ bool UnaryMinus::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type UnaryMinus::data_type() const
+Type UnaryMinus::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 
@@ -304,10 +304,10 @@ bool FunctionCall::is_constant() const
   }
   return true;
 }
-Expression::Type FunctionCall::data_type() const
+Type FunctionCall::data_type() const
 {
   // TODO: look up type declaration.
-  return Expression::INTEGER;
+  return Integer{};
 
 }
 
@@ -320,9 +320,9 @@ bool ToChar::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type ToChar::data_type() const
+Type ToChar::data_type() const
 {
-  return Expression::CHAR;
+  return Character{};
 }
 
 
@@ -334,9 +334,9 @@ bool ToInt::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type ToInt::data_type() const
+Type ToInt::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 namespace
@@ -346,7 +346,7 @@ namespace
     std::stringstream s;
     s << src->gen_asm();
     dest->allocate();
-    s << ((src->data_type() == Expression::INTEGER) ?
+    s << ((src->data_type().type() == Type::INTEGER) ?
          MIPS::addi(dest->result(), src->result(), to_add, int_note) :
          MIPS::bit_flip(dest->result(), src->result(), "Flipping a boolean"));
 
@@ -364,7 +364,7 @@ bool Predecessor::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type Predecessor::data_type() const
+Type Predecessor::data_type() const
 {
   return expr->data_type();
 }
@@ -378,7 +378,7 @@ bool Successor::is_constant() const
 {
   return expr->is_constant();
 }
-Expression::Type Successor ::data_type() const
+Type Successor ::data_type() const
 {
   return expr->data_type();
 }
@@ -415,9 +415,9 @@ bool StringLiteral::is_constant() const
 {
   return true;
 }
-Expression::Type StringLiteral::data_type() const
+Type StringLiteral::data_type() const
 {
-  return Expression::STRING;
+  return StringConstant{};
 }
 
 
@@ -431,9 +431,9 @@ bool CharLiteral::is_constant() const
   return true;
 }
 
-Expression::Type CharLiteral::data_type() const
+Type CharLiteral::data_type() const
 {
-  return Expression::CHAR;
+  return Character{};
 }
 
 std::string IntLiteral::gen_asm()
@@ -445,9 +445,9 @@ bool IntLiteral::is_constant() const
 {
   return true;
 }
-Expression::Type IntLiteral::data_type() const
+Type IntLiteral::data_type() const
 {
-  return Expression::INTEGER;
+  return Integer{};
 }
 
 std::string BoolLiteral::gen_asm()
@@ -459,9 +459,9 @@ bool BoolLiteral::is_constant() const
 {
   return true;
 }
-Expression::Type BoolLiteral::data_type() const
+Type BoolLiteral::data_type() const
 {
-  return Expression::BOOL;
+  return Boolean{};
 }
 
 
@@ -477,7 +477,7 @@ bool LValue::is_constant() const
   return false;
 }
 
-Expression::Type LValue::data_type() const
+Type LValue::data_type() const
 {
   return Expression::INTEGER;
 }

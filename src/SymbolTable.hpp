@@ -7,17 +7,24 @@
 
 struct Variable
 {
-  const Expression::Type type;
+  Variable(Type t, int a) : type(t), address_offset(a) {}
+  const Type type;
   const int address_offset;
-  const bool is_constant;
+};
+
+struct Constant
+{
+  Constant(Expression* e) : result(e) {}
+  const Expression* result;
 };
 
 namespace Symbol
 {
-  const int starting_address = 0;
-  Expression::Type parse_type(std::string raw_type);
-  int available_address_offset();
-  std::shared_ptr<std::map<std::string, Variable>> get_table();
+  void add_variable(std::string, std::string);
+  void add_constant(std::string, Expression*);
+  std::shared_ptr<Variable> lookup_variable(std::string);
+  std::shared_ptr<Constant> lookup_constant(std::string);
+
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP

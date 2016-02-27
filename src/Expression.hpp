@@ -3,16 +3,10 @@
 #include <string>
 #include <vector>
 #include "ProgramNode.hpp"
+#include "Type.hpp"
 
 struct Expression : ProgramNode
 {
-  enum Type
-  {
-    BOOL,
-    STRING,
-    INTEGER,
-    CHAR
-  };
   virtual std::string gen_asm()=0;
   virtual bool is_constant() const=0;
   virtual Type data_type() const=0;

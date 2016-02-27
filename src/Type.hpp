@@ -12,28 +12,29 @@ struct Type {
   };
 
 
-  virtual std::string write_out(int register)=0;
-  virtual Basic type()=0;
+  virtual std::string write_out(int register) const=0;
+  virtual Basic type() const=0;
+  virtual int word_size() const;
 };
 
 struct Integer : Type {
-  std::string write_out(int);
-  Basic type();
+  std::string write_out(int) const;
+  Basic type() const;
 };
 
 struct Character : Type {
-  std::string write_out(int);
-  Basic type();
+  std::string write_out(int) const;
+  Basic type() const;
 };
 
 struct StringConstant : Type {
-  std::string write_out(int);
-  Basic type();
+  std::string write_out(int) const;
+  Basic type() const;
 };
 
 struct Boolean : Type {
-  std::string write_out(int);
-  Basic type();
+  std::string write_out(int) const;
+  Basic type() const;
 };
 
 #endif //CPSL_TYPE_HPP
