@@ -282,7 +282,7 @@ statement_sequence : statement
                    | statement_sequence SEMICOLON statement
                      { $$ = $1; $$->push_back($3); }
 
-statement : assignment {$$=$1; parsed("Assignment"); }
+statement : assignment {$$=$1;}
           | if_statement {$$=nullptr;}
           | while_statement {$$=nullptr;}
           | repeat_statement {$$=nullptr;}

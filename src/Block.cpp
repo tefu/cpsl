@@ -23,6 +23,7 @@ std::string Block::gen_asm()
   }
 
   s << StringLabel::print_labels();
+  s << ".align 2\n";
   s << global_label << ":\n";
 
   return s.str();
