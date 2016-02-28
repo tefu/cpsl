@@ -185,6 +185,7 @@ struct ToChar : Expression
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
+  virtual int result() const;
   Expression* expr;
 };
 
@@ -194,6 +195,7 @@ struct ToInt : Expression
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
+  virtual int result() const;
   Expression* expr;
 };
 

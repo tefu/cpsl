@@ -306,6 +306,10 @@ std::shared_ptr<Type> ToChar::data_type() const
 {
   return std::make_shared<Character>();
 }
+int ToChar::result() const
+{
+  return expr->result();
+}
 
 
 std::string ToInt::gen_asm()
@@ -319,6 +323,11 @@ bool ToInt::is_constant() const
 std::shared_ptr<Type> ToInt::data_type() const
 {
   return std::make_shared<Integer>();
+}
+
+int ToInt::result() const
+{
+  return expr->result();
 }
 
 namespace
