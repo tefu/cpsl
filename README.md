@@ -8,6 +8,7 @@ This project uses:
 
 * [CMake](https://cmake.org/) as a build tool.
 * [Flex](http://flex.sourceforge.net/) to generate the CPSL lexical analyzer.
+* [Bison](https://www.gnu.org/software/bison) to parse the CPSL syntax.
 
 Once you have the above installed, you can run
 ```
@@ -19,6 +20,14 @@ make
 ```
 to start the compiler. I tested this build process on Ubuntu with GCC 4.8 and
 Arch Linux with GCC 5.3.
+
+# Usage
+The compiler takes the following arguments on the command line:
+```
+./cpsl input.cpsl output.asm
+```
+This will generate `output.asm`, which should be run in a MIPS simulator.
+
 
 # Language Tests
 
