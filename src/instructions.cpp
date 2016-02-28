@@ -170,7 +170,7 @@ std::string MIPS::store_word(int src, int offset, int dest, std::string note)
 
 std::string MIPS::load_word(int dest, int offset, int src, std::string note)
 {
-  return two_args("sw", dress_up(dest), stringify(offset) + "(" + dress_up(src) + ")", note);
+  return two_args("lw", dress_up(dest), stringify(offset) + "(" + dress_up(src) + ")", note);
 }
 
 std::string MIPS::data()

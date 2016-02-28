@@ -24,9 +24,8 @@ set(COMMON_SOURCES
         src/Block.hpp
         src/ParseTree.cpp
         src/ParseTree.hpp
-
         src/Type.cpp
-        src/Type.hpp)
+        src/Type.hpp src/LValue.cpp src/LValue.hpp src/Register.cpp src/Register.hpp)
 
 set(COMPILER_SOURCES
         parser

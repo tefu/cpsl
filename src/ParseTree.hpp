@@ -33,7 +33,8 @@ namespace ParseTree {
   StringLiteral* string_literal(std::string*);
   CharLiteral* char_literal(std::string*);
   IntLiteral* integer_literal(int);
-  LValue* l_value();
+  LValue* l_value(std::string*);
+  Assignment* assign(LValue*, Expression*);
 };
 
 

@@ -251,11 +251,16 @@ struct BoolLiteral : Expression
   bool literal;
 };
 
-struct LValue : Expression
+struct LoadExpression : Expression
 {
+  LoadExpression(std::shared_ptr<Type> t, int a) : datatype(t), address_offset(a) {}
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
+private:
+  std::shared_ptr<Type> datatype;
+  const int address_offset;
+
 };
 
 

@@ -138,7 +138,19 @@ IntLiteral* ParseTree::integer_literal(int literal)
   return new IntLiteral(literal);
 }
 
-LValue* ParseTree::l_value()
+LValue* ParseTree::l_value(std::string* ident)
 {
-  return new LValue();
+  auto var = Symbol::lookup_variable(*ident);
+  if (var != nullptr)
+    return var;
+
+  auto constant = Symbol::lookup_variable(*ident);
+
+  // TODO: error checking
+  return constant;
+}
+
+Assignment* ParseTree::assign(LValue* l_val, Expression* expr)
+{
+  return new Assignment(l_val, expr);
 }

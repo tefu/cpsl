@@ -1,32 +1,13 @@
 #include <set>
 #include "Expression.hpp"
 #include "instructions.hpp"
+#include "Register.hpp"
 
 namespace
 {
   bool is_binary_operation_constant(const Expression* right, const Expression* left)
   {
     return left->is_constant() && right->is_constant();
-  }
-
-  std::set<int> registers_taken = {};
-  const int starting_register=8;
-
-  int allocate_register()
-  {
-    int winning_register = starting_register;
-    while(registers_taken.find(winning_register) != registers_taken.end())
-    {
-      winning_register++;
-    }
-    registers_taken.insert(winning_register);
-
-    return winning_register;
-  }
-
-  void release_register(int reg)
-  {
-    registers_taken.erase(reg);
   }
 
   template <typename F>
@@ -55,12 +36,12 @@ int Expression::result() const
 void Expression::allocate()
 {
   if (result_reg == NULL_REGISTER)
-    result_reg = allocate_register();
+    result_reg = Register::allocate_register();
 }
 
 void Expression::release()
 {
-  release_register(result_reg);
+  Register::release_register(result_reg);
   result_reg = NULL_REGISTER;
 }
 
@@ -390,7 +371,7 @@ namespace
   std::string get_unique_string_label()
   {
     std::stringstream s;
-    s << "string_friend_" << label_count;
+    s << "string_" << label_count;
     label_count++;
     return s.str();
   }
@@ -465,20 +446,18 @@ std::shared_ptr<Type> BoolLiteral::data_type() const
 }
 
 
-
-
-
-std::string LValue::gen_asm()
+std::string LoadExpression::gen_asm()
 {
-  return "";
+  allocate();
+  return MIPS::load_word(result(), address_offset, MIPS::GP, "Loading a variable");
 }
-bool LValue::is_constant() const
+
+bool LoadExpression::is_constant() const
 {
   return false;
 }
 
-std::shared_ptr<Type> LValue::data_type() const
+std::shared_ptr<Type> LoadExpression::data_type() const
 {
-  return std::make_shared<Integer>();
+  return datatype;
 }
-

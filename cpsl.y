@@ -44,6 +44,8 @@ void parsed(std::string term)
   std::vector<Expression*>* exprList;
   ProgramNode* node;
   std::vector<ProgramNode*>* nodeList;
+  LValue* lval;
+  std::vector<LValue*>* lvalList;
 }
 
 %start program
@@ -138,6 +140,8 @@ void parsed(std::string term)
 
 %type <node> var_decl
 %type <node> var_members
+%type <lval> l_value
+%type <lvalList> l_value_list
 
 
 
@@ -278,7 +282,7 @@ statement_sequence : statement
                    | statement_sequence SEMICOLON statement
                      { $$ = $1; $$->push_back($3); }
 
-statement : assignment {$$=nullptr;}
+statement : assignment {$$=$1; parsed("Assignment"); }
           | if_statement {$$=nullptr;}
           | while_statement {$$=nullptr;}
           | repeat_statement {$$=nullptr;}
@@ -291,7 +295,7 @@ statement : assignment {$$=nullptr;}
           | null_statement { $$=nullptr; }
           ;
 
-assignment : l_value ASSIGNMENT expression
+assignment : l_value ASSIGNMENT expression { $$ = PT::assign($1, $3); }
            ;
 
 if_statement : IF expression
@@ -393,14 +397,14 @@ expression : expression OR expression                  { $$ = PT::logical_or($1,
            | CHAR                                      { $$ = PT::char_literal($1); }
            | STRING                                    { $$ = PT::string_literal($1); }
            | INTEGER                                   { $$ = PT::integer_literal($1); }
-           | l_value                                   { $$ = PT::l_value(); }
+           | l_value                                   { $$ = $1->read(); }
            ;
 
-l_value_list : l_value
-             | l_value_list COMMA l_value
+l_value_list : l_value { $$ = new std::vector<LValue*>(); $$->push_back($1); }
+             | l_value_list COMMA l_value { $$ = $1; $$->push_back($3); }
              ;
 
-l_value : IDENT
+l_value : IDENT { $$ = PT::l_value($1); }
         | l_value DOT IDENT
         | l_value LEFT_BRACKET expression RIGHT_BRACKET
         ;

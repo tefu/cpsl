@@ -4,7 +4,11 @@
 
 std::string Assignment::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  s << expr->gen_asm();
+  s << l_value->assign(expr->result());
+  expr->release();
+  return s.str();
 }
 
 std::string IfStatement::gen_asm()

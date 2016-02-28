@@ -2,6 +2,7 @@
 #include <string>
 #include "Expression.hpp"
 #include "ProgramNode.hpp"
+#include "LValue.hpp"
 #include "parser.hpp"
 #include <iostream>
 

@@ -2,10 +2,14 @@
 #define CPSL_STATEMENT_HPP
 #include "ProgramNode.hpp"
 #include "Expression.hpp"
+#include "LValue.hpp"
 
 
 struct Assignment : ProgramNode {
+  Assignment(LValue* l, Expression* e) : l_value(l), expr(e) {}
   std::string gen_asm();
+  LValue* l_value;
+  Expression* expr;
 };
 
 struct IfStatement : ProgramNode {
