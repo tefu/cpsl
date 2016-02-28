@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
 #include "instructions.hpp"
 #include "ProgramNode.hpp"
 #include "Statement.hpp"
@@ -22,6 +23,7 @@ void yyerror(const char* message)
 {
   std::cout << "Build failed: " << message << " at line " << yylineno << " with "
   << yytext << "." << std::endl;
+  exit(EXIT_FAILURE);
 }
 
 void parsed(std::string term)
@@ -189,7 +191,7 @@ definitions : definition
             | definitions definition
             ;
 
-definition : IDENT EQUALITY expression SEMICOLON
+definition : IDENT EQUALITY expression SEMICOLON { PT::ConstDecl($1,$3); }
            ;
 
 proc_decl : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
@@ -344,12 +346,12 @@ stop_statement : STOP { $$ = new StopStatement(); }
 return_statement : RETURN optional_expression
                  ;
 
-read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN { $$=new ReadStatement($3); }
+read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN { $$=PT::read_statement($3); }
                ;
 
 
 write_statement : WRITE LEFT_PAREN expression_list RIGHT_PAREN
-                  { $$ = new WriteStatement($3) ; }
+                  { $$ = PT::write_statement($3); }
                  ;
 
 

@@ -16,7 +16,7 @@ namespace
   {
     std::stringstream s;
     std::string instruction = "\t" + op_code + " " + a;
-    s << std::left << std::setw(23) << instruction << comment(note);
+    s << std::left << std::setw(25) << instruction << comment(note);
     return  s.str();
   }
 
@@ -24,7 +24,7 @@ namespace
   {
     std::stringstream s;
     std::string instruction = "\t" + op_code + " " + a + ", " + b;
-    s << std::left << std::setw(18) << instruction << comment(note);
+    s << std::left << std::setw(25) << instruction << comment(note);
     return  s.str();
   }
 
@@ -32,7 +32,7 @@ namespace
   {
     std::stringstream s;
     std::string instruction = "\t" + op_code + " " + a + ", " + b + ", " + c;
-    s << std::left << std::setw(18) << instruction << comment(note);
+    s << std::left << std::setw(25) << instruction << comment(note);
     return  s.str();
   }
 
@@ -212,5 +212,12 @@ std::string MIPS::system_call(int call_number)
   std::stringstream s;
   s << li(V0, call_number, "")
     << "\tsyscall\n";
+  return s.str();
+}
+
+std::string MIPS::error(std::string body)
+{
+  std::stringstream s;
+  s << "# Error: " << body << "\n";
   return s.str();
 }

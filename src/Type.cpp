@@ -45,7 +45,7 @@ std::string StringConstant::write_out(int register_location) const {
 
 std::string StringConstant::read_in(int register_location) const
 {
-  return std::string("# Error: cannot read in a string");
+  return MIPS::error("cannot read in a string");
 }
 
 Type::Basic StringConstant::type() const {
@@ -71,7 +71,7 @@ std::string Boolean::write_out(int register_location) const {
 
 std::string Boolean::read_in(int register_location) const
 {
-  return std::string("# Error: cannot read in a boolean");
+  return MIPS::error("cannot read in a boolean");
 }
 
 Type::Basic Boolean::type() const {

@@ -10,6 +10,7 @@ namespace ParseTree {
   ProgramNode* program(ProgramNode*);
   Block* block(std::vector<ProgramNode*>*);
   void VarDecl(std::vector<std::string>*, std::string*);
+  void ConstDecl(std::string*, Expression*);
   LogicalOr* logical_or(Expression*, Expression*);
   LogicalAnd* logical_and(Expression*, Expression*);
   Equality* equality(Expression*, Expression*);
@@ -35,6 +36,8 @@ namespace ParseTree {
   IntLiteral* integer_literal(int);
   LValue* l_value(std::string*);
   Assignment* assign(LValue*, Expression*);
+  ReadStatement* read_statement(std::vector<LValue*>*);
+  WriteStatement* write_statement(std::vector<Expression*>*);
 };
 
 

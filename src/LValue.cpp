@@ -14,6 +14,11 @@ std::shared_ptr<Type> Variable::get_type()
   return type;
 }
 
+bool Variable::is_constant()
+{
+  return false;
+}
+
 Expression* Variable::read()
 {
   return new LoadExpression{type, address_offset};
@@ -21,12 +26,17 @@ Expression* Variable::read()
 
 std::string Constant::assign(int result_register)
 {
-  return std::string("# Error, cannot assign to constant value");
+  return MIPS::error("cannot assign to constant value");
 }
 
 std::shared_ptr<Type> Constant::get_type()
 {
   return result->data_type();
+}
+
+bool Constant::is_constant()
+{
+  return true;
 }
 
 Expression* Constant::read()

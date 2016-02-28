@@ -54,6 +54,7 @@ namespace MIPS {
   std::string data();
   std::string asciiz(std::string, std::string);
   std::string text();
+  std::string error(std::string);
 
 }
 

@@ -24,6 +24,18 @@ void ParseTree::VarDecl(std::vector<std::string>* identList, std::string* type)
   }
 }
 
+void ParseTree::ConstDecl(std::string* ident, Expression* expr)
+{
+  if (expr->is_constant())
+  {
+    Symbol::add_constant(*ident, expr);
+  }
+  else
+  {
+    yyerror((std::string("Error: defining constant '") + *ident + "' to be a non-constant expression").c_str());
+  }
+}
+
 
 LogicalOr* ParseTree::logical_or(Expression* left, Expression* right)
 {
@@ -156,5 +168,22 @@ LValue* ParseTree::l_value(std::string* ident)
 
 Assignment* ParseTree::assign(LValue* l_val, Expression* expr)
 {
-  return new Assignment(l_val, expr);
+  if (l_val->is_constant())
+  {
+    yyerror("Assigning to a constant");
+  }
+  else
+  {
+    return new Assignment(l_val, expr);
+  }
+}
+
+ReadStatement* ParseTree::read_statement(std::vector<LValue*>* l_values)
+{
+  return new ReadStatement(l_values);
+}
+
+WriteStatement* ParseTree::write_statement(std::vector<Expression*>* exprs)
+{
+  return new WriteStatement(exprs);
 }
