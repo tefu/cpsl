@@ -2,6 +2,7 @@
 #include "Expression.hpp"
 #include "instructions.hpp"
 #include "Register.hpp"
+#include "StringLabel.hpp"
 
 namespace
 {
@@ -384,11 +385,8 @@ std::string StringLiteral::gen_asm()
   allocate();
   std::stringstream s;
   auto label = get_unique_string_label();
-
-  s << MIPS::data()
-    << MIPS::asciiz(label, *literal)
-    << MIPS::text()
-    << MIPS::la(result_reg, label, "Loading a string's address");
+  StringLabel::store_label(label, *literal);
+  s << MIPS::la(result_reg, label, "Loading a string's address");
   return s.str();
 }
 

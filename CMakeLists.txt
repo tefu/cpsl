@@ -25,7 +25,7 @@ set(COMMON_SOURCES
         src/ParseTree.cpp
         src/ParseTree.hpp
         src/Type.cpp
-        src/Type.hpp src/LValue.cpp src/LValue.hpp src/Register.cpp src/Register.hpp)
+        src/Type.hpp src/LValue.cpp src/LValue.hpp src/Register.cpp src/Register.hpp src/StringLabel.cpp src/StringLabel.hpp)
 
 set(COMPILER_SOURCES
         parser
