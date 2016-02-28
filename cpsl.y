@@ -289,7 +289,7 @@ statement : assignment {$$=$1;}
           | for_statement {$$=nullptr;}
           | stop_statement { $$ = $1; }
           | return_statement {$$=nullptr;}
-          | read_statement {$$=nullptr;}
+          | read_statement {$$=$1;}
           | write_statement { $$ = $1; }
           | procedure_call {$$=nullptr;}
           | null_statement { $$=nullptr; }
@@ -344,7 +344,7 @@ stop_statement : STOP { $$ = new StopStatement(); }
 return_statement : RETURN optional_expression
                  ;
 
-read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN
+read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN { $$=new ReadStatement($3); }
                ;
 
 

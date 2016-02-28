@@ -5,6 +5,7 @@
 struct LValue
 {
   virtual std::string assign(int result_register) = 0;
+  virtual std::shared_ptr<Type> get_type() = 0;
   virtual Expression* read()=0;
 };
 
@@ -14,6 +15,7 @@ struct Variable: LValue
   const std::shared_ptr<Type> type;
   const int address_offset;
   virtual std::string assign(int result_register);
+  virtual std::shared_ptr<Type> get_type();
   virtual Expression* read();
 };
 
@@ -22,6 +24,7 @@ struct Constant: LValue
   Constant(Expression* e) : result(e) {}
   Expression* result;
   virtual std::string assign(int result_register);
+  virtual std::shared_ptr<Type> get_type();
   virtual Expression* read();
 };
 

@@ -38,7 +38,9 @@ struct ReturnStatement : ProgramNode {
 };
 
 struct ReadStatement : ProgramNode {
+  ReadStatement(std::vector<LValue*>* ll) : l_value_list(ll) {}
   std::string gen_asm();
+  std::vector<LValue*>* l_value_list;
 };
 
 struct WriteStatement : ProgramNode {
