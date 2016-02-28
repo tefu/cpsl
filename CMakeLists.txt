@@ -25,7 +25,13 @@ set(COMMON_SOURCES
         src/ParseTree.cpp
         src/ParseTree.hpp
         src/Type.cpp
-        src/Type.hpp src/LValue.cpp src/LValue.hpp src/Register.cpp src/Register.hpp src/StringLabel.cpp src/StringLabel.hpp)
+        src/Type.hpp
+        src/LValue.cpp
+        src/LValue.hpp
+        src/Register.cpp
+        src/Register.hpp
+        src/StringLabel.cpp
+        src/StringLabel.hpp)
 
 set(COMPILER_SOURCES
         parser
@@ -73,7 +79,18 @@ foreach (language_test_dir ${language_tests})
         DEPENDS "${CMAKE_SOURCE_DIR}/language-tests/test-files")
 endforeach()
 
+file(GLOB expected_output ${CMAKE_SOURCE_DIR}/language-tests/expected-output/*.out)
+foreach (full_output ${expected_output})
+    get_filename_component(output ${full_output} NAME)
+    add_custom_command(TARGET cpsl
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${full_output}
+            "${CMAKE_CURRENT_BINARY_DIR}/expected-output/${output}"
+            DEPENDS "${CMAKE_SOURCE_DIR}/language-tests/expected-output")
+endforeach()
+
 add_custom_target(language_test
         COMMAND ./language_test.sh
-        DEPENDS cpsl "${CMAKE_CURRENT_BINARY_DIR}/language_test.sh" )
+        DEPENDS cpsl "${CMAKE_CURRENT_BINARY_DIR}/language_test.sh")
 
