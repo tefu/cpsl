@@ -2,6 +2,8 @@
 #include "ParseTree.hpp"
 #include "SymbolTable.hpp"
 #include <sstream>
+
+extern void yyerror(const char* message);
 extern std::stringstream sout;
 
 ProgramNode* ParseTree::program(ProgramNode* b)
@@ -144,10 +146,12 @@ LValue* ParseTree::l_value(std::string* ident)
   if (var != nullptr)
     return var;
 
-  auto constant = Symbol::lookup_variable(*ident);
+  auto constant = Symbol::lookup_constant(*ident);
+  if (constant != nullptr)
+    return constant;
 
-  // TODO: error checking
-  return constant;
+  yyerror((std::string("Unknown identifier: '") + *ident + "'").c_str());
+  return nullptr;
 }
 
 Assignment* ParseTree::assign(LValue* l_val, Expression* expr)
