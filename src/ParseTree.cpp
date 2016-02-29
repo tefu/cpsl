@@ -201,3 +201,8 @@ ElseIf* ParseTree::else_if(Expression* expr, std::vector<ProgramNode*>* statemen
 {
   return new ElseIf{expr, statements};
 }
+
+WhileStatement* ParseTree::while_statement(Expression* expr,std::vector<ProgramNode*>* statements)
+{
+  return new WhileStatement(expr, statements);
+}

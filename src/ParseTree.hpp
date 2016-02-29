@@ -43,6 +43,7 @@ namespace ParseTree {
                             std::vector<ElseIf*>*,
                             std::vector<ProgramNode*>*);
   ElseIf* else_if(Expression*, std::vector<ProgramNode*>*);
+  WhileStatement* while_statement(Expression*,std::vector<ProgramNode*>*);
 };
 
 

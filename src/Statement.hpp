@@ -33,10 +33,12 @@ struct IfStatement : ProgramNode {
   std::vector<ProgramNode*>* optional_else;
 };
 
-
-
 struct WhileStatement : ProgramNode {
+  WhileStatement(Expression* e, std::vector<ProgramNode*>* s) :
+          expr(e), statements(s) {}
   std::string gen_asm();
+  Expression* expr;
+  std::vector<ProgramNode*>* statements;
 };
 
 struct RepeatStatement : ProgramNode {

@@ -8,20 +8,22 @@
 namespace
 {
   std::string if_then_jump(Expression* expr,
+                           std::vector<ProgramNode*>* statements,
                            std::string else_label,
+                           std::string else_note,
                            std::string end_label,
-                           std::vector<ProgramNode*>* statements)
+                           std::string end_note)
   {
     std::stringstream s;
     s << expr->gen_asm();
-    s << MIPS::beq(expr->result(), MIPS::ZERO, else_label, "Testing an if statement's condition");
+    s << MIPS::beq(expr->result(), MIPS::ZERO, else_label, else_note);
     expr->release();
     for(auto &statement: *statements)
     {
       if (statement != nullptr)
         s << statement->gen_asm();
     }
-    s << MIPS::j(end_label, "Finished the true branch of an if statement");
+    s << MIPS::j(end_label, end_note);
     s << MIPS::label(else_label, "");
     return s.str();
   }
@@ -41,7 +43,8 @@ std::string IfStatement::gen_asm()
   std::stringstream s;
   auto else_label = StringLabel::get_unique_control_label();
   auto end_label = StringLabel::get_unique_control_label();
-  s << if_then_jump(expr, else_label, end_label, main_statements);
+  s << if_then_jump(expr, main_statements, else_label,"Testing an if statement's condition",
+                                           end_label, "Finished the true branch of an if statement");
 
   if (optional_else_ifs != nullptr)
   {
@@ -68,12 +71,19 @@ std::string IfStatement::gen_asm()
 std::string ElseIf::gen_asm(std::string end_label)
 {
   auto else_label = StringLabel::get_unique_control_label();
-  return if_then_jump(expr, else_label, end_label, statements);
+  return if_then_jump(expr, statements, else_label, "Testing an else if's condition",
+                                        end_label, "Finished running an else if");
 }
 
 std::string WhileStatement::gen_asm()
 {
-  return "";
+  auto start_while = StringLabel::get_unique_control_label();
+  auto end_while = StringLabel::get_unique_control_label();
+  std::stringstream s;
+  s << MIPS::label(start_while,"");
+  s << if_then_jump(expr, statements, end_while, "Testing whether to run this while loop",
+                                      start_while, "Going back to start of the loop");
+  return s.str();
 }
 
 std::string RepeatStatement::gen_asm()
