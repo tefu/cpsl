@@ -14,7 +14,7 @@ namespace
   {
     std::stringstream s;
     s << expr->gen_asm();
-    s << MIPS::bne(expr->result(), MIPS::ZERO, else_label, "Testing an if statement's condition");
+    s << MIPS::beq(expr->result(), MIPS::ZERO, else_label, "Testing an if statement's condition");
     expr->release();
     for(auto &statement: *statements)
     {
