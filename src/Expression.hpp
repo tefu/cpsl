@@ -186,6 +186,7 @@ struct ToChar : Expression
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
   virtual int result() const;
+  virtual void release();
   Expression* expr;
 };
 
@@ -196,6 +197,7 @@ struct ToInt : Expression
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
   virtual int result() const;
+  virtual void release();
   Expression* expr;
 };
 

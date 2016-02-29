@@ -310,6 +310,10 @@ int ToChar::result() const
 {
   return expr->result();
 }
+void ToChar::release()
+{
+  expr->release();
+}
 
 
 std::string ToInt::gen_asm()
@@ -328,6 +332,10 @@ std::shared_ptr<Type> ToInt::data_type() const
 int ToInt::result() const
 {
   return expr->result();
+}
+void ToInt::release()
+{
+  expr->release();
 }
 
 namespace
