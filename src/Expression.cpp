@@ -170,7 +170,7 @@ bool OperatorPlus::is_constant() const
 }
 std::shared_ptr<Type> OperatorPlus::data_type() const
 {
-  return std::make_shared<Integer>();
+  return left->data_type();
 }
 
 
@@ -184,7 +184,7 @@ bool OperatorMinus::is_constant() const
 }
 std::shared_ptr<Type> OperatorMinus::data_type() const
 {
-  return std::make_shared<Integer>();
+  return left->data_type();
 }
 
 
@@ -256,7 +256,7 @@ bool Negation::is_constant() const
 }
 std::shared_ptr<Type> Negation::data_type() const
 {
-  return std::make_shared<Boolean>();
+  return std::make_shared<Integer>();
 }
 
 std::string UnaryMinus::gen_asm()

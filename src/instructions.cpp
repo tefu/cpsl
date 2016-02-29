@@ -110,6 +110,11 @@ std::string MIPS::bgt(int dest, int src, std::string label, std::string note) {
   return three_args("bgt", dress_up(dest), dress_up(src), label, note);
 }
 
+std::string MIPS::sne(int dest, int src1, int src2, std::string note) {
+  return three_args("sne", dress_up(dest), dress_up(src1), dress_up(src2), note);
+}
+
+
 std::string MIPS::mulo(int dest, int src1, int src2, std::string note) {
   return three_args("mulo", dress_up(dest), dress_up(src1), dress_up(src2), note);
 }

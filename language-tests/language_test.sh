@@ -25,9 +25,13 @@ fail () {
 }
 
 compare_output () {
+  mine=$(basename $OUTPUT_DIR)
+  theirs=$(basename $EXPECTED_OUTPUT_DIR)
   FILE_DIFF=$(diff -y -W 72 $1 $2)
   if [ $? -ne 0 ]; then
     fail "Diff didn't match for $3"
+    echo "Diff between:"
+    printf "$mine/$3 $theirs/$3 \n"
     echo "$FILE_DIFF"
   else
     success "Diff matched for $3!"

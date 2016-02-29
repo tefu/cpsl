@@ -66,7 +66,10 @@ Type::Basic Character::type() const {
 }
 
 std::string Boolean::write_out(int register_location) const {
-  return write_with_call(register_location, 1, "Writing out a boolean");
+  std::stringstream s;
+  s << MIPS::sne(register_location, register_location, MIPS::ZERO, "Flatten boolean to 0 or 1");
+  s << write_with_call(register_location, 1, "Writing out a boolean");
+  return s.str();
 }
 
 std::string Boolean::read_in(int register_location) const
