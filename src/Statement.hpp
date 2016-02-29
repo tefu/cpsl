@@ -42,7 +42,11 @@ struct WhileStatement : ProgramNode {
 };
 
 struct RepeatStatement : ProgramNode {
+  RepeatStatement(Expression* e, std::vector<ProgramNode*>* s) :
+          expr(e), statements(s) {}
   std::string gen_asm();
+  Expression* expr;
+  std::vector<ProgramNode*>* statements;
 };
 
 struct ForStatement : ProgramNode {

@@ -296,7 +296,7 @@ statement_sequence : statement
 statement : assignment {$$=$1;}
           | if_statement {$$=$1;}
           | while_statement {$$=$1;}
-          | repeat_statement {$$=nullptr;}
+          | repeat_statement {$$=$1;}
           | for_statement {$$=nullptr;}
           | stop_statement { $$ = $1; }
           | return_statement {$$=nullptr;}
@@ -338,7 +338,7 @@ else : ELSE statement_sequence { $$=$2; }
 while_statement : WHILE expression DO statement_sequence END { $$=PT::while_statement($2, $4); }
                 ;
 
-repeat_statement : REPEAT statement_sequence UNTIL expression
+repeat_statement : REPEAT statement_sequence UNTIL expression { $$=PT::repeat_statement($4, $2); }
                  ;
 
 for_statement : FOR IDENT ASSIGNMENT expression direction expression

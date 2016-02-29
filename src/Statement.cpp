@@ -7,6 +7,37 @@
 
 namespace
 {
+  std::string run_statements(std::vector<ProgramNode*>* statements)
+  {
+    std::stringstream s;
+    for(auto &statement: *statements)
+    {
+      if (statement != nullptr)
+        s << statement->gen_asm();
+    }
+    return s.str();
+  }
+
+  std::string run_else_ifs(std::vector<ElseIf*>* else_ifs, std::string jump_out_of_if_run)
+  {
+    std::stringstream s;
+    for(auto &else_if: *else_ifs)
+    {
+      if (else_if != nullptr)
+        s << else_if->gen_asm(jump_out_of_if_run);
+    }
+    return s.str();
+  }
+
+  std::string branch_to_on_false(Expression* expr, std::string branch_label, std::string note)
+  {
+    std::stringstream s;
+    s << expr->gen_asm();
+    s << MIPS::beq(expr->result(), MIPS::ZERO, branch_label, note);
+    expr->release();
+    return s.str();
+  }
+
   std::string if_then_jump(Expression* expr,
                            std::vector<ProgramNode*>* statements,
                            std::string else_label,
@@ -15,14 +46,8 @@ namespace
                            std::string end_note)
   {
     std::stringstream s;
-    s << expr->gen_asm();
-    s << MIPS::beq(expr->result(), MIPS::ZERO, else_label, else_note);
-    expr->release();
-    for(auto &statement: *statements)
-    {
-      if (statement != nullptr)
-        s << statement->gen_asm();
-    }
+    s << branch_to_on_false(expr, else_label, else_note);
+    s << run_statements(statements);
     s << MIPS::j(end_label, end_note);
     s << MIPS::label(else_label, "");
     return s.str();
@@ -48,20 +73,12 @@ std::string IfStatement::gen_asm()
 
   if (optional_else_ifs != nullptr)
   {
-    for (auto &elseif: *optional_else_ifs)
-    {
-      if (elseif != nullptr)
-        s << elseif->gen_asm(end_label);
-    }
+    s << run_else_ifs(optional_else_ifs, end_label);
   }
 
   if (optional_else != nullptr)
   {
-    for (auto &statement: *optional_else)
-    {
-      if (statement != nullptr)
-        s << statement->gen_asm();
-    }
+    s << run_statements(optional_else);
   }
   s << MIPS::label(end_label, "");
 
@@ -77,9 +94,9 @@ std::string ElseIf::gen_asm(std::string end_label)
 
 std::string WhileStatement::gen_asm()
 {
+  std::stringstream s;
   auto start_while = StringLabel::get_unique_control_label();
   auto end_while = StringLabel::get_unique_control_label();
-  std::stringstream s;
   s << MIPS::label(start_while,"");
   s << if_then_jump(expr, statements, end_while, "Testing whether to run this while loop",
                                       start_while, "Going back to start of the loop");
@@ -88,7 +105,17 @@ std::string WhileStatement::gen_asm()
 
 std::string RepeatStatement::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  auto start_repeat = StringLabel::get_unique_control_label();
+  auto end_repeat = StringLabel::get_unique_control_label();
+
+  s << MIPS::label(start_repeat, "");
+  s << run_statements(statements);
+  s << branch_to_on_false(expr, start_repeat, "Testing whether to continue this repeat loop");
+  s << MIPS::j(end_repeat, "Ending repeat loop");
+  s << MIPS::label(end_repeat, "");
+
+  return s.str();
 }
 
 std::string ForStatement::gen_asm()

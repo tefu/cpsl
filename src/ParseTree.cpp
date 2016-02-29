@@ -206,3 +206,8 @@ WhileStatement* ParseTree::while_statement(Expression* expr,std::vector<ProgramN
 {
   return new WhileStatement(expr, statements);
 }
+
+RepeatStatement* ParseTree::repeat_statement(Expression* expr,std::vector<ProgramNode*>* statements)
+{
+  return new RepeatStatement(expr, statements);
+}
