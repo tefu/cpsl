@@ -1,7 +1,29 @@
+#include <sstream>
 #include "Statement.hpp"
 #include "instructions.hpp"
 #include "Register.hpp"
-#include <sstream>
+#include "StringLabel.hpp"
+
+
+namespace
+{
+  std::string if_then_jump(Expression* expr,
+                           std::string else_label,
+                           std::string end_label,
+                           std::vector<ProgramNode*>* statements)
+  {
+    std::stringstream s;
+    s << expr->gen_asm();
+    s << MIPS::bne(expr->result(), MIPS::ZERO, else_label, "Testing an if statement's condition");
+    expr->release();
+    for(auto &statement: *statements)
+    {
+      s << statement->gen_asm();
+    }
+    s << MIPS::j(end_label, "Finished the true branch of an if statement");
+    s << MIPS::label(else_label, "");
+  }
+}
 
 std::string Assignment::gen_asm()
 {
@@ -14,7 +36,35 @@ std::string Assignment::gen_asm()
 
 std::string IfStatement::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  auto else_label = StringLabel::get_unique_control_label();
+  auto end_label = StringLabel::get_unique_control_label();
+  s << if_then_jump(expr, else_label, end_label, main_statements);
+
+  if (optional_else_ifs != nullptr)
+  {
+    for (auto &elseif: *optional_else_ifs)
+    {
+      s << elseif->gen_asm(end_label);
+    }
+  }
+
+  if (optional_else != nullptr)
+  {
+    for (auto &statement: *optional_else)
+    {
+      s << statement->gen_asm();
+    }
+  }
+  s << MIPS::label(end_label, "");
+
+  return s.str();
+}
+
+std::string ElseIf::gen_asm(std::string end_label)
+{
+  auto else_label = StringLabel::get_unique_control_label();
+  return if_then_jump(expr, else_label, end_label, statements);
 }
 
 std::string WhileStatement::gen_asm()

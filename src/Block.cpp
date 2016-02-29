@@ -11,7 +11,7 @@ std::string Block::gen_asm()
   auto global_label = std::string("global_address");
   s << MIPS::text()
     << ".globl main\n"
-    << "main:\n"
+    << MIPS::label("main","")
     << MIPS::la(MIPS::GP, global_label, "Initializing the global pointer");
 
   for(auto &statement: *statements)
@@ -24,7 +24,7 @@ std::string Block::gen_asm()
 
   s << StringLabel::print_labels();
   s << ".align 2\n";
-  s << global_label << ":\n";
+  s << MIPS::label(global_label, "");
 
   return s.str();
 }

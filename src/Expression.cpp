@@ -374,18 +374,6 @@ std::shared_ptr<Type> Successor ::data_type() const
   return expr->data_type();
 }
 
-namespace
-{
-  int label_count = 0;
-
-  std::string get_unique_string_label()
-  {
-    std::stringstream s;
-    s << "string_" << label_count;
-    label_count++;
-    return s.str();
-  }
-}
 
 /* Literals
    ------------------------------------------------------------------- */
@@ -393,7 +381,7 @@ std::string StringLiteral::gen_asm()
 {
   allocate();
   std::stringstream s;
-  auto label = get_unique_string_label();
+  auto label = StringLabel::get_unique_string_label();
   StringLabel::store_label(label, *literal);
   s << MIPS::la(result_reg, label, "Loading a string's address");
   return s.str();

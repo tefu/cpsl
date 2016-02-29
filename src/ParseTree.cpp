@@ -187,3 +187,17 @@ WriteStatement* ParseTree::write_statement(std::vector<Expression*>* exprs)
 {
   return new WriteStatement(exprs);
 }
+
+IfStatement* ParseTree::if_statement(Expression* expr,
+                                     std::vector<ProgramNode*>* main_statements,
+                                     std::vector<ElseIf*>* optional_else_ifs,
+                                     std::vector<ProgramNode*>* optional_else)
+{
+  return new IfStatement{expr, main_statements, optional_else_ifs, optional_else};
+}
+
+
+ElseIf* ParseTree::else_if(Expression* expr, std::vector<ProgramNode*>* statements)
+{
+  return new ElseIf{expr, statements};
+}

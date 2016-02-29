@@ -38,6 +38,11 @@ namespace ParseTree {
   Assignment* assign(LValue*, Expression*);
   ReadStatement* read_statement(std::vector<LValue*>*);
   WriteStatement* write_statement(std::vector<Expression*>*);
+  IfStatement* if_statement(Expression*,
+                            std::vector<ProgramNode*>*,
+                            std::vector<ElseIf*>*,
+                            std::vector<ProgramNode*>*);
+  ElseIf* else_if(Expression*, std::vector<ProgramNode*>*);
 };
 
 

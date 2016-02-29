@@ -12,9 +12,28 @@ struct Assignment : ProgramNode {
   Expression* expr;
 };
 
-struct IfStatement : ProgramNode {
-  std::string gen_asm();
+struct ElseIf {
+    ElseIf(Expression* e, std::vector<ProgramNode*>* s) :
+            expr(e), statements(s) {}
+    Expression* expr;
+    std::string gen_asm(std::string end_label);
+    std::vector<ProgramNode*>* statements;
 };
+
+struct IfStatement : ProgramNode {
+  IfStatement(Expression* e,
+              std::vector<ProgramNode*>* m,
+              std::vector<ElseIf*>* oei,
+              std::vector<ProgramNode*>* oe) :
+    expr(e), main_statements(m), optional_else_ifs(oei), optional_else(oe) {}
+  std::string gen_asm();
+  Expression* expr;
+  std::vector<ProgramNode*>* main_statements;
+  std::vector<ElseIf*>* optional_else_ifs;
+  std::vector<ProgramNode*>* optional_else;
+};
+
+
 
 struct WhileStatement : ProgramNode {
   std::string gen_asm();

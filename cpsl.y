@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include "instructions.hpp"
 #include "ProgramNode.hpp"
-#include "Statement.hpp"
 #include "Expression.hpp"
 #include "ParseTree.hpp"
 #include "Block.hpp"
@@ -48,6 +47,8 @@ void parsed(std::string term)
   std::vector<ProgramNode*>* nodeList;
   LValue* lval;
   std::vector<LValue*>* lvalList;
+  ElseIf* elseif;
+  std::vector<ElseIf*>* elseifList;
 }
 
 %start program
@@ -120,7 +121,15 @@ void parsed(std::string term)
 %type <node> block
 %type <node> statement
 %type <node> assignment
+
 %type <node> if_statement
+%type <elseifList> optional_else_ifs
+%type <elseifList> else_ifs
+%type <elseif> else_if
+%type <nodeList> optional_else
+%type <nodeList> else
+
+
 %type <node> while_statement
 %type <node> repeat_statement
 %type <node> for_statement
@@ -241,8 +250,8 @@ type_definitions : IDENT EQUALITY type SEMICOLON
                  ;
 
 type : simple_type {$$=$1;}
-     | record_type {$$=nullptr;}
-     | array_type {$$=nullptr;}
+     | record_type
+     | array_type
      ;
 
 simple_type : IDENT { $$ = $1; }
@@ -285,7 +294,7 @@ statement_sequence : statement
                      { $$ = $1; $$->push_back($3); }
 
 statement : assignment {$$=$1;}
-          | if_statement {$$=nullptr;}
+          | if_statement {$$=$1;}
           | while_statement {$$=nullptr;}
           | repeat_statement {$$=nullptr;}
           | for_statement {$$=nullptr;}
@@ -304,26 +313,26 @@ if_statement : IF expression
                THEN statement_sequence
                optional_else_ifs
                optional_else
-               END
+               END { $$= PT::if_statement($2, $4, $5, $6); }
              ;
 
 
-optional_else_ifs : else_ifs
-                  |
+optional_else_ifs : else_ifs { $$=$1; }
+                  | { $$=nullptr; }
                   ;
 
-else_ifs : else_if
-         | else_ifs else_if
+else_ifs : else_if { $$=new std::vector<ElseIf*>(); $$->push_back($1); }
+         | else_ifs else_if { $$=$1; $$->push_back($2); }
          ;
 
-else_if : ELSEIF expression THEN statement_sequence
+else_if : ELSEIF expression THEN statement_sequence { $$ = PT::else_if($2, $4); }
         ;
 
-optional_else : else
-              |
+optional_else : else { $$=$1; }
+              | { $$=nullptr; }
               ;
 
-else : ELSE statement_sequence
+else : ELSE statement_sequence { $$=$2; }
      ;
 
 while_statement : WHILE expression DO statement_sequence END

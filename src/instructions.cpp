@@ -57,6 +57,12 @@ std::string MIPS::la(int dest, std::string address, std::string note)
   return two_args("la", dress_up(dest), address, note);
 }
 
+std::string MIPS::j(std::string address, std::string note)
+{
+  return one_arg("j", address, note);
+}
+
+
 std::string MIPS::li(int reg, int value, std::string note)
 {
   return two_args("li", dress_up(reg), stringify(value), note);
@@ -177,10 +183,10 @@ std::string MIPS::data()
 {
   return std::string(".data\n");
 }
-std::string MIPS::asciiz(std::string label, std::string ascii)
+std::string MIPS::asciiz(std::string name, std::string ascii)
 {
   std::stringstream s;
-  s << label << ": " << ".asciiz " << ascii << "\n";
+  s << MIPS::label(name, std::string(".asciiz ") + ascii);
   return s.str();
 }
 std::string MIPS::text()
@@ -219,5 +225,12 @@ std::string MIPS::error(std::string body)
 {
   std::stringstream s;
   s << "# Error: " << body << "\n";
+  return s.str();
+}
+
+std::string MIPS::label(std::string name, std::string rest)
+{
+  std::stringstream s;
+  s << name << ":" << rest << "\n";
   return s.str();
 }
