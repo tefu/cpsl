@@ -120,7 +120,17 @@ std::string RepeatStatement::gen_asm()
 
 std::string ForStatement::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  auto for_start = StringLabel::get_unique_control_label();
+  auto for_end = StringLabel::get_unique_control_label();
+  s << assignment->gen_asm();
+  s << MIPS::label(for_start, "");
+  s << branch_to_on_false(continue_condition, for_end, "Testing whether to continue: for loop");
+  s << run_statements(statements);
+  s << update->gen_asm();
+  s << MIPS::j(for_start, "Going back to start of for loop");
+  s << MIPS::label(for_end, "");
+  return s.str();
 }
 
 std::string StopStatement::gen_asm()

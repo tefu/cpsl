@@ -132,7 +132,10 @@ void parsed(std::string term)
 
 %type <node> while_statement
 %type <node> repeat_statement
+
 %type <node> for_statement
+%type <boolean> direction
+
 %type <node> stop_statement
 %type <node> return_statement
 %type <node> read_statement
@@ -297,7 +300,7 @@ statement : assignment {$$=$1;}
           | if_statement {$$=$1;}
           | while_statement {$$=$1;}
           | repeat_statement {$$=$1;}
-          | for_statement {$$=nullptr;}
+          | for_statement {$$=$1;}
           | stop_statement { $$ = $1; }
           | return_statement {$$=nullptr;}
           | read_statement {$$=$1;}
@@ -342,11 +345,11 @@ repeat_statement : REPEAT statement_sequence UNTIL expression { $$=PT::repeat_st
                  ;
 
 for_statement : FOR IDENT ASSIGNMENT expression direction expression
-                DO statement_sequence END
+                DO statement_sequence END { $$ = PT::for_statement($2,$4,$5,$6,$8); }
               ;
 
-direction : TO
-          | DOWNTO
+direction : TO { $$=true; }
+          | DOWNTO { $$=false; }
           ;
 
 stop_statement : STOP { $$ = new StopStatement(); }
