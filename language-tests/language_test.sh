@@ -25,10 +25,10 @@ fail () {
 }
 
 compare_output () {
-  FILE_DIFF=$(diff $1 $2)
+  FILE_DIFF=$(diff -y -W 72 $1 $2)
   if [ $? -ne 0 ]; then
     fail "Diff didn't match for $3"
-    echo ${FILE_DIFF}
+    echo "$FILE_DIFF"
   else
     success "Diff matched for $3!"
   fi
