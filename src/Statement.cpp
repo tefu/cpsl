@@ -18,10 +18,12 @@ namespace
     expr->release();
     for(auto &statement: *statements)
     {
-      s << statement->gen_asm();
+      if (statement != nullptr)
+        s << statement->gen_asm();
     }
     s << MIPS::j(end_label, "Finished the true branch of an if statement");
     s << MIPS::label(else_label, "");
+    return s.str();
   }
 }
 
@@ -45,7 +47,8 @@ std::string IfStatement::gen_asm()
   {
     for (auto &elseif: *optional_else_ifs)
     {
-      s << elseif->gen_asm(end_label);
+      if (elseif != nullptr)
+        s << elseif->gen_asm(end_label);
     }
   }
 
@@ -53,7 +56,8 @@ std::string IfStatement::gen_asm()
   {
     for (auto &statement: *optional_else)
     {
-      s << statement->gen_asm();
+      if (statement != nullptr)
+        s << statement->gen_asm();
     }
   }
   s << MIPS::label(end_label, "");

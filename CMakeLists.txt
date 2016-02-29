@@ -42,7 +42,7 @@ set(TEST_SOURCES
   unit-tests/mips_test.cpp
   unit-tests/expression_test.cpp
   unit-tests/type_test.cpp
-  unit-tests/symbol_table_test.cpp)
+  unit-tests/symbol_table_test.cpp unit-tests/label_test.cpp unit-tests/statement_test.cpp)
 
 
 include_directories(
