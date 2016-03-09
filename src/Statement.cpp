@@ -18,13 +18,13 @@ namespace
     return s.str();
   }
 
-  std::string run_else_ifs(std::vector<ElseIf*>* else_ifs, std::string jump_out_of_if_run)
+  std::string run_else_ifs(std::vector<ElseIf*>* else_ifs, std::string jump_to_if_run)
   {
     std::stringstream s;
     for(auto &else_if: *else_ifs)
     {
       if (else_if != nullptr)
-        s << else_if->gen_asm(jump_out_of_if_run);
+        s << else_if->gen_asm(jump_to_if_run);
     }
     return s.str();
   }
