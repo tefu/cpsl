@@ -9,23 +9,21 @@ TEST_CASE("Symbol table works")
   REQUIRE(my_int.type() == Type::INTEGER);
   Symbol::add_variable(std::string("x"), std::string("integer"));
   Symbol::add_variable(std::string("y"), std::string("boolean"));
-  Symbol::add_variable(std::string("z"), std::string("string"));
+  Symbol::add_constant(std::string("z"), new StringLiteral(new std::string("string")));
 
-  auto x_var = Symbol::lookup_variable("x");
+  auto x_var = Symbol::lookup("x");
   REQUIRE(x_var != nullptr);
-  REQUIRE(x_var->address_offset == 0);
-  REQUIRE(x_var->type->type() == Type::INTEGER);
-  REQUIRE(x_var->type->word_size() == 4);
+  REQUIRE(x_var->is_constant() == false);
+  REQUIRE(x_var->get_type()->type() == Type::INTEGER);
 
-  auto y_var = Symbol::lookup_variable("y");
+  auto y_var = Symbol::lookup("y");
   REQUIRE(y_var != nullptr);
-  REQUIRE(y_var->address_offset == 4);
-  REQUIRE(y_var->type->type() == Type::BOOL);
-  REQUIRE(y_var->type->word_size() == 4);
+  REQUIRE(y_var->is_constant() == false);
+  REQUIRE(y_var->get_type()->type() == Type::BOOL);
 
-  auto z_var =  Symbol::lookup_variable("z");
-  REQUIRE(z_var != nullptr);
-  REQUIRE(z_var->address_offset == 8);
-  REQUIRE(z_var->type->type() == Type::STRING);
-  REQUIRE(z_var->type->word_size() == 4);
+
+  auto z_const = Symbol::lookup("z");
+  REQUIRE(z_const != nullptr);
+  REQUIRE(z_const->is_constant());
+  REQUIRE(z_const->get_type()->type() == Type::STRING);
 }

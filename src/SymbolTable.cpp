@@ -40,7 +40,6 @@ namespace
 
 }
 
-
 void Symbol::add_variable(std::string ident, std::string supposed_type) {
   init_check();
   auto type = parse_type(supposed_type);
@@ -55,28 +54,14 @@ void Symbol::add_constant(std::string ident, Expression* expr)
   constants->emplace(std::string(ident), new Constant(expr));
 }
 
-Variable* Symbol::lookup_variable(std::string ident)
+LValue* Symbol::lookup(std::string ident)
 {
   init_check();
   if (variables->find(ident) != variables->end())
-  {
     return (*variables)[ident];
-  }
-  else
-  {
-    return nullptr;
-  }
-}
 
-Constant* Symbol::lookup_constant(std::string ident)
-{
-  init_check();
   if (constants->find(ident) != constants->end())
-  {
     return (*constants)[ident];
-  }
-  else
-  {
-    return nullptr;
-  }
+
+  return nullptr;
 }

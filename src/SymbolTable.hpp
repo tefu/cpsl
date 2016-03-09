@@ -10,9 +10,7 @@ namespace Symbol
 {
   void add_variable(std::string, std::string);
   void add_constant(std::string, Expression*);
-  Variable* lookup_variable(std::string);
-  Constant* lookup_constant(std::string);
-
+  LValue* lookup(std::string);
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP

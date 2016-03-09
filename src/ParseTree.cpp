@@ -154,13 +154,9 @@ IntLiteral* ParseTree::integer_literal(int literal)
 
 LValue* ParseTree::l_value(std::string* ident)
 {
-  auto var = Symbol::lookup_variable(*ident);
-  if (var != nullptr)
-    return var;
-
-  auto constant = Symbol::lookup_constant(*ident);
-  if (constant != nullptr)
-    return constant;
+  auto lval = Symbol::lookup(*ident);
+  if (lval != nullptr)
+    return lval;
 
   yyerror((std::string("Unknown identifier: '") + *ident + "'").c_str());
   return nullptr;
