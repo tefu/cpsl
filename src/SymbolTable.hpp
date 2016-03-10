@@ -11,6 +11,8 @@ namespace Symbol
   void add_variable(std::string, std::string);
   void add_constant(std::string, Expression*);
   LValue* lookup(std::string);
+  void push_table();
+  void pop_table();
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP
