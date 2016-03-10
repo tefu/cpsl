@@ -70,7 +70,7 @@ void Symbol::add_variable(std::string ident, std::string supposed_type) {
     auto type = table.parse_type(supposed_type);
     if (type != nullptr)
     {
-      auto last_table = tables.back();
+      SymbolTable& last_table = tables.back();
       auto var = new Variable{type, last_table.global_offset};
       last_table.variables->emplace(std::string(ident), var);
       last_table.global_offset += type->word_size();
