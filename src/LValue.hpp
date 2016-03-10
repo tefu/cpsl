@@ -10,9 +10,9 @@ struct LValue
   virtual Expression* read()=0;
 };
 
-struct Variable: LValue
+struct GlobalVariable : LValue
 {
-  Variable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
+  GlobalVariable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
   const std::shared_ptr<Type> type;
   const int address_offset;
   virtual std::string assign(int result_register);

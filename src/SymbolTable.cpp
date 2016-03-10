@@ -17,7 +17,7 @@ namespace
 
   struct SymbolTable
   {
-    SymbolTable(int g_offset) : variables(std::make_shared<std::map<std::string, Variable*>>()),
+    SymbolTable(int g_offset) : variables(std::make_shared<std::map<std::string, GlobalVariable *>>()),
                     constants(std::make_shared<std::map<std::string, Constant*>>()),
                     global_offset(g_offset),
                     types(std::make_shared<std::map<std::string, std::shared_ptr<Type>>>()),
@@ -25,7 +25,7 @@ namespace
     int global_offset;
     std::shared_ptr<std::map<std::string, std::shared_ptr<Type>>> types;
     std::shared_ptr<std::map<std::string, std::shared_ptr<Function>>> functions;
-    std::shared_ptr<std::map<std::string, Variable*>> variables;
+    std::shared_ptr<std::map<std::string, GlobalVariable *>> variables;
     std::shared_ptr<std::map<std::string, Constant*>> constants;
 
     std::shared_ptr<Type> parse_type(std::string raw_type)
@@ -38,7 +38,7 @@ namespace
       return find_in_map(*functions, name);
     }
 
-    Variable* find_variable(std::string ident)
+    GlobalVariable * find_variable(std::string ident)
     {
       return find_in_map(*variables, ident);
     }
@@ -75,7 +75,7 @@ void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
   if (type != nullptr)
   {
     SymbolTable& last_table = tables.back();
-    auto var = new Variable{type, last_table.global_offset};
+    auto var = new GlobalVariable{type, last_table.global_offset};
     last_table.variables->emplace(std::string(ident), var);
     last_table.global_offset += type->word_size();
   }

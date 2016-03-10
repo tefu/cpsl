@@ -2,24 +2,24 @@
 #include "instructions.hpp"
 #include "Register.hpp"
 
-std::string Variable::assign(int result_register)
+std::string GlobalVariable::assign(int result_register)
 {
   std::stringstream s;
   s << MIPS::store_word(result_register, address_offset, MIPS::GP, "Assigning to a variable");
   return s.str();
 }
 
-std::shared_ptr<Type> Variable::get_type()
+std::shared_ptr<Type> GlobalVariable::get_type()
 {
   return type;
 }
 
-bool Variable::is_constant()
+bool GlobalVariable::is_constant()
 {
   return false;
 }
 
-Expression* Variable::read()
+Expression*GlobalVariable::read()
 {
   return new LoadExpression{type, address_offset};
 }
