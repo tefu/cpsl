@@ -45,7 +45,8 @@ namespace ParseTree {
   ElseIf* else_if(Expression*, std::vector<ProgramNode*>*);
   WhileStatement* while_statement(Expression*,std::vector<ProgramNode*>*);
   RepeatStatement* repeat_statement(Expression*,std::vector<ProgramNode*>*);
-  ForStatement* for_statement(std::string*, Expression*, bool, Expression*, std::vector<ProgramNode*>*);
+  ForStatement* for_statement(LValue*, Expression*, bool, Expression*, std::vector<ProgramNode*>*);
+  LValue* for_head(std::string*);
 };
 
 

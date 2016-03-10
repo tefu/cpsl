@@ -134,6 +134,7 @@ void parsed(std::string term)
 %type <node> repeat_statement
 
 %type <node> for_statement
+%type <lval> for_head
 %type <boolean> direction
 
 %type <node> stop_statement
@@ -344,9 +345,13 @@ while_statement : WHILE expression DO statement_sequence END { $$=PT::while_stat
 repeat_statement : REPEAT statement_sequence UNTIL expression { $$=PT::repeat_statement($4, $2); }
                  ;
 
-for_statement : FOR IDENT ASSIGNMENT expression direction expression
-                DO statement_sequence END { $$ = PT::for_statement($2,$4,$5,$6,$8); }
+for_statement : for_head ASSIGNMENT expression direction expression
+                DO statement_sequence END { $$ = PT::for_statement($1,$3,$4,$5,$7); }
               ;
+
+for_head: FOR IDENT { $$=PT::for_head($2); }
+
+
 
 direction : TO { $$=true; }
           | DOWNTO { $$=false; }

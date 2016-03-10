@@ -208,13 +208,12 @@ RepeatStatement* ParseTree::repeat_statement(Expression* expr,std::vector<Progra
   return new RepeatStatement(expr, statements);
 }
 
-ForStatement* ParseTree::for_statement(std::string* ident,
+ForStatement* ParseTree::for_statement(LValue* var,
                                        Expression* start,
                                        bool going_up,
                                        Expression* end,
                                        std::vector<ProgramNode*>* statements)
 {
-  auto var = l_value(ident);
   auto assignment = assign(var, start);
   Expression* condition;
   ProgramNode* update;
@@ -228,5 +227,13 @@ ForStatement* ParseTree::for_statement(std::string* ident,
     condition = greater_than_or_equal(var->read(), end);
     update = assign(var, PRED(var->read()));
   }
+  Symbol::pop_table();
   return new ForStatement(assignment, condition, statements, update);
+}
+
+LValue* ParseTree::for_head(std::string* ident)
+{
+  Symbol::push_table();
+  Symbol::add_variable(*ident, "integer");
+  return l_value(ident);
 }
