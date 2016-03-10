@@ -8,7 +8,8 @@ struct Type {
     BOOL,
     STRING,
     INTEGER,
-    CHAR
+    CHAR,
+    NULL_TYPE
   };
 
   virtual std::string write_out(int register) const=0;
@@ -36,6 +37,12 @@ struct StringConstant : Type {
 };
 
 struct Boolean : Type {
+  virtual std::string write_out(int) const;
+  virtual std::string read_in(int register) const;
+  virtual Basic type() const;
+};
+
+struct Null : Type {
   virtual std::string write_out(int) const;
   virtual std::string read_in(int register) const;
   virtual Basic type() const;

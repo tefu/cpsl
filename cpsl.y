@@ -49,6 +49,8 @@ void parsed(std::string term)
   std::vector<LValue*>* lvalList;
   ElseIf* elseif;
   std::vector<ElseIf*>* elseifList;
+  FormalParameter* fparam;
+  std::vector<FormalParameter*>* fparams;
 }
 
 %start program
@@ -155,6 +157,11 @@ void parsed(std::string term)
 
 %type <node> var_decl
 %type <node> var_members
+%type <node> proc_head
+%type <fparam> formal_parameter
+%type <fparams> formal_parameters
+%type <fparams> some_formal_parameters
+%type <boolean> optional_var_or_ref
 %type <lval> l_value
 %type <lvalList> l_value_list
 
@@ -207,11 +214,10 @@ definitions : definition
 definition : IDENT EQUALITY expression SEMICOLON { PT::ConstDecl($1,$3); }
            ;
 
-proc_decl : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
-            SEMICOLON FORWARD SEMICOLON
-          | PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
-            SEMICOLON body SEMICOLON
+proc_decl : proc_head FORWARD SEMICOLON
+          | proc_head body SEMICOLON {  }  /* run body, then pop_table */
           ;
+proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON { PT::procedure_decl($2,$4); }
 
 func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
             COLON type SEMICOLON FORWARD SEMICOLON
@@ -220,20 +226,20 @@ func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
           ;
 
 
-formal_parameters : some_formal_parameters
-                  |
+formal_parameters : some_formal_parameters { $$=$1; }
+                  | { $$=new std::vector<FormalParameter*>; }
                   ;
 
-some_formal_parameters : formal_parameter
-                       | some_formal_parameters SEMICOLON formal_parameter
+some_formal_parameters : formal_parameter { $$=new std::vector<FormalParameter*>; $$->push_back($1); }
+                       | some_formal_parameters SEMICOLON formal_parameter { $$=$1; $$->push_back($3); }
                        ;
 
-formal_parameter : optional_var_or_ref ident_list COLON type
+formal_parameter : optional_var_or_ref ident_list COLON type { $$=PT::formal_parameter($1,$2,$4); }
                  ;
 
-optional_var_or_ref : VAR
-                    | REF
-                    |
+optional_var_or_ref : VAR {$$=true;}
+                    | REF {$$=false;}
+                    | {$$=true;}
                     ;
 
 body : optional_constant_decl

@@ -7,7 +7,7 @@ TEST_CASE("Symbol table works")
 {
   Integer my_int{};
   REQUIRE(my_int.type() == Type::INTEGER);
-  Symbol::add_variable(std::string("x"), std::string("integer"));
+  Symbol::add_variable(std::string("x"), std::make_shared<Integer>());
 
 
   auto x_var = Symbol::lookup("x");
@@ -16,7 +16,7 @@ TEST_CASE("Symbol table works")
   REQUIRE(x_var->get_type()->type() == Type::INTEGER);
 
   Symbol::push_table();
-  Symbol::add_variable(std::string("y"), std::string("boolean"));
+  Symbol::add_variable(std::string("y"), std::make_shared<Boolean>());
 
   auto y_var = Symbol::lookup("y");
   REQUIRE(y_var != nullptr);

@@ -6,6 +6,21 @@
 extern void yyerror(const char* message);
 extern std::stringstream sout;
 
+namespace
+{
+  std::shared_ptr<Type> find_type(std::string supposed_type)
+  {
+    auto type = Symbol::lookup_type(supposed_type);
+    if (type == nullptr)
+    {
+      std::stringstream s;
+      s << "Error: " << supposed_type << " is not a type.";
+      yyerror(s.str().c_str());
+    }
+    return type;
+  }
+}
+
 ProgramNode* ParseTree::program(ProgramNode* b)
 {
   return b;
@@ -20,7 +35,7 @@ void ParseTree::VarDecl(std::vector<std::string>* identList, std::string* type)
 {
   for(auto &ident: *identList)
   {
-    Symbol::add_variable(ident, *type);
+    Symbol::add_variable(ident, find_type(*type));
   }
 }
 
@@ -34,6 +49,30 @@ void ParseTree::ConstDecl(std::string* ident, Expression* expr)
   {
     yyerror((std::string("Error: defining constant '") + *ident + "' to be a non-constant expression").c_str());
   }
+}
+
+FormalParameter* ParseTree::formal_parameter(bool is_var, std::vector<std::string>* argument_list, std::string* supposed_type)
+{
+  std::vector<std::shared_ptr<Type>> argument_types;
+  auto type = find_type(*supposed_type);
+  return new FormalParameter(is_var, *argument_list, type);
+}
+
+void ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalParameter*>* parameters)
+{
+  auto new_function = std::make_shared<Function>(*parameters, std::make_shared<Null>());
+  auto duplicate_function = Symbol::lookup_function(*procedure_name);
+  if (duplicate_function != nullptr && !(new_function->same_signature(*duplicate_function)))
+  {
+    std::stringstream s;
+    s << "Error: " << *procedure_name << " is already a function with a different signature.";
+    yyerror(s.str().c_str());
+  }
+  else
+  {
+    Symbol::add_function(*procedure_name, new_function);
+  }
+
 }
 
 
@@ -234,6 +273,6 @@ ForStatement* ParseTree::for_statement(LValue* var,
 LValue* ParseTree::for_head(std::string* ident)
 {
   Symbol::push_table();
-  Symbol::add_variable(*ident, "integer");
+  Symbol::add_variable(*ident, std::make_shared<Integer>());
   return l_value(ident);
 }

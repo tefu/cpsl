@@ -7,6 +7,7 @@ namespace StringLabel {
   std::string print_labels();
   std::string get_unique_string_label();
   std::string get_unique_control_label();
+  std::string get_unique_function_label();
 };
 
 

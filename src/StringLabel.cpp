@@ -8,6 +8,7 @@ namespace
   std::map<std::string, std::string> labels = {};
   int string_label_count = 0;
   int branch_label_count = 0;
+  int function_label_count = 0;
 
   std::string get_unique_label(std::string name, int& count)
   {
@@ -45,4 +46,10 @@ std::string StringLabel::get_unique_string_label()
 std::string StringLabel::get_unique_control_label()
 {
   return get_unique_label("branch_", branch_label_count);
+}
+
+
+std::string StringLabel::get_unique_function_label()
+{
+  return get_unique_label("function_", function_label_count);
 }

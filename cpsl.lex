@@ -4,6 +4,7 @@
 #include "ProgramNode.hpp"
 #include "LValue.hpp"
 #include "Statement.hpp"
+#include "Function.hpp"
 #include "parser.hpp"
 #include <iostream>
 

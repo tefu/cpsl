@@ -80,3 +80,18 @@ std::string Boolean::read_in(int register_location) const
 Type::Basic Boolean::type() const {
   return Basic::BOOL;
 }
+
+std::string Null::write_out(int register_location) const {
+  return MIPS::error("cannot write out a NULL type");
+}
+
+std::string Null::read_in(int register_location) const
+{
+  return MIPS::error("cannot read in a NULL type");
+}
+
+Type::Basic Null::type() const {
+  return Basic::NULL_TYPE;
+}
+
+
