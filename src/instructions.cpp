@@ -62,6 +62,10 @@ std::string MIPS::j(std::string address, std::string note)
   return one_arg("j", address, note);
 }
 
+std::string MIPS::jr(int address, std::string note)
+{
+  return one_arg("jr", dress_up(address), note);
+}
 
 std::string MIPS::li(int reg, int value, std::string note)
 {
@@ -71,6 +75,11 @@ std::string MIPS::li(int reg, int value, std::string note)
 std::string MIPS::li(int reg, std::string character, std::string note)
 {
   return two_args("li", dress_up(reg), character, note);
+}
+
+std::string MIPS::move(int dest, int src, std::string note)
+{
+  return two_args("move", dress_up(dest), dress_up(src), note);
 }
 
 std::string MIPS::add(int dest, int src, int value, std::string note)

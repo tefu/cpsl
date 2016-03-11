@@ -300,3 +300,8 @@ LValue* ParseTree::for_head(std::string* ident)
   Symbol::add_variable(*ident, std::make_shared<Integer>());
   return l_value(ident);
 }
+
+ReturnStatement* ParseTree::return_statement(Expression* expr)
+{
+  return new ReturnStatement(expr);
+}

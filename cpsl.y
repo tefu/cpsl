@@ -311,17 +311,17 @@ statement_sequence : statement
                    | statement_sequence SEMICOLON statement
                      { $$ = $1; $$->push_back($3); }
 
-statement : assignment {$$=$1;}
-          | if_statement {$$=$1;}
-          | while_statement {$$=$1;}
-          | repeat_statement {$$=$1;}
-          | for_statement {$$=$1;}
-          | stop_statement { $$ = $1; }
-          | return_statement {$$=nullptr;}
-          | read_statement {$$=$1;}
-          | write_statement { $$ = $1; }
-          | procedure_call {$$=nullptr;}
-          | null_statement { $$=nullptr; }
+statement : assignment         {$$=$1;}
+          | if_statement       {$$=$1;}
+          | while_statement    {$$=$1;}
+          | repeat_statement   {$$=$1;}
+          | for_statement      {$$=$1;}
+          | stop_statement     {$$=$1;}
+          | return_statement   {$$=$1;}
+          | read_statement     {$$=$1;}
+          | write_statement    {$$=$1;}
+          | procedure_call     {$$=nullptr;}
+          | null_statement     {$$=nullptr;}
           ;
 
 assignment : l_value ASSIGNMENT expression { $$ = PT::assign($1, $3); }
@@ -374,7 +374,7 @@ direction : TO { $$=true; }
 stop_statement : STOP { $$ = new StopStatement(); }
                ;
 
-return_statement : RETURN optional_expression
+return_statement : RETURN optional_expression { $$=PT::return_statement($2); }
                  ;
 
 read_statement : READ LEFT_PAREN l_value_list RIGHT_PAREN { $$=PT::read_statement($3); }

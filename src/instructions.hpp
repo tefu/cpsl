@@ -23,6 +23,8 @@ namespace MIPS {
   std::string li(int, std::string, std::string);
   std::string la(int, std::string, std::string);
   std::string j(std::string, std::string);
+  std::string jr(int, std::string);
+  std::string move(int, int, std::string);
   std::string add(int, int, int, std::string);
   std::string addi(int, int, int, std::string);
   std::string sub(int, int, int, std::string);

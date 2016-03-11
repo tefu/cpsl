@@ -140,7 +140,15 @@ std::string StopStatement::gen_asm()
 
 std::string ReturnStatement::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  if(optional_return_value != nullptr)
+  {
+    s << optional_return_value->gen_asm();
+    s << MIPS::move(MIPS::A0, optional_return_value->result(), "Loading a return a value");
+    optional_return_value->release();
+  }
+  s << MIPS::jr(MIPS::RA, "Returning from function");
+  return s.str();
 }
 
 std::string ReadStatement::gen_asm()

@@ -65,7 +65,9 @@ struct StopStatement : ProgramNode {
 };
 
 struct ReturnStatement : ProgramNode {
+  ReturnStatement(Expression* expr) : optional_return_value(expr) {}
   std::string gen_asm();
+  Expression* optional_return_value;
 };
 
 struct ReadStatement : ProgramNode {
