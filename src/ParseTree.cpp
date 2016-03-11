@@ -21,9 +21,9 @@ namespace
   }
 }
 
-ProgramNode* ParseTree::program(ProgramNode* b)
+ProgramNode* ParseTree::program(std::vector<ProgramNode*>* bodies, ProgramNode* main)
 {
-  return b;
+  return new Program(*bodies, main);
 }
 
 Block* ParseTree::block(std::vector<ProgramNode*>* statements)
@@ -58,7 +58,13 @@ FormalParameter* ParseTree::formal_parameter(bool is_var, std::vector<std::strin
   return new FormalParameter(is_var, *argument_list, type);
 }
 
-void ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalParameter*>* parameters)
+FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNode* body)
+{
+  auto function = Symbol::lookup_function(*procedure_name);
+  return new FunctionBlock(function->address, body);
+}
+
+std::string* ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalParameter*>* parameters)
 {
   auto new_function = std::make_shared<Function>(*parameters, std::make_shared<Null>());
   auto duplicate_function = Symbol::lookup_function(*procedure_name);
@@ -89,6 +95,8 @@ void ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalPa
       // TODO: implement reference variables
     }
   }
+
+  return procedure_name;
 }
 
 

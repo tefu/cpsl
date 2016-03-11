@@ -124,6 +124,13 @@ void parsed(std::string term)
 %type <node> statement
 %type <node> assignment
 
+%type <nodeList> optional_proc_or_func_decls
+%type <nodeList> proc_or_func_decls
+%type <node> func_decl
+%type <node> proc_decl
+%type <string_constant> proc_head
+%type <node> body
+
 %type <node> if_statement
 %type <elseifList> optional_else_ifs
 %type <elseifList> else_ifs
@@ -139,17 +146,18 @@ void parsed(std::string term)
 %type <lval> for_head
 %type <boolean> direction
 
+%type <nodeList> statement_sequence
 %type <node> stop_statement
 %type <node> return_statement
 %type <node> read_statement
 %type <node> write_statement
 %type <node> procedure_call
 %type <node> null_statement
-%type <nodeList> statement_sequence
 %type <expr> expression
 %type <expr> optional_expression
 %type <exprList> optional_expression_list
 %type <exprList> expression_list
+
 
 %type <string_constant> simple_type
 %type <string_constant> type
@@ -157,7 +165,7 @@ void parsed(std::string term)
 
 %type <node> var_decl
 %type <node> var_members
-%type <node> proc_head
+
 %type <fparam> formal_parameter
 %type <fparams> formal_parameters
 %type <fparams> some_formal_parameters
@@ -178,7 +186,7 @@ program : optional_constant_decl
           optional_proc_or_func_decls
           block
           DOT
-          {$$ = PT::program($5);
+          {$$ = PT::program($4,$5);
            sout << $$->gen_asm();}
 		  ;
 
@@ -194,14 +202,14 @@ optional_var_decl : var_decl
                    |
                    ;
 
-optional_proc_or_func_decls : proc_or_func_decls
-                            |
+optional_proc_or_func_decls : proc_or_func_decls { $$=$1;}
+                            | { $$=new std::vector<ProgramNode*>(); }
                             ;
 
 proc_or_func_decls : func_decl
-                   | proc_decl
-                   | func_decl proc_or_func_decls
-                   | proc_decl proc_or_func_decls
+                   | proc_decl { $$ = new std::vector<ProgramNode*>; $$->push_back($1); }
+                   | proc_or_func_decls func_decl
+                   | proc_or_func_decls proc_decl { $$ = $1; $$->push_back($2); }
                    ;
 
 constant_decl : CONST definitions
@@ -214,10 +222,10 @@ definitions : definition
 definition : IDENT EQUALITY expression SEMICOLON { PT::ConstDecl($1,$3); }
            ;
 
-proc_decl : proc_head FORWARD SEMICOLON
-          | proc_head body SEMICOLON {  }  /* run body, then pop_table */
+proc_decl : proc_head FORWARD SEMICOLON { $$=nullptr; Symbol::pop_table(); }
+          | proc_head body SEMICOLON { $$=PT::procedure_body($1,$2); }
           ;
-proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON { PT::procedure_decl($2,$4); }
+proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON { $$=PT::procedure_decl($2,$4); }
 
 func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
             COLON type SEMICOLON FORWARD SEMICOLON
@@ -245,7 +253,7 @@ optional_var_or_ref : VAR {$$=true;}
 body : optional_constant_decl
        optional_type_decl
        optional_var_decl
-       block
+       block { $$=$4; }
        ;
 
 block : BEGIN_KW statement_sequence END { $$ = PT::block($2); }
