@@ -18,6 +18,7 @@ namespace Symbol
   std::shared_ptr<Function> lookup_function(std::string);
   void push_table();
   void pop_table();
+  int size_of_last_table_vars();
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP

@@ -3,6 +3,7 @@
 #include "instructions.hpp"
 #include "Register.hpp"
 #include "StringLabel.hpp"
+#include "SymbolTable.hpp"
 
 namespace
 {
@@ -275,22 +276,59 @@ std::shared_ptr<Type> UnaryMinus::data_type() const
 
 std::string FunctionCall::gen_asm()
 {
-  return "";
+  std::stringstream s;
+  auto size_of_vars = Symbol::size_of_last_table_vars();
+  s << MIPS::addi(MIPS::SP, MIPS::SP, -size_of_vars, "Move stack pointer past variables.");
+  auto registers_under_the_frame = Register::clear_all_registers();
+  registers_under_the_frame.push_back(MIPS::RA);
+  registers_under_the_frame.push_back(MIPS::FP);
+
+  auto reg_offset = 0;
+  auto reg_type = std::make_shared<Integer>();
+  for(auto reg: registers_under_the_frame)
+  {
+    reg_offset -= reg_type->word_size();
+    s << MIPS::store_word(reg, reg_offset, MIPS::SP, "Storing register under the frame before a function call");
+  }
+
+  s << MIPS::addi(MIPS::SP, MIPS::SP, reg_offset, "Bringing the stack pointer above the stored registers");
+  s << MIPS::move(MIPS::FP, MIPS::SP, "Placing the frame pointer");
+
+  auto argument_offset = 0;
+  for(auto &expr: exprList)
+  {
+    s << expr->gen_asm();
+    argument_offset -= expr->data_type()->word_size();
+    s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
+    expr->release();
+  }
+  s << MIPS::addi(MIPS::SP, MIPS::SP, argument_offset, "Bringing the stack pointer above the stored arguments");
+  s << MIPS::jal(jump_to, "Jumping to function");
+  s << MIPS::addi(MIPS::SP, MIPS::SP, -argument_offset, "Bringing the stack pointer below the stored arguments");
+  s << MIPS::addi(MIPS::SP, MIPS::SP, -reg_offset, "Bringing the stack pointer below the stored registers");
+
+  for(auto reg: registers_under_the_frame)
+  {
+    s << MIPS::load_word(reg, reg_offset, MIPS::SP, "Loading register that was active before function call");
+    reg_offset += reg_type->word_size();
+  }
+
+  s << MIPS::addi(MIPS::SP, MIPS::SP, size_of_vars, "Move stack pointer under variables from before function.");
+
+  if(return_type->type() != Type::NULL_TYPE)
+  {
+    allocate();
+    s << MIPS::move(result(), MIPS::A0, "Store fuction return type in a register");
+  }
+  return s.str();
 }
 bool FunctionCall::is_constant() const
 {
-  for(auto &expr: *exprList)
-  {
-    if (!expr->is_constant())
-      return false;
-  }
-  return true;
+  return false;
 }
 std::shared_ptr<Type> FunctionCall::data_type() const
 {
-  // TODO: look up type declaration.
-  return std::make_shared<Integer>();
-
+  return return_type;
 }
 
 

@@ -320,7 +320,7 @@ statement : assignment         {$$=$1;}
           | return_statement   {$$=$1;}
           | read_statement     {$$=$1;}
           | write_statement    {$$=$1;}
-          | procedure_call     {$$=nullptr;}
+          | procedure_call     {$$=$1;}
           | null_statement     {$$=nullptr;}
           ;
 
@@ -386,7 +386,7 @@ write_statement : WRITE LEFT_PAREN expression_list RIGHT_PAREN
                  ;
 
 
-procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
+procedure_call : IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN { auto fc=PT::function_call($1,$3); fc->release(); $$=fc;}
                ;
 
 null_statement :
@@ -422,7 +422,7 @@ expression : expression OR expression                  { $$ = PT::logical_or($1,
            | MINUS expression %prec UNARY_MINUS        { $$ = PT::unary_minus($2);}
            | LEFT_PAREN expression RIGHT_PAREN         { $$ = $2; }
            | IDENT LEFT_PAREN optional_expression_list RIGHT_PAREN
-                                                       { $$ = PT::function_call($3); }
+                                                       { $$ = PT::function_call($1,$3); }
            | CHR LEFT_PAREN expression RIGHT_PAREN     { $$ = PT::CHR($3); }
            | ORD LEFT_PAREN expression RIGHT_PAREN     { $$ = PT::ORD($3); }
            | PRED LEFT_PAREN expression RIGHT_PAREN    { $$ = PT::PRED($3); }

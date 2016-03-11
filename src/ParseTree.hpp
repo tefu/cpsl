@@ -30,7 +30,7 @@ namespace ParseTree {
   OperatorModulus* modulus(Expression*, Expression*);
   Negation* negation(Expression*);
   UnaryMinus* unary_minus(Expression*);
-  FunctionCall* function_call(std::vector<Expression*>*);
+  FunctionCall* function_call(std::string*, std::vector<Expression*>*);
   ToChar* CHR(Expression*);
   ToInt* ORD(Expression*);
   Predecessor* PRED(Expression*);

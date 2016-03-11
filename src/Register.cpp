@@ -23,3 +23,22 @@ void Register::release_register(int reg)
 {
   registers_taken.erase(reg);
 }
+
+std::vector<int> Register::clear_all_registers()
+{
+  std::vector<int> cleared_registers;
+  for(auto reg: registers_taken)
+  {
+    cleared_registers.push_back(reg);
+  }
+  registers_taken.clear();
+  return cleared_registers;
+}
+
+void Register::hog_some_registers(std::vector<int> registers)
+{
+  for(auto reg: registers)
+  {
+    registers_taken.insert(reg);
+  }
+}

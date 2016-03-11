@@ -171,11 +171,14 @@ struct UnaryMinus : Expression
 
 struct FunctionCall : Expression
 {
-  FunctionCall(std::vector<Expression*>* el) : exprList(el) {}
+  FunctionCall(std::vector<Expression*> el, std::shared_ptr<Type> rt, std::string jt)
+    : exprList(el), return_type(rt), jump_to(jt) {}
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
-  std::vector<Expression*>* exprList;
+  std::vector<Expression*> exprList;
+  std::shared_ptr<Type> return_type;
+  std::string jump_to;
 };
 
 
@@ -261,10 +264,10 @@ struct LoadExpression : Expression
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
-private:
-  std::shared_ptr<Type> datatype;
   const int address_offset;
   const int starting_address;
+private:
+  std::shared_ptr<Type> datatype;
 
 };
 

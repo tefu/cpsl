@@ -175,9 +175,34 @@ UnaryMinus* ParseTree::unary_minus(Expression* expr)
   return new UnaryMinus(expr);
 }
 
-FunctionCall* ParseTree::function_call(std::vector<Expression*>* exprList)
+FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expression*>* exprList)
 {
-  return new FunctionCall(exprList);
+  auto function = Symbol::lookup_function(*ident);
+  if (function == nullptr)
+  {
+    std::stringstream s;
+    s << "I don't know what the function " << *ident << " is.";
+    yyerror(s.str().c_str());
+  }
+
+  if(exprList->size() != function->parameters.size())
+  {
+    std::stringstream s;
+    s << "Incorrect number of arguments to function " << *ident;
+    yyerror(s.str().c_str());
+  }
+  for(auto i = 0; i < function->parameters.size() && i < exprList->size(); i++)
+  {
+    auto param = function->parameters[i];
+    auto expr = (*exprList)[i];
+    if(param->type->type() != expr->data_type()->type())
+    {
+      std::stringstream s;
+      s << "Incorrect type in function call " << *ident;
+      yyerror(s.str().c_str());
+    }
+  }
+  return new FunctionCall(*exprList, function->return_type, function->address);
 }
 
 ToChar* ParseTree::CHR(Expression* expr)
@@ -290,13 +315,11 @@ ForStatement* ParseTree::for_statement(LValue* var,
     condition = greater_than_or_equal(var->read(), end);
     update = assign(var, PRED(var->read()));
   }
-  Symbol::pop_table();
   return new ForStatement(assignment, condition, statements, update);
 }
 
 LValue* ParseTree::for_head(std::string* ident)
 {
-  Symbol::push_table();
   Symbol::add_variable(*ident, std::make_shared<Integer>());
   return l_value(ident);
 }

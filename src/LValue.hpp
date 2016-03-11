@@ -8,6 +8,7 @@ struct LValue
   virtual std::shared_ptr<Type> get_type() = 0;
   virtual bool is_constant() = 0;
   virtual Expression* read()=0;
+  virtual int size_on_stack();
 };
 
 struct GlobalVariable : LValue
@@ -30,6 +31,7 @@ struct StackVariable : LValue
   virtual std::shared_ptr<Type> get_type();
   virtual bool is_constant();
   virtual Expression* read();
+  virtual int size_on_stack();
 };
 
 struct ArgumentVariable : LValue

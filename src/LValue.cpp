@@ -3,6 +3,11 @@
 #include "Register.hpp"
 
 
+int LValue::size_on_stack()
+{
+  return 0;
+}
+
 /* Variables on the global space
  * ------------------------------------------------------------------------- */
 std::string GlobalVariable::assign(int result_register)
@@ -50,6 +55,11 @@ bool StackVariable::is_constant()
 Expression* StackVariable::read()
 {
   return new LoadExpression{type, address_offset, MIPS::SP};
+}
+
+int StackVariable::size_on_stack()
+{
+  return get_type()->word_size();
 }
 
 /* Arguments

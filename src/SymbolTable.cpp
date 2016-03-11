@@ -66,16 +66,30 @@ namespace
       tables.push_back(first_table);
     }
   }
+
+  bool next_variable_on_stack()
+  {
+    return tables.size() > 1;
+  }
 }
 
 void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
   init_check();
 
   assert (type != nullptr);
-  auto last_table = tables.back();
-  auto var = new GlobalVariable{type, global_offset};
-  last_table.lvalues->emplace(std::string(ident), var);
-  global_offset += type->word_size();
+  SymbolTable& last_table = tables.back();
+  if (next_variable_on_stack())
+  {
+    last_table.stack_offset -= type->word_size();
+    auto var = new StackVariable{type, last_table.stack_offset};
+    last_table.lvalues->emplace(std::string(ident), var);
+  }
+  else
+  {
+    auto var = new GlobalVariable{type, global_offset};
+    last_table.lvalues->emplace(std::string(ident), var);
+    global_offset += type->word_size();
+  }
 }
 
 void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
@@ -84,7 +98,7 @@ void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
 
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
-  last_table.frame_offset += type->word_size();
+  last_table.frame_offset -= type->word_size();
   auto arg = new ArgumentVariable{type, last_table.frame_offset};
   last_table.lvalues->emplace(std::string(ident), arg);
 }
@@ -159,4 +173,15 @@ void Symbol::pop_table()
 {
   init_check();
   tables.pop_back();
+}
+
+int Symbol::size_of_last_table_vars()
+{
+  auto total_size = 0;
+  auto last_table = tables.back();
+  for (auto &pair: *last_table.lvalues)
+  {
+    total_size += pair.second->size_on_stack();
+  }
+  return total_size;
 }
