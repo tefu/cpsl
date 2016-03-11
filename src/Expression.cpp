@@ -292,7 +292,6 @@ std::string FunctionCall::gen_asm()
   }
 
   s << MIPS::addi(MIPS::SP, MIPS::SP, reg_offset, "Bringing the stack pointer above the stored registers");
-  s << MIPS::move(MIPS::FP, MIPS::SP, "Placing the frame pointer");
 
   auto argument_offset = 0;
   for(auto &expr: exprList)
@@ -302,19 +301,24 @@ std::string FunctionCall::gen_asm()
     s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
     expr->release();
   }
+  s << MIPS::move(MIPS::FP, MIPS::SP, "Placing the frame pointer");
   s << MIPS::addi(MIPS::SP, MIPS::SP, argument_offset, "Bringing the stack pointer above the stored arguments");
   s << MIPS::jal(jump_to, "Jumping to function");
   s << MIPS::addi(MIPS::SP, MIPS::SP, -argument_offset, "Bringing the stack pointer below the stored arguments");
   s << MIPS::addi(MIPS::SP, MIPS::SP, -reg_offset, "Bringing the stack pointer below the stored registers");
 
+  reg_offset = 0;
   for(auto reg: registers_under_the_frame)
   {
+    reg_offset -= reg_type->word_size();
     s << MIPS::load_word(reg, reg_offset, MIPS::SP, "Loading register that was active before function call");
-    reg_offset += reg_type->word_size();
   }
 
   s << MIPS::addi(MIPS::SP, MIPS::SP, size_of_vars, "Move stack pointer under variables from before function.");
 
+  registers_under_the_frame.pop_back();
+  registers_under_the_frame.pop_back();
+  Register::hog_some_registers(registers_under_the_frame);
   if(return_type->type() != Type::NULL_TYPE)
   {
     allocate();

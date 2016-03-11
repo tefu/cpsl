@@ -1,6 +1,5 @@
 #include <assert.h>
 #include "SymbolTable.hpp"
-
 namespace
 {
   template<typename T>

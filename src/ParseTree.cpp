@@ -60,6 +60,7 @@ FormalParameter* ParseTree::formal_parameter(bool is_var, std::vector<std::strin
 
 FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNode* body)
 {
+  Symbol::pop_table();
   auto function = Symbol::lookup_function(*procedure_name);
   return new FunctionBlock(function->address, body);
 }
@@ -185,7 +186,13 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
     yyerror(s.str().c_str());
   }
 
-  if(exprList->size() != function->parameters.size())
+  auto total_parameters_expected = 0;
+  for(auto &args: function->parameters)
+  {
+    total_parameters_expected += args->arguments.size();
+  }
+
+  if(exprList->size() != total_parameters_expected)
   {
     std::stringstream s;
     s << "Incorrect number of arguments to function " << *ident;

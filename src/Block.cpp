@@ -52,6 +52,7 @@ std::string FunctionBlock::gen_asm()
   std::stringstream s;
   s << MIPS::label(function_label, "");
   s << block->gen_asm();
+  s << MIPS::jr(MIPS::RA, "Default return from function");
 
   return s.str();
 }
