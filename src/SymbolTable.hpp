@@ -10,6 +10,7 @@
 namespace Symbol
 {
   void add_variable(std::string, std::shared_ptr<Type>);
+  void add_argument(std::string, std::shared_ptr<Type>);
   void add_constant(std::string, Expression*);
   void add_function(std::string, std::shared_ptr<Function>);
   LValue* lookup(std::string);

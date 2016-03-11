@@ -257,13 +257,14 @@ struct BoolLiteral : Expression
 
 struct LoadExpression : Expression
 {
-  LoadExpression(std::shared_ptr<Type> t, int a) : datatype(t), address_offset(a) {}
+  LoadExpression(std::shared_ptr<Type> t, int a, int sa) : datatype(t), address_offset(a), starting_address(sa) {}
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
 private:
   std::shared_ptr<Type> datatype;
   const int address_offset;
+  const int starting_address;
 
 };
 

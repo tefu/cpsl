@@ -16,6 +16,8 @@ namespace MIPS {
   const int A3=7;
   const int GP=28;
   const int SP=29;
+  const int FP=30;
+  const int RA=31;
 
   std::string li(int, int, std::string);
   std::string li(int, std::string, std::string);

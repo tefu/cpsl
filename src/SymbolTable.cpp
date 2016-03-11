@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "SymbolTable.hpp"
 
 namespace
@@ -15,18 +16,21 @@ namespace
     }
   }
 
+  auto global_offset = 0;
+
   struct SymbolTable
   {
-    SymbolTable(int g_offset) : variables(std::make_shared<std::map<std::string, GlobalVariable *>>()),
-                    constants(std::make_shared<std::map<std::string, Constant*>>()),
-                    global_offset(g_offset),
-                    types(std::make_shared<std::map<std::string, std::shared_ptr<Type>>>()),
-                    functions(std::make_shared<std::map<std::string, std::shared_ptr<Function>>>()){}
-    int global_offset;
+    SymbolTable(int s_offset, int f_offset)
+            : lvalues(std::make_shared<std::map<std::string, LValue*>>()),
+              stack_offset(s_offset),
+              frame_offset(f_offset),
+              types(std::make_shared<std::map<std::string, std::shared_ptr<Type>>>()),
+              functions(std::make_shared<std::map<std::string, std::shared_ptr<Function>>>()){}
+    int stack_offset;
+    int frame_offset;
     std::shared_ptr<std::map<std::string, std::shared_ptr<Type>>> types;
     std::shared_ptr<std::map<std::string, std::shared_ptr<Function>>> functions;
-    std::shared_ptr<std::map<std::string, GlobalVariable *>> variables;
-    std::shared_ptr<std::map<std::string, Constant*>> constants;
+    std::shared_ptr<std::map<std::string, LValue*>> lvalues;
 
     std::shared_ptr<Type> parse_type(std::string raw_type)
     {
@@ -38,14 +42,9 @@ namespace
       return find_in_map(*functions, name);
     }
 
-    GlobalVariable * find_variable(std::string ident)
+    LValue* find_lvalue(std::string ident)
     {
-      return find_in_map(*variables, ident);
-    }
-
-    Constant* find_constant(std::string ident)
-    {
-      return find_in_map(*constants, ident);
+      return find_in_map(*lvalues, ident);
     }
   };
 
@@ -55,11 +54,11 @@ namespace
   {
     if(tables.empty())
     {
-      SymbolTable first_table(0);
-      first_table.constants->emplace(std::string("true"), new Constant(new BoolLiteral(true)));
-      first_table.constants->emplace(std::string("True"), new Constant(new BoolLiteral(true)));
-      first_table.constants->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
-      first_table.constants->emplace(std::string("False"), new Constant(new BoolLiteral(false)));
+      SymbolTable first_table(0,0);
+      first_table.lvalues->emplace(std::string("true"), new Constant(new BoolLiteral(true)));
+      first_table.lvalues->emplace(std::string("True"), new Constant(new BoolLiteral(true)));
+      first_table.lvalues->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
+      first_table.lvalues->emplace(std::string("False"), new Constant(new BoolLiteral(false)));
       first_table.types->emplace(std::string("integer"), std::make_shared<Integer>());
       first_table.types->emplace(std::string("char"), std::make_shared<Character>());
       first_table.types->emplace(std::string("boolean"), std::make_shared<Boolean>());
@@ -72,20 +71,29 @@ namespace
 void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
   init_check();
 
-  if (type != nullptr)
-  {
-    SymbolTable& last_table = tables.back();
-    auto var = new GlobalVariable{type, last_table.global_offset};
-    last_table.variables->emplace(std::string(ident), var);
-    last_table.global_offset += type->word_size();
-  }
+  assert (type != nullptr);
+  auto last_table = tables.back();
+  auto var = new GlobalVariable{type, global_offset};
+  last_table.lvalues->emplace(std::string(ident), var);
+  global_offset += type->word_size();
+}
+
+void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
+{
+  init_check();
+
+  assert (type != nullptr);
+  SymbolTable& last_table = tables.back();
+  last_table.frame_offset += type->word_size();
+  auto arg = new ArgumentVariable{type, last_table.frame_offset};
+  last_table.lvalues->emplace(std::string(ident), arg);
 }
 
 void Symbol::add_constant(std::string ident, Expression* expr)
 {
   init_check();
   auto last_table = tables.back();
-  last_table.constants->emplace(std::string(ident), new Constant(expr));
+  last_table.lvalues->emplace(std::string(ident), new Constant(expr));
 }
 
 void Symbol::add_function(std::string name, std::shared_ptr<Function> func)
@@ -102,13 +110,9 @@ LValue* Symbol::lookup(std::string ident)
   for (size_t i = tables.size(); i-- > 0;)
   {
     auto table = tables[i];
-    auto var = table.find_variable(ident);
-    if (var != nullptr)
-      return var;
-
-    auto constant = table.find_constant(ident);
-    if (constant != nullptr)
-      return constant;
+    auto lvalue = table.find_lvalue(ident);
+    if (lvalue != nullptr)
+      return lvalue;
   }
 
   return nullptr;
@@ -147,7 +151,7 @@ void Symbol::push_table()
   init_check();
 
   auto last_table = tables.back();
-  SymbolTable new_table(last_table.global_offset);
+  SymbolTable new_table(0,0);
   tables.push_back(new_table);
 }
 

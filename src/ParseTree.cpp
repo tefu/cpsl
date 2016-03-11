@@ -73,6 +73,22 @@ void ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalPa
     Symbol::add_function(*procedure_name, new_function);
   }
 
+  Symbol::push_table();
+
+  for(auto &param: *parameters)
+  {
+    if (param->is_variable)
+    {
+      for (auto &arg_name: param->arguments)
+      {
+        Symbol::add_argument(arg_name, param->type);
+      }
+    }
+    else
+    {
+      // TODO: implement reference variables
+    }
+  }
 }
 
 
