@@ -7,7 +7,7 @@ bool Function::same_signature(const Function& other_func)
 
   for(size_t i = 0; i < parameters.size() && i < other_func.parameters.size(); i++)
   {
-    if (!(parameters[i] == other_func.parameters[i]))
+    if (!(*(parameters[i]) == *(other_func. parameters[i])))
       return false;
   }
 
