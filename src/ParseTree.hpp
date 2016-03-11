@@ -14,7 +14,10 @@ namespace ParseTree {
   void ConstDecl(std::string*, Expression*);
   FormalParameter* formal_parameter(bool is_var, std::vector<std::string>*, std::string*);
   FunctionBlock* procedure_body(std::string* procedure_name, ProgramNode* body);
-  std::string* procedure_decl(std::string*,std::vector<FormalParameter*>*);
+  FunctionBlock* function_body(std::string* procedure_name, ProgramNode* body);
+  std::string* function_decl(std::string*,std::vector<FormalParameter*>*, std::shared_ptr<Type>);
+  std::string* function_decl(std::string*,std::vector<FormalParameter*>*, std::string*);
+
   LogicalOr* logical_or(Expression*, Expression*);
   LogicalAnd* logical_and(Expression*, Expression*);
   Equality* equality(Expression*, Expression*);

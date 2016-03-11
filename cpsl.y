@@ -128,6 +128,7 @@ void parsed(std::string term)
 %type <nodeList> proc_or_func_decls
 %type <node> func_decl
 %type <node> proc_decl
+%type <string_constant> func_head
 %type <string_constant> proc_head
 %type <node> body
 
@@ -206,9 +207,9 @@ optional_proc_or_func_decls : proc_or_func_decls { $$=$1;}
                             | { $$=new std::vector<ProgramNode*>(); }
                             ;
 
-proc_or_func_decls : func_decl
+proc_or_func_decls : func_decl { $$= new std::vector<ProgramNode*>; $$->push_back($1); }
                    | proc_decl { $$ = new std::vector<ProgramNode*>; $$->push_back($1); }
-                   | proc_or_func_decls func_decl
+                   | proc_or_func_decls func_decl { $$ = $1; $$->push_back($2); }
                    | proc_or_func_decls proc_decl { $$ = $1; $$->push_back($2); }
                    ;
 
@@ -225,14 +226,18 @@ definition : IDENT EQUALITY expression SEMICOLON { PT::ConstDecl($1,$3); }
 proc_decl : proc_head FORWARD SEMICOLON { $$=nullptr; Symbol::pop_table(); }
           | proc_head body SEMICOLON { $$=PT::procedure_body($1,$2); }
           ;
-proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON { $$=PT::procedure_decl($2,$4); }
 
-func_decl : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
-            COLON type SEMICOLON FORWARD SEMICOLON
-          | FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN
-            COLON type SEMICOLON body SEMICOLON
+proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON
+            { $$=PT::function_decl($2,$4,std::make_shared<Null>()); }
           ;
 
+func_decl : func_head FORWARD SEMICOLON { $$=nullptr; Symbol::pop_table(); }
+          | func_head body SEMICOLON { $$=PT::procedure_body($1,$2);}
+          ;
+
+func_head : FUNCTION IDENT LEFT_PAREN formal_parameters RIGHT_PAREN COLON type SEMICOLON
+          { $$=PT::function_decl($2,$4,$7);}
+          ;
 
 formal_parameters : some_formal_parameters { $$=$1; }
                   | { $$=new std::vector<FormalParameter*>; }

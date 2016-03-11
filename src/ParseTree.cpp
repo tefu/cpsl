@@ -65,19 +65,19 @@ FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNod
   return new FunctionBlock(function->address, body);
 }
 
-std::string* ParseTree::procedure_decl(std::string* procedure_name, std::vector<FormalParameter*>* parameters)
+std::string* ParseTree::function_decl(std::string* function_name, std::vector<FormalParameter*>* parameters, std::shared_ptr<Type> type)
 {
-  auto new_function = std::make_shared<Function>(*parameters, std::make_shared<Null>());
-  auto duplicate_function = Symbol::lookup_function(*procedure_name);
+  auto new_function = std::make_shared<Function>(*parameters, type);
+  auto duplicate_function = Symbol::lookup_function(*function_name);
   if (duplicate_function != nullptr && !(new_function->same_signature(*duplicate_function)))
   {
     std::stringstream s;
-    s << "Error: " << *procedure_name << " is already a function with a different signature.";
+    s << "Error: " << *function_name << " is already a function with a different signature.";
     yyerror(s.str().c_str());
   }
   else
   {
-    Symbol::add_function(*procedure_name, new_function);
+    Symbol::add_function(*function_name, new_function);
   }
 
   Symbol::push_table();
@@ -97,8 +97,14 @@ std::string* ParseTree::procedure_decl(std::string* procedure_name, std::vector<
     }
   }
 
-  return procedure_name;
+  return function_name;
 }
+
+std::string* ParseTree::function_decl(std::string* function_name,std::vector<FormalParameter*>* parameters, std::string* type)
+{
+  return function_decl(function_name, parameters, find_type(*type));
+}
+
 
 
 LogicalOr* ParseTree::logical_or(Expression* left, Expression* right)
