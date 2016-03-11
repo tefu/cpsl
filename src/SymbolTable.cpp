@@ -174,7 +174,7 @@ void Symbol::pop_table()
   tables.pop_back();
 }
 
-int Symbol::size_of_last_table_vars()
+int Symbol::size_of_stack()
 {
   auto total_size = 0;
   auto last_table = tables.back();
