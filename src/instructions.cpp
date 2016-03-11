@@ -45,7 +45,52 @@ namespace
 
   std::string dress_up(int address)
   {
-    return "$" + stringify(address);
+    std::stringstream s;
+    s << "$";
+
+
+    switch(address)
+    {
+      case MIPS::ZERO:
+        s << "zero";
+        break;
+      case MIPS::AT:
+        s << "at";
+        break;
+      case MIPS::V0:
+        s << "v0";
+        break;
+      case MIPS::V1:
+        s << "v1";
+        break;
+      case MIPS::A0:
+        s << "a0";
+        break;
+      case MIPS::A1:
+        s << "a1";
+        break;
+      case MIPS::A2:
+        s << "a2";
+        break;
+      case MIPS::A3:
+        s << "a3";
+        break;
+      case MIPS::GP:
+        s << "gp";
+        break;
+      case MIPS::SP:
+        s << "sp";
+        break;
+      case MIPS::FP:
+        s << "fp";
+        break;
+      case MIPS::RA:
+        s << "ra";
+        break;
+      default:
+        s << stringify(address);
+    }
+    return s.str();
   }
 
 
