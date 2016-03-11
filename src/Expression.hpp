@@ -171,14 +171,15 @@ struct UnaryMinus : Expression
 
 struct FunctionCall : Expression
 {
-  FunctionCall(std::vector<Expression*> el, std::shared_ptr<Type> rt, std::string jt)
-    : exprList(el), return_type(rt), jump_to(jt) {}
+  FunctionCall(std::vector<Expression*> el, std::shared_ptr<Type> rt, std::string jt, int sov)
+    : exprList(el), return_type(rt), jump_to(jt), size_of_vars(sov) {}
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
   std::vector<Expression*> exprList;
   std::shared_ptr<Type> return_type;
   std::string jump_to;
+  const int size_of_vars;
 };
 
 

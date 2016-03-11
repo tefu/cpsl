@@ -215,7 +215,7 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
       yyerror(s.str().c_str());
     }
   }
-  return new FunctionCall(*exprList, function->return_type, function->address);
+  return new FunctionCall(*exprList, function->return_type, function->address, Symbol::size_of_last_table_vars());
 }
 
 ToChar* ParseTree::CHR(Expression* expr)

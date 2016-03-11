@@ -277,7 +277,6 @@ std::shared_ptr<Type> UnaryMinus::data_type() const
 std::string FunctionCall::gen_asm()
 {
   std::stringstream s;
-  auto size_of_vars = Symbol::size_of_last_table_vars();
   s << MIPS::addi(MIPS::SP, MIPS::SP, -size_of_vars, "Move stack pointer past variables.");
   auto registers_under_the_frame = Register::clear_all_registers();
   registers_under_the_frame.push_back(MIPS::RA);

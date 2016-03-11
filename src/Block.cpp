@@ -10,10 +10,11 @@ std::string Program::gen_asm()
   std::stringstream s;
   auto global_label = std::string("global_address");
   s << MIPS::text()
-  << ".globl main\n"
-  << MIPS::la(MIPS::GP, global_label, "Initializing the global pointer");
+    << ".globl main\n";
 
   s << MIPS::label("main","");
+  s << MIPS::la(MIPS::GP, global_label, "Initializing the global pointer");
+  s << MIPS::move(MIPS::FP, MIPS::SP, "Initialize frame pointer");
   s << program->gen_asm();
   s << MIPS::system_call(10);
 
