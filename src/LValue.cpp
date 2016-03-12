@@ -86,6 +86,32 @@ Expression* ArgumentVariable::read()
   return new LoadExpression{type, address_offset, MIPS::FP};
 }
 
+std::string RefArgument::assign(int result_register)
+{
+  std::stringstream s;
+  auto ref_address = Register::allocate_register();
+  s << MIPS::load_word(ref_address, address_offset, MIPS::FP, "Loading a reference variable's address");
+  s << MIPS::store_word(result_register, 0, ref_address, "Assigning to a reference variable");
+  Register::release_register(ref_address);
+  return s.str();
+}
+
+std::shared_ptr<Type> RefArgument::get_type()
+{
+  return type;
+}
+
+bool RefArgument::is_constant()
+{
+  return false;
+}
+
+Expression* RefArgument::read()
+{
+  return new RefExpression{type, address_offset, MIPS::FP};
+}
+
+
 
 /* Constants
  * ------------------------------------------------------------------------- */

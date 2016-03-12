@@ -1,4 +1,3 @@
-#include <set>
 #include "Expression.hpp"
 #include "instructions.hpp"
 #include "Register.hpp"
@@ -46,6 +45,17 @@ void Expression::release()
   Register::release_register(result_reg);
   result_reg = NULL_REGISTER;
 }
+
+bool Expression::can_be_referenced()
+{
+  return false;
+}
+
+std::string Expression::get_address()
+{
+  return MIPS::error("Cannot get store the address of this expression");
+}
+
 
 /* Binary Operators
    ------------------------------------------------------------------- */
@@ -277,7 +287,7 @@ std::shared_ptr<Type> UnaryMinus::data_type() const
 std::string FunctionCall::gen_asm()
 {
   std::stringstream s;
-  s << MIPS::addi(MIPS::SP, MIPS::SP, -size_of_vars, "Move stack pointer past variables.");
+  s << MIPS::addi(MIPS::SP, MIPS::SP, -size_of_vars, "Move stack pointer past variables");
   auto registers_under_the_frame = Register::clear_all_registers();
   registers_under_the_frame.push_back(MIPS::RA);
   registers_under_the_frame.push_back(MIPS::FP);
@@ -293,10 +303,20 @@ std::string FunctionCall::gen_asm()
   s << MIPS::addi(MIPS::SP, MIPS::SP, reg_offset, "Bringing the stack pointer above the stored registers");
 
   auto argument_offset = 0;
-  for(auto &expr: exprList)
+  for(auto index = 0; index < exprList.size() && index < parameters.size(); index++)
   {
-    s << expr->gen_asm();
-    argument_offset -= expr->data_type()->word_size();
+    auto expr = exprList[index];
+    auto param = parameters[index];
+    if (param->is_variable)
+    {
+      s << expr->gen_asm();
+      argument_offset -= expr->data_type()->word_size();
+    }
+    else
+    {
+      s << expr->get_address();
+      argument_offset -= Type::ADDRESS_SIZE;
+    }
     s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
     expr->release();
   }
@@ -313,7 +333,7 @@ std::string FunctionCall::gen_asm()
     s << MIPS::load_word(reg, reg_offset, MIPS::SP, "Loading register that was active before function call");
   }
 
-  s << MIPS::addi(MIPS::SP, MIPS::SP, size_of_vars, "Move stack pointer under variables from before function.");
+  s << MIPS::addi(MIPS::SP, MIPS::SP, size_of_vars, "Move stack pointer under variables from before function");
 
   registers_under_the_frame.pop_back();
   registers_under_the_frame.pop_back();
@@ -504,4 +524,48 @@ bool LoadExpression::is_constant() const
 std::shared_ptr<Type> LoadExpression::data_type() const
 {
   return datatype;
+}
+
+bool LoadExpression::can_be_referenced()
+{
+  return true;
+}
+
+std::string LoadExpression::get_address()
+{
+  allocate();
+  return  MIPS::addi(result(), starting_address, address_offset, "Loading an address");
+}
+
+
+
+std::string RefExpression::gen_asm()
+{
+  std::stringstream s;
+  allocate();
+
+  s << MIPS::load_word(result(), address_offset, starting_address, "Loading a reference address");
+  s << MIPS::load_word(result(), 0, result(), "Loading a reference variable");
+  return s.str();
+}
+
+bool RefExpression::is_constant() const
+{
+  return false;
+}
+
+std::shared_ptr<Type> RefExpression::data_type() const
+{
+  return datatype;
+}
+
+bool RefExpression::can_be_referenced()
+{
+  return true;
+}
+
+std::string RefExpression::get_address()
+{
+  allocate();
+  return  MIPS::addi(result(), starting_address, address_offset, "Loading an address");
 }

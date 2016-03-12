@@ -3,6 +3,7 @@
 #include <string>
 
 struct Type {
+  static const int ADDRESS_SIZE = 4;
   virtual std::string write_out(int register) const=0;
   virtual std::string read_in(int register) const=0;
   virtual std::string type() const=0;

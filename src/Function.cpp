@@ -1,5 +1,23 @@
 #include "Function.hpp"
 
+namespace
+{
+  template<typename F>
+  bool all_correct(F correct, Function func, std::vector<Expression*> exprList)
+  {
+    for(auto i = 0; i < func.parameters.size() && i < exprList.size(); i++)
+      {
+        auto param = func.parameters[i];
+        auto expr = exprList[i];
+        if(!correct(param,expr))
+        {
+          return false;
+        }
+      }
+    return true;
+  }
+}
+
 bool Function::same_signature(const Function& other_func)
 {
   if (parameters.size() != other_func.parameters.size())
@@ -14,27 +32,16 @@ bool Function::same_signature(const Function& other_func)
   return true;
 }
 
-
 bool Function::correct_types(std::vector<Expression*> exprList)
 {
-  for(auto i = 0; i < parameters.size() && i < exprList.size(); i++)
-  {
-    auto param = parameters[i];
-    auto expr = exprList[i];
-    if(!(*(param->type) == *(expr->data_type())))
-    {
-      return false;
-    }
-  }
-  return true;
+  return all_correct([](FormalParameter* param, Expression* expr){
+      return param->type->type() == expr->data_type()->type();
+    }, *this, exprList);
 }
 
-
-bool FormalParameter::operator==(const FormalParameter& other_param)
+bool Function::correct_references(std::vector<Expression*> exprList)
 {
-  bool same_var = is_variable == other_param.is_variable;
-  bool same_type = *type == *other_param.type;
-  bool same_arg = argument == other_param.argument;
-
-  return same_var && same_type && same_arg;
+  return all_correct([](FormalParameter* param, Expression* expr){
+      return (param->is_variable || expr->can_be_referenced());
+    }, *this, exprList);
 }

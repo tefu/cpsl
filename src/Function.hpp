@@ -6,17 +6,7 @@
 #include "Type.hpp"
 #include "StringLabel.hpp"
 #include "Expression.hpp"
-
-struct FormalParameter
-{
-  FormalParameter(bool iv, std::string arg, std::shared_ptr<Type> t)
-          : is_variable(iv), argument(arg), type(t) {}
-  bool is_variable;
-  std::string argument;
-  std::shared_ptr<Type> type;
-  bool operator==(const FormalParameter&);
-};
-
+#include "FormalParameter.hpp"
 
 struct Function
 {
@@ -29,6 +19,7 @@ struct Function
   std::shared_ptr<Type> return_type;
   bool same_signature(const Function&);
   bool correct_types(std::vector<Expression*>);
+  bool correct_references(std::vector<Expression*>);
 
 };
 

@@ -45,6 +45,18 @@ struct ArgumentVariable : LValue
   virtual Expression* read();
 };
 
+struct RefArgument : LValue
+{
+  RefArgument(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
+  const std::shared_ptr<Type> type;
+  const int address_offset;
+  virtual std::string assign(int result_register);
+  virtual std::shared_ptr<Type> get_type();
+  virtual bool is_constant();
+  virtual Expression* read();
+};
+
+
 struct Constant: LValue
 {
   Constant(Expression* e) : result(e) {}

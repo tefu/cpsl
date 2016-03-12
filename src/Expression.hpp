@@ -5,6 +5,7 @@
 #include <memory>
 #include "ProgramNode.hpp"
 #include "Type.hpp"
+#include "FormalParameter.hpp"
 
 struct Expression : ProgramNode
 {
@@ -14,6 +15,8 @@ struct Expression : ProgramNode
   virtual int result() const;
   virtual void allocate();
   virtual void release();
+  virtual bool can_be_referenced();
+  virtual std::string get_address();
   static const int NULL_REGISTER = -1;
 protected:
   int result_reg=NULL_REGISTER;
@@ -171,11 +174,16 @@ struct UnaryMinus : Expression
 
 struct FunctionCall : Expression
 {
-  FunctionCall(std::vector<Expression*> el, std::shared_ptr<Type> rt, std::string jt, int sov)
-    : exprList(el), return_type(rt), jump_to(jt), size_of_vars(sov) {}
+  FunctionCall(std::vector<FormalParameter*> fparams,
+               std::vector<Expression*> el,
+               std::shared_ptr<Type> rt,
+               std::string jt,
+               int sov)
+    : parameters(fparams), exprList(el), return_type(rt), jump_to(jt), size_of_vars(sov) {}
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
+  std::vector<FormalParameter*> parameters;
   std::vector<Expression*> exprList;
   std::shared_ptr<Type> return_type;
   std::string jump_to;
@@ -265,12 +273,26 @@ struct LoadExpression : Expression
   std::string gen_asm();
   bool is_constant() const;
   std::shared_ptr<Type> data_type() const;
+  bool can_be_referenced();
+  std::string get_address();
   const int address_offset;
   const int starting_address;
 private:
   std::shared_ptr<Type> datatype;
-
 };
 
+struct RefExpression : Expression
+{
+  RefExpression(std::shared_ptr<Type> t, int a, int sa) : datatype(t), address_offset(a), starting_address(sa) {}
+  std::string gen_asm();
+  bool is_constant() const;
+  std::shared_ptr<Type> data_type() const;
+  bool can_be_referenced();
+  std::string get_address();
+  const int address_offset;
+  const int starting_address;
+private:
+  std::shared_ptr<Type> datatype;
+};
 
 #endif //CPSL_EXPRESSION_H

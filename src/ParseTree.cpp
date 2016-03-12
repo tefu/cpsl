@@ -94,7 +94,7 @@ std::string* ParseTree::function_decl(std::string* function_name, std::vector<Fo
     }
     else
     {
-      // TODO: implement reference variables
+      Symbol::add_reference(param->argument, param->type);
     }
   }
 
@@ -207,7 +207,14 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
     yyerror(s.str().c_str());
   }
 
-  return new FunctionCall(*exprList, function->return_type, function->address, Symbol::size_of_stack());
+  if (!function->correct_references(*exprList))
+  {
+    std::stringstream s;
+    s << "Cannot send value as a reference in function call " << *ident;
+    yyerror(s.str().c_str());
+  }
+
+  return new FunctionCall(function->parameters, *exprList, function->return_type, function->address, Symbol::size_of_stack());
 }
 
 ToChar* ParseTree::CHR(Expression* expr)

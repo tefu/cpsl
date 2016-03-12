@@ -102,6 +102,17 @@ void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
   last_table.lvalues->emplace(std::string(ident), arg);
 }
 
+void Symbol::add_reference(std::string ident, std::shared_ptr<Type> type)
+{
+  init_check();
+
+  assert (type != nullptr);
+  SymbolTable& last_table = tables.back();
+  last_table.frame_offset -= Type::ADDRESS_SIZE;
+  auto arg = new RefArgument{type, last_table.frame_offset};
+  last_table.lvalues->emplace(std::string(ident), arg);
+}
+
 void Symbol::add_constant(std::string ident, Expression* expr)
 {
   init_check();
