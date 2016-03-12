@@ -98,7 +98,7 @@ void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
   last_table.frame_offset -= type->word_size();
-  auto arg = new ArgumentVariable{type, last_table.frame_offset};
+  auto arg = new VarArgument{type, last_table.frame_offset};
   last_table.lvalues->emplace(std::string(ident), arg);
 }
 

@@ -64,24 +64,24 @@ int StackVariable::size_on_stack()
 
 /* Arguments
  * ------------------------------------------------------------------------- */
-std::string ArgumentVariable::assign(int result_register)
+std::string VarArgument::assign(int result_register)
 {
   std::stringstream s;
   s << MIPS::store_word(result_register, address_offset, MIPS::FP, "Assigning to an argument variable");
   return s.str();
 }
 
-std::shared_ptr<Type> ArgumentVariable::get_type()
+std::shared_ptr<Type> VarArgument::get_type()
 {
   return type;
 }
 
-bool ArgumentVariable::is_constant()
+bool VarArgument::is_constant()
 {
   return false;
 }
 
-Expression* ArgumentVariable::read()
+Expression*VarArgument::read()
 {
   return new LoadExpression{type, address_offset, MIPS::FP};
 }

@@ -34,9 +34,9 @@ struct StackVariable : LValue
   virtual int size_on_stack();
 };
 
-struct ArgumentVariable : LValue
+struct VarArgument : LValue
 {
-  ArgumentVariable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
+  VarArgument(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
   const std::shared_ptr<Type> type;
   const int address_offset;
   virtual std::string assign(int result_register);
