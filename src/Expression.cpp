@@ -567,5 +567,5 @@ bool RefExpression::can_be_referenced()
 std::string RefExpression::get_address()
 {
   allocate();
-  return  MIPS::addi(result(), starting_address, address_offset, "Loading an address");
+  return MIPS::load_word(result(), address_offset, starting_address, "Loading a referenced address");
 }
