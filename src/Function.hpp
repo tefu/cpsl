@@ -5,13 +5,14 @@
 #include <memory>
 #include "Type.hpp"
 #include "StringLabel.hpp"
+#include "Expression.hpp"
 
 struct FormalParameter
 {
-  FormalParameter(bool iv, std::vector<std::string> args, std::shared_ptr<Type> t)
-          : is_variable(iv), arguments(args), type(t) {}
+  FormalParameter(bool iv, std::string arg, std::shared_ptr<Type> t)
+          : is_variable(iv), argument(arg), type(t) {}
   bool is_variable;
-  std::vector<std::string> arguments;
+  std::string argument;
   std::shared_ptr<Type> type;
   bool operator==(const FormalParameter&);
 };
@@ -27,6 +28,7 @@ struct Function
   std::string address;
   std::shared_ptr<Type> return_type;
   bool same_signature(const Function&);
+  bool correct_types(std::vector<Expression*>);
 
 };
 

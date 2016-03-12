@@ -318,7 +318,7 @@ std::string FunctionCall::gen_asm()
   registers_under_the_frame.pop_back();
   registers_under_the_frame.pop_back();
   Register::hog_some_registers(registers_under_the_frame);
-  if(return_type->type() != Type::NULL_TYPE)
+  if(return_type->type() != "null")
   {
     allocate();
     s << MIPS::move(result(), MIPS::A0, "Store fuction return type in a register");
@@ -386,7 +386,7 @@ namespace
     std::stringstream s;
     s << src->gen_asm();
     dest->allocate();
-    s << ((src->data_type()->type() == Type::INTEGER) ?
+    s << ((src->data_type()->type() == "integer") ?
          MIPS::addi(dest->result(), src->result(), to_add, int_note) :
          MIPS::bit_flip(dest->result(), src->result(), "Flipping a boolean"));
 

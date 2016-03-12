@@ -167,7 +167,7 @@ void parsed(std::string term)
 %type <node> var_decl
 %type <node> var_members
 
-%type <fparam> formal_parameter
+%type <fparams> formal_parameter
 %type <fparams> formal_parameters
 %type <fparams> some_formal_parameters
 %type <boolean> optional_var_or_ref
@@ -243,8 +243,9 @@ formal_parameters : some_formal_parameters { $$=$1; }
                   | { $$=new std::vector<FormalParameter*>; }
                   ;
 
-some_formal_parameters : formal_parameter { $$=new std::vector<FormalParameter*>; $$->push_back($1); }
-                       | some_formal_parameters SEMICOLON formal_parameter { $$=$1; $$->push_back($3); }
+some_formal_parameters : formal_parameter { $$=$1; }
+                       | some_formal_parameters SEMICOLON formal_parameter
+                       {  $$=$1; $$->insert($$->end(),$3->begin(),$3->end()); }
                        ;
 
 formal_parameter : optional_var_or_ref ident_list COLON type { $$=PT::formal_parameter($1,$2,$4); }

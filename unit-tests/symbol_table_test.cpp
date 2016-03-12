@@ -6,14 +6,14 @@
 TEST_CASE("Symbol table works")
 {
   Integer my_int{};
-  REQUIRE(my_int.type() == Type::INTEGER);
+  REQUIRE(my_int.type() == "integer");
   Symbol::add_variable(std::string("x"), std::make_shared<Integer>());
 
 
   auto x_var = Symbol::lookup("x");
   REQUIRE(x_var != nullptr);
   REQUIRE(x_var->is_constant() == false);
-  REQUIRE(x_var->get_type()->type() == Type::INTEGER);
+  REQUIRE(x_var->get_type()->type() == "integer");
 
   Symbol::push_table();
   Symbol::add_variable(std::string("y"), std::make_shared<Boolean>());
@@ -21,7 +21,7 @@ TEST_CASE("Symbol table works")
   auto y_var = Symbol::lookup("y");
   REQUIRE(y_var != nullptr);
   REQUIRE(y_var->is_constant() == false);
-  REQUIRE(y_var->get_type()->type() == Type::BOOL);
+  REQUIRE(y_var->get_type()->type() == "bool");
 
   Symbol::pop_table();
   auto non_existant_y = Symbol::lookup("y");
@@ -31,5 +31,5 @@ TEST_CASE("Symbol table works")
   auto z_const = Symbol::lookup("z");
   REQUIRE(z_const != nullptr);
   REQUIRE(z_const->is_constant());
-  REQUIRE(z_const->get_type()->type() == Type::STRING);
+  REQUIRE(z_const->get_type()->type() == "string");
 }

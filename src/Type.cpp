@@ -25,6 +25,12 @@ int Type::word_size() const
   return 4;
 }
 
+bool Type::operator==(const Type& other_type)
+{
+  return type() == other_type.type();
+}
+
+
 
 std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
@@ -35,8 +41,8 @@ std::string Integer::read_in(int register_location) const
   return read_with_call(register_location, 5, "Reading in an integer");
 }
 
-Type::Basic Integer::type() const {
-  return Basic::INTEGER;
+std::string Integer::type() const {
+  return "integer";
 }
 
 std::string StringConstant::write_out(int register_location) const {
@@ -48,8 +54,8 @@ std::string StringConstant::read_in(int register_location) const
   return MIPS::error("cannot read in a string");
 }
 
-Type::Basic StringConstant::type() const {
-  return Basic::STRING;
+std::string StringConstant::type() const {
+  return "string";
 }
 
 std::string Character::write_out(int register_location) const {
@@ -61,8 +67,8 @@ std::string Character::read_in(int register_location) const
   return read_with_call(register_location, 12, "Reading in a character");
 }
 
-Type::Basic Character::type() const {
-  return Basic::CHAR;
+std::string Character::type() const {
+  return "char";
 }
 
 std::string Boolean::write_out(int register_location) const {
@@ -77,8 +83,8 @@ std::string Boolean::read_in(int register_location) const
   return MIPS::error("cannot read in a boolean");
 }
 
-Type::Basic Boolean::type() const {
-  return Basic::BOOL;
+std::string Boolean::type() const {
+  return "bool";
 }
 
 std::string Null::write_out(int register_location) const {
@@ -90,8 +96,8 @@ std::string Null::read_in(int register_location) const
   return MIPS::error("cannot read in a NULL type");
 }
 
-Type::Basic Null::type() const {
-  return Basic::NULL_TYPE;
+std::string Null::type() const {
+  return "null";
 }
 
 

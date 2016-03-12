@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ParseTree.hpp"
 #include "SymbolTable.hpp"
 #include <sstream>
@@ -51,11 +50,16 @@ void ParseTree::ConstDecl(std::string* ident, Expression* expr)
   }
 }
 
-FormalParameter* ParseTree::formal_parameter(bool is_var, std::vector<std::string>* argument_list, std::string* supposed_type)
+std::vector<FormalParameter*>* ParseTree::formal_parameter(bool is_var, std::vector<std::string>* argument_list, std::string* supposed_type)
 {
-  std::vector<std::shared_ptr<Type>> argument_types;
+  auto arguments = new std::vector<FormalParameter*>();
   auto type = find_type(*supposed_type);
-  return new FormalParameter(is_var, *argument_list, type);
+
+  for(auto &arg: *argument_list)
+  {
+    arguments->push_back(new FormalParameter(is_var, arg, type));
+  }
+  return arguments;
 }
 
 FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNode* body)
@@ -82,14 +86,11 @@ std::string* ParseTree::function_decl(std::string* function_name, std::vector<Fo
 
   Symbol::push_table();
 
-  for(auto &param: *parameters)
+  for(auto &param: new_function->parameters)
   {
     if (param->is_variable)
     {
-      for (auto &arg_name: param->arguments)
-      {
-        Symbol::add_argument(arg_name, param->type);
-      }
+      Symbol::add_argument(param->argument, param->type);
     }
     else
     {
@@ -192,29 +193,20 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
     yyerror(s.str().c_str());
   }
 
-  auto total_parameters_expected = 0;
-  for(auto &args: function->parameters)
-  {
-    total_parameters_expected += args->arguments.size();
-  }
-
-  if(exprList->size() != total_parameters_expected)
+  if(exprList->size() != function->parameters.size())
   {
     std::stringstream s;
     s << "Incorrect number of arguments to function " << *ident;
     yyerror(s.str().c_str());
   }
-  for(auto i = 0; i < function->parameters.size() && i < exprList->size(); i++)
+
+  if (!(function->correct_types(*exprList)))
   {
-    auto param = function->parameters[i];
-    auto expr = (*exprList)[i];
-    if(param->type->type() != expr->data_type()->type())
-    {
-      std::stringstream s;
-      s << "Incorrect type in function call " << *ident;
-      yyerror(s.str().c_str());
-    }
+    std::stringstream s;
+    s << "Incorrect type in function call " << *ident;
+    yyerror(s.str().c_str());
   }
+
   return new FunctionCall(*exprList, function->return_type, function->address, Symbol::size_of_stack());
 }
 
