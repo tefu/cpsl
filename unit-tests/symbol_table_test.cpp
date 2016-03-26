@@ -5,6 +5,7 @@
 
 TEST_CASE("Symbol table works")
 {
+  Symbol::init();
   Integer my_int{};
   REQUIRE(my_int.type() == "integer");
   Symbol::add_variable(std::string("x"), std::make_shared<Integer>());

@@ -21,6 +21,7 @@ namespace Symbol
   void pop_table();
   int size_of_stack();
   bool already_defined(std::string);
+  void init();
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP

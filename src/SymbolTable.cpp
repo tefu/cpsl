@@ -49,32 +49,30 @@ namespace
 
   auto tables = std::vector<SymbolTable>();
 
-  void init_check()
-  {
-    if(tables.empty())
-    {
-      SymbolTable first_table(0,0);
-      first_table.lvalues->emplace(std::string("true"), new Constant(new BoolLiteral(true)));
-      first_table.lvalues->emplace(std::string("TRUE"), new Constant(new BoolLiteral(true)));
-      first_table.lvalues->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
-      first_table.lvalues->emplace(std::string("FALSE"), new Constant(new BoolLiteral(false)));
-      first_table.types->emplace(std::string("integer"), std::make_shared<Integer>());
-      first_table.types->emplace(std::string("char"), std::make_shared<Character>());
-      first_table.types->emplace(std::string("boolean"), std::make_shared<Boolean>());
-      first_table.types->emplace(std::string("string"), std::make_shared<StringConstant>());
-      tables.push_back(first_table);
-    }
-  }
-
   bool next_variable_on_stack()
   {
     return tables.size() > 1;
   }
 }
 
-void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
-  init_check();
+void Symbol::init()
+{
+  if(tables.empty())
+  {
+    SymbolTable first_table(0,0);
+    first_table.lvalues->emplace(std::string("true"), new Constant(new BoolLiteral(true)));
+    first_table.lvalues->emplace(std::string("TRUE"), new Constant(new BoolLiteral(true)));
+    first_table.lvalues->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
+    first_table.lvalues->emplace(std::string("FALSE"), new Constant(new BoolLiteral(false)));
+    first_table.types->emplace(std::string("integer"), std::make_shared<Integer>());
+    first_table.types->emplace(std::string("char"), std::make_shared<Character>());
+    first_table.types->emplace(std::string("boolean"), std::make_shared<Boolean>());
+    first_table.types->emplace(std::string("string"), std::make_shared<StringConstant>());
+    tables.push_back(first_table);
+  }
+}
 
+void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
   if (next_variable_on_stack())
@@ -93,8 +91,6 @@ void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
 
 void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
 {
-  init_check();
-
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
   last_table.frame_offset -= type->word_size();
@@ -104,8 +100,6 @@ void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
 
 void Symbol::add_reference(std::string ident, std::shared_ptr<Type> type)
 {
-  init_check();
-
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
   last_table.frame_offset -= Type::ADDRESS_SIZE;
@@ -115,22 +109,18 @@ void Symbol::add_reference(std::string ident, std::shared_ptr<Type> type)
 
 void Symbol::add_constant(std::string ident, Expression* expr)
 {
-  init_check();
   auto last_table = tables.back();
   last_table.lvalues->emplace(std::string(ident), new Constant(expr));
 }
 
 void Symbol::add_function(std::string name, std::shared_ptr<Function> func)
 {
-  init_check();
   auto last_table = tables.back();
   last_table.functions->emplace(name, func);
 }
 
 LValue* Symbol::lookup(std::string ident)
 {
-  init_check();
-
   for (size_t i = tables.size(); i-- > 0;)
   {
     auto table = tables[i];
@@ -144,8 +134,6 @@ LValue* Symbol::lookup(std::string ident)
 
 std::shared_ptr<Type> Symbol::lookup_type(std::string supposed_type)
 {
-  init_check();
-
   for (size_t i = tables.size(); i-- > 0;)
   {
     auto table = tables[i];
@@ -158,8 +146,6 @@ std::shared_ptr<Type> Symbol::lookup_type(std::string supposed_type)
 
 std::shared_ptr<Function> Symbol::lookup_function(std::string function_name)
 {
-  init_check();
-
   for (size_t i = tables.size(); i-- > 0;)
   {
     auto table = tables[i];
@@ -172,8 +158,6 @@ std::shared_ptr<Function> Symbol::lookup_function(std::string function_name)
 
 void Symbol::push_table()
 {
-  init_check();
-
   auto last_table = tables.back();
   SymbolTable new_table(0,0);
   tables.push_back(new_table);
@@ -181,13 +165,11 @@ void Symbol::push_table()
 
 void Symbol::pop_table()
 {
-  init_check();
   tables.pop_back();
 }
 
 int Symbol::size_of_stack()
 {
-  init_check();
   auto total_size = 0;
   auto last_table = tables.back();
   for (auto &pair: *last_table.lvalues)
@@ -199,7 +181,6 @@ int Symbol::size_of_stack()
 
 bool Symbol::already_defined(std::string ident)
 {
-  init_check();
   auto table = tables.back();
   auto function = table.find_function(ident);
   auto type = table.parse_type(ident);

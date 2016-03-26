@@ -181,15 +181,18 @@ void parsed(std::string term)
 %%
 
 
-program : optional_constant_decl
+program : symbol_table_init
+          optional_constant_decl
           optional_type_decl
           optional_var_decl
           optional_proc_or_func_decls
           block
           DOT
-          {$$ = PT::program($4,$5);
+          {$$ = PT::program($5,$6);
            sout << $$->gen_asm();}
 		  ;
+
+symbol_table_init : { Symbol::init(); }
 
 optional_constant_decl : constant_decl
                        |
