@@ -55,9 +55,9 @@ namespace
     {
       SymbolTable first_table(0,0);
       first_table.lvalues->emplace(std::string("true"), new Constant(new BoolLiteral(true)));
-      first_table.lvalues->emplace(std::string("True"), new Constant(new BoolLiteral(true)));
+      first_table.lvalues->emplace(std::string("TRUE"), new Constant(new BoolLiteral(true)));
       first_table.lvalues->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
-      first_table.lvalues->emplace(std::string("False"), new Constant(new BoolLiteral(false)));
+      first_table.lvalues->emplace(std::string("FALSE"), new Constant(new BoolLiteral(false)));
       first_table.types->emplace(std::string("integer"), std::make_shared<Integer>());
       first_table.types->emplace(std::string("char"), std::make_shared<Character>());
       first_table.types->emplace(std::string("boolean"), std::make_shared<Boolean>());
