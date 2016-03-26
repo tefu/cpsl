@@ -1,4 +1,4 @@
-VAR a,i,j,k : integer;
+VAR i,j,k : integer;
 
 BEGIN
 
