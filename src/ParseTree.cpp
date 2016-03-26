@@ -46,7 +46,9 @@ void ParseTree::ConstDecl(std::string* ident, Expression* expr)
   }
   else
   {
-    yyerror((std::string("Error: defining constant '") + *ident + "' to be a non-constant expression").c_str());
+    throw std::runtime_error(std::string("Defining constant ") +
+                             *ident +
+                             " to be a non-constant expression.");
   }
 }
 
@@ -75,9 +77,7 @@ std::string* ParseTree::function_decl(std::string* function_name, std::vector<Fo
   auto duplicate_function = Symbol::lookup_function(*function_name);
   if (duplicate_function != nullptr && !(new_function->same_signature(*duplicate_function)))
   {
-    std::stringstream s;
-    s << "Error: " << *function_name << " is already a function with a different signature.";
-    yyerror(s.str().c_str());
+    throw std::runtime_error(*function_name + " is already a function with a different signature.");
   }
   else
   {
@@ -188,30 +188,22 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
   auto function = Symbol::lookup_function(*ident);
   if (function == nullptr)
   {
-    std::stringstream s;
-    s << "I don't know what the function " << *ident << " is.";
-    yyerror(s.str().c_str());
+    throw std::runtime_error(std::string("I don't know what the function ") + *ident + " is.");
   }
 
   if(exprList->size() != function->parameters.size())
   {
-    std::stringstream s;
-    s << "Incorrect number of arguments to function " << *ident;
-    yyerror(s.str().c_str());
+    throw std::runtime_error(std::string("Incorrect number of arguments to function " + *ident));
   }
 
   if (!(function->correct_types(*exprList)))
   {
-    std::stringstream s;
-    s << "Incorrect type in function call " << *ident;
-    yyerror(s.str().c_str());
+    throw std::runtime_error(std::string("Incorrect type in value of function call: ") + *ident);
   }
 
   if (!function->correct_references(*exprList))
   {
-    std::stringstream s;
-    s << "Cannot send value as a reference in function call " << *ident;
-    yyerror(s.str().c_str());
+    throw std::runtime_error(std::string("Cannot send value as a reference in function call: ") + *ident);
   }
 
   return new FunctionCall(function->parameters, *exprList, function->return_type, function->address, Symbol::size_of_stack());
@@ -255,23 +247,20 @@ IntLiteral* ParseTree::integer_literal(int literal)
 LValue* ParseTree::l_value(std::string* ident)
 {
   auto lval = Symbol::lookup(*ident);
-  if (lval != nullptr)
-    return lval;
+  if (lval == nullptr)
+    throw std::runtime_error(std::string("Unknown identifier: ") + *ident);
 
-  yyerror((std::string("Unknown identifier: '") + *ident + "'").c_str());
-  return nullptr;
+  return lval;
 }
 
 Assignment* ParseTree::assign(LValue* l_val, Expression* expr)
 {
   if (l_val->is_constant())
   {
-    yyerror("Assigning to a constant");
+    throw std::runtime_error("Assigning to a constant.");
   }
-  else
-  {
-    return new Assignment(l_val, expr);
-  }
+
+  return new Assignment(l_val, expr);
 }
 
 ReadStatement* ParseTree::read_statement(std::vector<LValue*>* l_values)

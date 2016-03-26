@@ -46,8 +46,17 @@ int main(int argc, const char** argv)
   }
 
   yyin = fopen(input_file.c_str(), "r");
-  yyparse();
-  fclose(yyin);
+  try
+  {
+    yyparse();
+    fclose(yyin);
+  }
+  catch(std::runtime_error e)
+  {
+    std::cout << "Did not compile! " << e.what() << std::endl;
+    fclose(yyin);
+    return EXIT_FAILURE;
+  }
 
   std::ofstream outfile;
   outfile.open(output_file);
