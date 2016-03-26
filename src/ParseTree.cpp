@@ -12,11 +12,24 @@ namespace
     auto type = Symbol::lookup_type(supposed_type);
     if (type == nullptr)
     {
-      std::stringstream s;
-      s << "Error: " << supposed_type << " is not a type.";
-      yyerror(s.str().c_str());
+      throw std::runtime_error(supposed_type + " is not a type.");
     }
     return type;
+  }
+
+  std::string confirm_not_defined(std::string ident)
+  {
+    if (Symbol::already_defined(ident))
+    {
+      throw std::runtime_error(ident + " is already defined.");
+    }
+    return ident;
+  }
+
+
+  void AddVariable(std::string ident, std::string type)
+  {
+    Symbol::add_variable(confirm_not_defined(ident), find_type(type));
   }
 }
 
@@ -34,9 +47,10 @@ void ParseTree::VarDecl(std::vector<std::string>* identList, std::string* type)
 {
   for(auto &ident: *identList)
   {
-    Symbol::add_variable(ident, find_type(*type));
+    AddVariable(ident,*type);
   }
 }
+
 
 void ParseTree::ConstDecl(std::string* ident, Expression* expr)
 {
@@ -321,7 +335,7 @@ ForStatement* ParseTree::for_statement(LValue* var,
 
 LValue* ParseTree::for_head(std::string* ident)
 {
-  Symbol::add_variable(*ident, std::make_shared<Integer>());
+  AddVariable(*ident, "integer");
   return l_value(ident);
 }
 

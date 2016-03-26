@@ -187,6 +187,7 @@ void Symbol::pop_table()
 
 int Symbol::size_of_stack()
 {
+  init_check();
   auto total_size = 0;
   auto last_table = tables.back();
   for (auto &pair: *last_table.lvalues)
@@ -194,4 +195,14 @@ int Symbol::size_of_stack()
     total_size += pair.second->size_on_stack();
   }
   return total_size;
+}
+
+bool Symbol::already_defined(std::string ident)
+{
+  init_check();
+  auto table = tables.back();
+  auto function = table.find_function(ident);
+  auto type = table.parse_type(ident);
+  auto l_value = table.find_lvalue(ident);
+  return (function != nullptr || type != nullptr || l_value != nullptr);
 }

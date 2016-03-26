@@ -20,6 +20,7 @@ namespace Symbol
   void push_table();
   void pop_table();
   int size_of_stack();
+  bool already_defined(std::string);
 };
 
 #endif //CPSL_SYMBOLTABLE_HPP

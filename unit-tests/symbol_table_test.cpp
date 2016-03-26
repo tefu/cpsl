@@ -22,8 +22,11 @@ TEST_CASE("Symbol table works")
   REQUIRE(y_var != nullptr);
   REQUIRE(y_var->is_constant() == false);
   REQUIRE(y_var->get_type()->type() == "bool");
+  REQUIRE(Symbol::already_defined("y") == true);
+  REQUIRE(Symbol::already_defined("x") == false);
 
   Symbol::pop_table();
+  REQUIRE(Symbol::already_defined("x") == true);
   auto non_existant_y = Symbol::lookup("y");
   REQUIRE(non_existant_y == nullptr);
 
