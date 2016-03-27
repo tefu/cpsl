@@ -305,10 +305,10 @@ namespace
     auto reg_offset = 0;
     auto reg_type = std::make_shared<Integer>();
     for(auto reg: registers)
-      {
-        reg_offset -= reg_type->word_size();
-        s << MIPS::store_word(reg, reg_offset, MIPS::SP, "Storing register under the frame before a function call");
-      }
+    {
+      reg_offset -= reg_type->word_size();
+      s << MIPS::store_word(reg, reg_offset, MIPS::SP, "Storing register under the frame before a function call");
+    }
 
     s << MIPS::addi(MIPS::SP, MIPS::SP, reg_offset, "Bringing the stack pointer above the stored registers");
     return reg_offset;
@@ -322,15 +322,15 @@ namespace
       auto expr = exprList[index];
       auto param = parameters[index];
       if (param->is_variable)
-        {
-          s << expr->gen_asm();
-          argument_offset -= expr->data_type()->word_size();
-        }
+      {
+        s << expr->gen_asm();
+        argument_offset -= expr->data_type()->word_size();
+      }
       else
-        {
-          s << expr->get_address();
-          argument_offset -= Type::ADDRESS_SIZE;
-        }
+      {
+        s << expr->get_address();
+        argument_offset -= Type::ADDRESS_SIZE;
+      }
       s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
       expr->release();
     }
