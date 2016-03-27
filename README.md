@@ -43,6 +43,16 @@ cmake ..
 make 
 make language_test 
 ```
+# Unit Tests
+
+I also added unit tests for the C++ codebase (rather than the CPSL one). After
+getting your CMake build directory setup, try running
+```
+make unit_tests
+./unit_tests
+
+```
+to run the unit tests.
 
 # Bison Output
 
