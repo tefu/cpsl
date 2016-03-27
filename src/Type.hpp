@@ -10,8 +10,9 @@ struct Type {
   static std::string null_type()    { return "null"; }
 
   static const int ADDRESS_SIZE = 4;
-  virtual std::string write_out(int register) const=0;
-  virtual std::string read_in(int register) const=0;
+  virtual std::string write_out(int) const=0;
+  virtual std::string read_in(int) const=0;
+  virtual std::string assign_to(int, int, int, std::string);
   virtual std::string type() const=0;
   virtual int word_size() const;
   bool operator==(const Type&);

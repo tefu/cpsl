@@ -30,6 +30,14 @@ bool Type::operator==(const Type& other_type)
   return type() == other_type.type();
 }
 
+std::string Type::assign_to(int result_register, int address_offset, int address, std::string var_type)
+{
+  std::stringstream s;
+  s << MIPS::store_word(result_register, address_offset, address, std::string("Assigning to a ") + var_type);
+  return s.str();
+}
+
+
 std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
 }

@@ -12,9 +12,7 @@ int LValue::size_on_stack()
  * ------------------------------------------------------------------------- */
 std::string GlobalVariable::assign(int result_register)
 {
-  std::stringstream s;
-  s << MIPS::store_word(result_register, address_offset, MIPS::GP, "Assigning to a variable");
-  return s.str();
+  return get_type()->assign_to(result_register, address_offset, MIPS::GP, "global variable");
 }
 
 std::shared_ptr<Type> GlobalVariable::get_type()
@@ -37,9 +35,7 @@ Expression* GlobalVariable::read()
  * ------------------------------------------------------------------------- */
 std::string StackVariable::assign(int result_register)
 {
-  std::stringstream s;
-  s << MIPS::store_word(result_register, address_offset, MIPS::SP, "Assigning to a stack variable");
-  return s.str();
+  return get_type()->assign_to(result_register, address_offset, MIPS::SP, "stack variable");
 }
 
 std::shared_ptr<Type> StackVariable::get_type()
@@ -66,9 +62,7 @@ int StackVariable::size_on_stack()
  * ------------------------------------------------------------------------- */
 std::string VarArgument::assign(int result_register)
 {
-  std::stringstream s;
-  s << MIPS::store_word(result_register, address_offset, MIPS::FP, "Assigning to an argument variable");
-  return s.str();
+  return get_type()->assign_to(result_register, address_offset, MIPS::FP, "argument variable");
 }
 
 std::shared_ptr<Type> VarArgument::get_type()
@@ -91,7 +85,8 @@ std::string RefArgument::assign(int result_register)
   std::stringstream s;
   auto ref_address = Register::allocate_register();
   s << MIPS::load_word(ref_address, address_offset, MIPS::FP, "Loading a reference variable's address");
-  s << MIPS::store_word(result_register, 0, ref_address, "Assigning to a reference variable");
+  s << get_type()->assign_to(result_register, 0, ref_address, "reference variable");
+
   Register::release_register(ref_address);
   return s.str();
 }
