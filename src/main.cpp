@@ -6,6 +6,7 @@
 
 std::stringstream sout;
 extern int yyparse();
+extern int yylineno;
 extern FILE* yyin;
 
 bool file_exists(std::string fileName)
@@ -53,7 +54,7 @@ int main(int argc, const char** argv)
   }
   catch(std::runtime_error e)
   {
-    std::cout << "Did not compile! " << e.what() << std::endl;
+    std::cout << "Did not compile! " << e.what() << " at line " << yylineno << std::endl;
     fclose(yyin);
     return EXIT_FAILURE;
   }
