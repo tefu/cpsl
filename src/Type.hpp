@@ -3,6 +3,12 @@
 #include <string>
 
 struct Type {
+  static std::string integer_type() { return "integer"; }
+  static std::string boolean_type() { return "bool"; }
+  static std::string string_type()  { return "string"; }
+  static std::string char_type()    { return "char"; }
+  static std::string null_type()    { return "null"; }
+
   static const int ADDRESS_SIZE = 4;
   virtual std::string write_out(int register) const=0;
   virtual std::string read_in(int register) const=0;

@@ -16,20 +16,18 @@ BEGIN
   write("2<>2=",2<>2,'\n','\n');
 
   write('a','\n');
-  write('a'+1,'\n');
+  write(chr(ord('a')+1),'\n');
   write(ord('a'),'\n');
-  write(1+'a','\n');
-  write(chr(1+'a'),'\n');
-  write(chr('a'+1),'\n');
-  write(ord('a'+1),'\n');
+  write(1+ord('a'),'\n');
+  write(chr(1+ord('a')),'\n');
+  write(chr(ord('a')+1),'\n');
+  write(ord('a')+1,'\n');
   c := 'c';
   d := 'd';
   write(c,'\n');
   write(d,'\n');
-  write(c+1,'\n');
-  write(d+1,'\n');
-  write(chr(c+1),'\n');
-  write(chr(d+1),'\n','\n');
+  write(chr(ord(c)+1),'\n');
+  write(chr(ord(d)+1),'\n','\n');
 
   write("2+2+2=",2+2+2,'\n');
   write("2*2*2=",2*2*2,'\n');
@@ -42,15 +40,11 @@ BEGIN
   write("2>=2=",2>=2,'\n');
   write("2<=2=",2<=2,'\n');
   write("2<>2=",2<>2,'\n');
-  write("2|8=",2|8,'\n');
-  write("5&15=",5&15,'\n');
   a := 2;
   b := 8;
   write(a,' ',b,'\n');
-  write("a|b=",a|b,'\n');
   a := 5;
   b := 15;
-  write("a&b=",a&b,'\n');
   write("~-5=",~-5,'\n');
   write("~5=",~5,'\n');
   write("Setting A to 5:");

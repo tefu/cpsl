@@ -30,8 +30,6 @@ bool Type::operator==(const Type& other_type)
   return type() == other_type.type();
 }
 
-
-
 std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
 }
@@ -42,7 +40,7 @@ std::string Integer::read_in(int register_location) const
 }
 
 std::string Integer::type() const {
-  return "integer";
+  return integer_type();
 }
 
 std::string StringConstant::write_out(int register_location) const {
@@ -55,7 +53,7 @@ std::string StringConstant::read_in(int register_location) const
 }
 
 std::string StringConstant::type() const {
-  return "string";
+  return string_type();
 }
 
 std::string Character::write_out(int register_location) const {
@@ -68,7 +66,7 @@ std::string Character::read_in(int register_location) const
 }
 
 std::string Character::type() const {
-  return "char";
+  return char_type();
 }
 
 std::string Boolean::write_out(int register_location) const {
@@ -84,7 +82,7 @@ std::string Boolean::read_in(int register_location) const
 }
 
 std::string Boolean::type() const {
-  return "bool";
+  return boolean_type();
 }
 
 std::string Null::write_out(int register_location) const {
@@ -97,7 +95,7 @@ std::string Null::read_in(int register_location) const
 }
 
 std::string Null::type() const {
-  return "null";
+  return null_type();
 }
 
 

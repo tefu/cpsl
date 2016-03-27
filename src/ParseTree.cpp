@@ -31,6 +31,18 @@ namespace
   {
     Symbol::add_variable(confirm_not_defined(ident), find_type(type));
   }
+
+  void require_both_as(Expression* left, Expression* right, std::string type_name, std::string operation)
+  {
+    if (left->data_type()->type() != type_name || right->data_type()->type() != type_name)
+      throw std::runtime_error(std::string("Performing ") + operation + " requires both types be " + type_name);
+  }
+
+  void require_both_same(Expression* left, Expression* right, std::string operation)
+  {
+    if(left->data_type()->type() != right->data_type()->type())
+      throw std::runtime_error(std::string("Performing ") + operation + " requires both types be the same.");
+  }
 }
 
 ProgramNode* ParseTree::program(std::vector<ProgramNode*>* bodies, ProgramNode* main)
@@ -124,66 +136,79 @@ std::string* ParseTree::function_decl(std::string* function_name,std::vector<For
 
 LogicalOr* ParseTree::logical_or(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::boolean_type(), "logical or");
   return new LogicalOr(left, right);
 }
 
 LogicalAnd* ParseTree::logical_and(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::boolean_type(), "logical and");
   return new LogicalAnd(left, right);
 }
 
 Equality* ParseTree::equality(Expression* left, Expression* right)
 {
+  require_both_same(left,right,"equality");
   return new Equality(left, right);
 }
 
 Inequality* ParseTree::inequality(Expression* left, Expression* right)
 {
+  require_both_same(left,right,"inequality");
   return new Inequality(left, right);
 }
 
 LessThanOrEqual* ParseTree::less_than_or_equal(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "less than or equal: <=");
   return new LessThanOrEqual(left, right);
 }
 
 GreaterThanOrEqual* ParseTree::greater_than_or_equal(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "greater than or equal: >=");
   return new GreaterThanOrEqual(left, right);
 }
 
 LessThan* ParseTree::less_than(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "less than: <");
   return new LessThan(left, right);
 }
 
 GreaterThan* ParseTree::greater_than(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "greater than: >");
   return new GreaterThan(left, right);
 }
 
 OperatorPlus* ParseTree::plus(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "addition: +");
   return new OperatorPlus(left, right);
 }
 
 OperatorMinus* ParseTree::minus(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "subtraction: -");
   return new OperatorMinus(left, right);
 }
 
 OperatorMult* ParseTree::mult(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "multiplication: *");
   return new OperatorMult(left, right);
 }
 
 OperatorDivide* ParseTree::divide(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "division: /");
   return new OperatorDivide(left, right);
 }
 
 OperatorModulus* ParseTree::modulus(Expression* left, Expression* right)
 {
+  require_both_as(left, right, Type::integer_type(), "modulus: %");
   return new OperatorModulus(left, right);
 }
 
