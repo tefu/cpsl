@@ -383,7 +383,7 @@ std::string FunctionCall::gen_asm()
   if(return_type->type() != "null")
   {
     allocate();
-    s << MIPS::move(result(), MIPS::A0, "Store fuction return type in a register");
+    s << MIPS::move(result(), MIPS::A0, "Store fuction return value in a register");
   }
   return s.str();
 }
