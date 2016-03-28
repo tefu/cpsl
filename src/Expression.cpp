@@ -557,7 +557,7 @@ std::shared_ptr<Type> BoolLiteral::data_type() const
 std::string LoadExpression::gen_asm()
 {
   allocate();
-  return MIPS::load_word(result(), address_offset, starting_address, "Loading a variable");
+  return datatype->load_into(result(), address_offset, starting_address, "variable");
 }
 
 bool LoadExpression::is_constant() const
@@ -589,7 +589,7 @@ std::string RefExpression::gen_asm()
   allocate();
 
   s << MIPS::load_word(result(), address_offset, starting_address, "Loading a reference address");
-  s << MIPS::load_word(result(), 0, result(), "Loading a reference variable");
+  s << datatype->load_into(result(), 0, result(), "reference variable");
   return s.str();
 }
 

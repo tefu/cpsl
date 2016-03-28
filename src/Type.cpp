@@ -37,6 +37,12 @@ std::string Type::assign_to(int result_register, int address_offset, int address
   return s.str();
 }
 
+std::string Type::load_into(int target_register, int address_offset, int address, std::string var_type)
+{
+  std::stringstream s;
+  s << MIPS::load_word(target_register, address_offset, address, std::string("Loading a ") + var_type);
+  return s.str();
+}
 
 std::string Integer::write_out(int register_location) const {
   return write_with_call(register_location, 1, "Writing out an integer");
