@@ -15,7 +15,7 @@ std::string GlobalVariable::assign(int result_register)
   return get_type()->assign_to(result_register, address_offset, MIPS::GP, "global variable");
 }
 
-std::shared_ptr<Type> GlobalVariable::get_type()
+Type* GlobalVariable::get_type()
 {
   return type;
 }
@@ -38,7 +38,7 @@ std::string StackVariable::assign(int result_register)
   return get_type()->assign_to(result_register, address_offset, MIPS::SP, "stack variable");
 }
 
-std::shared_ptr<Type> StackVariable::get_type()
+Type* StackVariable::get_type()
 {
   return type;
 }
@@ -65,7 +65,7 @@ std::string VarArgument::assign(int result_register)
   return get_type()->assign_to(result_register, address_offset, MIPS::FP, "argument variable");
 }
 
-std::shared_ptr<Type> VarArgument::get_type()
+Type* VarArgument::get_type()
 {
   return type;
 }
@@ -91,7 +91,7 @@ std::string RefArgument::assign(int result_register)
   return s.str();
 }
 
-std::shared_ptr<Type> RefArgument::get_type()
+Type* RefArgument::get_type()
 {
   return type;
 }
@@ -115,7 +115,7 @@ std::string Constant::assign(int result_register)
   return MIPS::error("cannot assign to constant value");
 }
 
-std::shared_ptr<Type> Constant::get_type()
+Type* Constant::get_type()
 {
   return result->data_type();
 }

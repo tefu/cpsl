@@ -7,7 +7,7 @@ extern std::stringstream sout;
 
 namespace
 {
-  std::shared_ptr<Type> find_type(std::string supposed_type)
+  Type* find_type(std::string supposed_type)
   {
     auto type = Symbol::lookup_type(supposed_type);
     if (type == nullptr)
@@ -97,7 +97,7 @@ FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNod
   return new FunctionBlock(function->address, body);
 }
 
-std::string* ParseTree::function_decl(std::string* function_name, std::vector<FormalParameter*>* parameters, std::shared_ptr<Type> type)
+std::string* ParseTree::function_decl(std::string* function_name, std::vector<FormalParameter*>* parameters, Type* type)
 {
   auto new_function = std::make_shared<Function>(*parameters, type);
   auto duplicate_function = Symbol::lookup_function(*function_name);

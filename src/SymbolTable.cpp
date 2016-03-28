@@ -23,15 +23,15 @@ namespace
             : lvalues(std::make_shared<std::map<std::string, LValue*>>()),
               stack_offset(s_offset),
               frame_offset(f_offset),
-              types(std::make_shared<std::map<std::string, std::shared_ptr<Type>>>()),
+              types(std::make_shared<std::map<std::string, Type*>>()),
               functions(std::make_shared<std::map<std::string, std::shared_ptr<Function>>>()){}
     int stack_offset;
     int frame_offset;
-    std::shared_ptr<std::map<std::string, std::shared_ptr<Type>>> types;
+    std::shared_ptr<std::map<std::string, Type*>> types;
     std::shared_ptr<std::map<std::string, std::shared_ptr<Function>>> functions;
     std::shared_ptr<std::map<std::string, LValue*>> lvalues;
 
-    std::shared_ptr<Type> parse_type(std::string raw_type)
+    Type* parse_type(std::string raw_type)
     {
       return find_in_map(*types, raw_type);
     }
@@ -64,15 +64,15 @@ void Symbol::init()
     first_table.lvalues->emplace(std::string("TRUE"), new Constant(new BoolLiteral(true)));
     first_table.lvalues->emplace(std::string("false"), new Constant(new BoolLiteral(false)));
     first_table.lvalues->emplace(std::string("FALSE"), new Constant(new BoolLiteral(false)));
-    first_table.types->emplace(std::string("integer"), std::make_shared<Integer>());
-    first_table.types->emplace(std::string("char"), std::make_shared<Character>());
-    first_table.types->emplace(std::string("boolean"), std::make_shared<Boolean>());
-    first_table.types->emplace(std::string("string"), std::make_shared<StringConstant>());
+    first_table.types->emplace(std::string("integer"), new Integer());
+    first_table.types->emplace(std::string("char"), new Character());
+    first_table.types->emplace(std::string("boolean"), new Boolean());
+    first_table.types->emplace(std::string("string"), new StringConstant());
     tables.push_back(first_table);
   }
 }
 
-void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
+void Symbol::add_variable(std::string ident, Type* type) {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
   if (next_variable_on_stack())
@@ -89,7 +89,7 @@ void Symbol::add_variable(std::string ident, std::shared_ptr<Type> type) {
   }
 }
 
-void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
+void Symbol::add_argument(std::string ident, Type* type)
 {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
@@ -98,7 +98,7 @@ void Symbol::add_argument(std::string ident, std::shared_ptr<Type> type)
   last_table.lvalues->emplace(std::string(ident), arg);
 }
 
-void Symbol::add_reference(std::string ident, std::shared_ptr<Type> type)
+void Symbol::add_reference(std::string ident, Type* type)
 {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
@@ -132,7 +132,7 @@ LValue* Symbol::lookup(std::string ident)
   return nullptr;
 }
 
-std::shared_ptr<Type> Symbol::lookup_type(std::string supposed_type)
+Type* Symbol::lookup_type(std::string supposed_type)
 {
   for (size_t i = tables.size(); i-- > 0;)
   {

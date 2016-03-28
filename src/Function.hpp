@@ -10,13 +10,13 @@
 
 struct Function
 {
-  Function(std::vector<FormalParameter*> params, std::shared_ptr<Type> rt)
+  Function(std::vector<FormalParameter*> params, Type* rt)
           : parameters(params),
             address(StringLabel::get_unique_function_label()),
             return_type(rt) {}
   std::vector<FormalParameter*> parameters;
   std::string address;
-  std::shared_ptr<Type> return_type;
+  Type* return_type;
   bool same_signature(const Function&);
   bool correct_types(std::vector<Expression*>);
   bool correct_references(std::vector<Expression*>);

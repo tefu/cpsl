@@ -9,13 +9,14 @@
 
 namespace Symbol
 {
-  void add_variable(std::string, std::shared_ptr<Type>);
-  void add_argument(std::string, std::shared_ptr<Type>);
-  void add_reference(std::string, std::shared_ptr<Type>);
+  void add_variable(std::string, Type*);
+  void add_argument(std::string, Type*);
+  void add_reference(std::string, Type*);
   void add_constant(std::string, Expression*);
   void add_function(std::string, std::shared_ptr<Function>);
+  void add_type(std::string, Type*);
   LValue* lookup(std::string);
-  std::shared_ptr<Type> lookup_type(std::string);
+  Type* lookup_type(std::string);
   std::shared_ptr<Function> lookup_function(std::string);
   void push_table();
   void pop_table();

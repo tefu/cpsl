@@ -6,11 +6,11 @@
 
 struct FormalParameter
 {
-  FormalParameter(bool iv, std::string arg, std::shared_ptr<Type> t)
+  FormalParameter(bool iv, std::string arg, Type* t)
           : is_variable(iv), argument(arg), type(t) {}
   bool is_variable;
   std::string argument;
-  std::shared_ptr<Type> type;
+  Type* type;
   bool operator==(const FormalParameter&);
 };
 

@@ -5,7 +5,7 @@
 struct LValue
 {
   virtual std::string assign(int result_register) = 0;
-  virtual std::shared_ptr<Type> get_type() = 0;
+  virtual Type* get_type() = 0;
   virtual bool is_constant() = 0;
   virtual Expression* read()=0;
   virtual int size_on_stack();
@@ -13,22 +13,22 @@ struct LValue
 
 struct GlobalVariable : LValue
 {
-  GlobalVariable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
-  const std::shared_ptr<Type> type;
+  GlobalVariable(Type* t, int a) : type(t), address_offset(a) {}
+  Type* type;
   const int address_offset;
   virtual std::string assign(int result_register);
-  virtual std::shared_ptr<Type> get_type();
+  virtual Type* get_type();
   virtual bool is_constant();
   virtual Expression* read();
 };
 
 struct StackVariable : LValue
 {
-  StackVariable(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
-  const std::shared_ptr<Type> type;
+  StackVariable(Type* t, int a) : type(t), address_offset(a) {}
+  Type* type;
   const int address_offset;
   virtual std::string assign(int result_register);
-  virtual std::shared_ptr<Type> get_type();
+  virtual Type* get_type();
   virtual bool is_constant();
   virtual Expression* read();
   virtual int size_on_stack();
@@ -36,22 +36,22 @@ struct StackVariable : LValue
 
 struct VarArgument : LValue
 {
-  VarArgument(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
-  const std::shared_ptr<Type> type;
+  VarArgument(Type* t, int a) : type(t), address_offset(a) {}
+  Type* type;
   const int address_offset;
   virtual std::string assign(int result_register);
-  virtual std::shared_ptr<Type> get_type();
+  virtual Type* get_type();
   virtual bool is_constant();
   virtual Expression* read();
 };
 
 struct RefArgument : LValue
 {
-  RefArgument(std::shared_ptr<Type> t, int a) : type(t), address_offset(a) {}
-  const std::shared_ptr<Type> type;
+  RefArgument(Type* t, int a) : type(t), address_offset(a) {}
+  Type* type;
   const int address_offset;
   virtual std::string assign(int result_register);
-  virtual std::shared_ptr<Type> get_type();
+  virtual Type* get_type();
   virtual bool is_constant();
   virtual Expression* read();
 };
@@ -62,7 +62,7 @@ struct Constant: LValue
   Constant(Expression* e) : result(e) {}
   Expression* result;
   virtual std::string assign(int result_register);
-  virtual std::shared_ptr<Type> get_type();
+  virtual Type* get_type();
   virtual bool is_constant();
   virtual Expression* read();
 };

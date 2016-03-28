@@ -231,7 +231,7 @@ proc_decl : proc_head FORWARD SEMICOLON { $$=nullptr; Symbol::pop_table(); }
           ;
 
 proc_head : PROCEDURE IDENT LEFT_PAREN formal_parameters RIGHT_PAREN SEMICOLON
-            { $$=PT::function_decl($2,$4,std::make_shared<Null>()); }
+            { $$=PT::function_decl($2,$4,new Null()); }
           ;
 
 func_decl : func_head FORWARD SEMICOLON { $$=nullptr; Symbol::pop_table(); }
