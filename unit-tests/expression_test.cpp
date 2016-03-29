@@ -56,3 +56,29 @@ TEST_CASE("Expressions")
   }
 
 }
+
+TEST_CASE("Expressions can evaluate to constant integers")
+{
+  auto left = new IntLiteral{8};
+  auto right = new IntLiteral{2};
+  auto add_them = new OperatorPlus(left, right);
+  REQUIRE(add_them->flatten_int() == 10);
+
+  auto lhs = new IntLiteral{8};
+  auto rhs = new IntLiteral{2};
+  auto sub_them = new OperatorMinus(left, right);
+  REQUIRE(sub_them->flatten_int() == 6);
+
+  auto failure = new StringLiteral(new std::string("I don't have any integers to give :("));
+  auto failed = false;
+  try
+  {
+    failure->flatten_int();
+  }
+  catch(std::runtime_error e)
+  {
+    failed = true;
+  }
+
+  REQUIRE(failed == true);
+}

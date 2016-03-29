@@ -56,6 +56,11 @@ std::string Expression::get_address()
   return MIPS::error("Cannot get store the address of this expression");
 }
 
+int Expression::flatten_int() const
+{
+  throw std::runtime_error("I can't convert the expression to a constant integer.");
+}
+
 
 /* Binary Operators
    ------------------------------------------------------------------- */
@@ -183,6 +188,10 @@ Type* OperatorPlus::data_type() const
 {
   return left->data_type();
 }
+int OperatorPlus::flatten_int() const
+{
+  return left->flatten_int() + right->flatten_int();
+}
 
 
 std::string OperatorMinus::gen_asm()
@@ -196,6 +205,10 @@ bool OperatorMinus::is_constant() const
 Type* OperatorMinus::data_type() const
 {
   return left->data_type();
+}
+int OperatorMinus::flatten_int() const
+{
+  return left->flatten_int() - right->flatten_int();
 }
 
 
@@ -211,6 +224,10 @@ Type* OperatorMult::data_type() const
 {
   return new Integer();
 }
+int OperatorMult::flatten_int() const
+{
+  return left->flatten_int() * right->flatten_int();
+}
 
 
 std::string OperatorDivide::gen_asm()
@@ -225,6 +242,10 @@ Type* OperatorDivide::data_type() const
 {
   return new Integer();
 }
+int OperatorDivide::flatten_int() const
+{
+  return left->flatten_int() / right->flatten_int();
+}
 
 std::string OperatorModulus::gen_asm()
 {
@@ -237,6 +258,10 @@ bool OperatorModulus::is_constant() const
 Type* OperatorModulus::data_type() const
 {
   return new Integer();
+}
+int OperatorModulus::flatten_int() const
+{
+  return left->flatten_int() % right->flatten_int();
 }
 
 namespace
@@ -269,6 +294,10 @@ Type* Negation::data_type() const
 {
   return new Integer();
 }
+int Negation::flatten_int() const
+{
+  return ~(expr->flatten_int());
+}
 
 std::string UnaryMinus::gen_asm()
 {
@@ -281,6 +310,10 @@ bool UnaryMinus::is_constant() const
 Type* UnaryMinus::data_type() const
 {
   return new Integer();
+}
+int UnaryMinus::flatten_int() const
+{
+  return -(expr->flatten_int());
 }
 
 namespace
@@ -537,6 +570,10 @@ bool IntLiteral::is_constant() const
 Type* IntLiteral::data_type() const
 {
   return new Integer();
+}
+int IntLiteral::flatten_int() const
+{
+  return literal;
 }
 
 std::string BoolLiteral::gen_asm()

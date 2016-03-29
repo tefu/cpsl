@@ -13,6 +13,7 @@ struct Expression : ProgramNode
   virtual bool is_constant() const=0;
   virtual Type* data_type() const=0;
   virtual int result() const;
+  virtual int flatten_int() const;
   virtual void allocate();
   virtual void release();
   virtual bool can_be_referenced();
@@ -109,6 +110,7 @@ struct OperatorPlus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* left;
   Expression* right;
 };
@@ -119,6 +121,7 @@ struct OperatorMinus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* left;
   Expression* right;
 };
@@ -129,6 +132,7 @@ struct OperatorMult : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* left;
   Expression* right;
 };
@@ -139,6 +143,7 @@ struct OperatorDivide : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* left;
   Expression* right;
 };
@@ -149,6 +154,7 @@ struct OperatorModulus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* left;
   Expression* right;
 };
@@ -159,6 +165,7 @@ struct Negation : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* expr;
 };
 
@@ -168,6 +175,7 @@ struct UnaryMinus : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   Expression* expr;
 };
 
@@ -255,6 +263,7 @@ struct IntLiteral : Expression
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
+  int flatten_int() const;
   int literal;
 };
 
