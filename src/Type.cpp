@@ -30,6 +30,12 @@ bool Type::operator==(const Type& other_type)
   return type() == other_type.type();
 }
 
+bool Type::equals(const Array& other) const
+{
+  return false;
+}
+
+
 std::string Type::assign_to(int result_register, int address_offset, int address, std::string var_type)
 {
   std::stringstream s;
@@ -113,3 +119,44 @@ std::string Null::type() const {
 }
 
 
+std::string Array::write_out(int) const
+{
+  return MIPS::error("Cannot write out an array.");
+}
+
+std::string Array::read_in(int register) const
+{
+  return MIPS::error("Cannot read in an array.");
+}
+
+std::string Array::type() const
+{
+  return array_type();
+}
+
+std::string Array::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
+{
+  std::stringstream s;
+  // TODO: copy everything from start to end
+  return s.str();
+}
+
+std::string Array::load_into(int target_register, int address_offset, int address, std::string var_type)
+{
+  return MIPS::addi(target_register, address, address_offset, std::string("Loading the address of a ") + var_type + " array.");
+}
+
+int Array::word_size() const
+{
+  return subtype->word_size() * size;
+}
+
+bool Array::operator==(const Type& other)
+{
+  return other.equals(*this);
+}
+
+bool Array::equals(const Array &other) const
+{
+  return this->type() == other.type() && this->subtype == other.subtype;
+}
