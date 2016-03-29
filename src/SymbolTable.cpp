@@ -119,6 +119,13 @@ void Symbol::add_function(std::string name, std::shared_ptr<Function> func)
   last_table.functions->emplace(name, func);
 }
 
+void Symbol::add_type(std::string name, Type* type)
+{
+  auto last_table = tables.back();
+  last_table.types->emplace(name, type);
+}
+
+
 LValue* Symbol::lookup(std::string ident)
 {
   for (size_t i = tables.size(); i-- > 0;)

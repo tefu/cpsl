@@ -17,7 +17,7 @@ extern int yylex();
 extern int yylineno;
 extern std::stringstream sout;
 extern char* yytext;
- 
+
 void yyerror(const char* message)
 {
   std::cout << "Build failed: " << message << " at line " << yylineno << " with "
@@ -51,6 +51,8 @@ void parsed(std::string term)
   std::vector<ElseIf*>* elseifList;
   FormalParameter* fparam;
   std::vector<FormalParameter*>* fparams;
+  Type* cpsl_type;
+  std::vector<Type*>* cpsl_types;
 }
 
 %start program
@@ -158,10 +160,6 @@ void parsed(std::string term)
 %type <expr> optional_expression
 %type <exprList> optional_expression_list
 %type <exprList> expression_list
-
-
-%type <string_constant> simple_type
-%type <string_constant> type
 %type <string_list> ident_list
 
 %type <node> var_decl
@@ -174,8 +172,9 @@ void parsed(std::string term)
 %type <lval> l_value
 %type <lvalList> l_value_list
 
-
-
+%type <cpsl_type> type
+%type <cpsl_type> simple_type
+%type <cpsl_type> array_type
 
 
 %%
@@ -281,13 +280,13 @@ type : simple_type {$$=$1;}
      | array_type
      ;
 
-simple_type : IDENT { $$ = $1; }
+simple_type : IDENT { $$ = PT::simple_type($1); }
             ;
 
 record_type : RECORD optional_members END
             ;
 
-array_type : ARRAY LEFT_BRACKET range RIGHT_BRACKET OF type
+array_type : ARRAY LEFT_BRACKET expression COLON expression RIGHT_BRACKET OF type
            ;
 
 optional_members : members
@@ -297,11 +296,6 @@ optional_members : members
 members : ident_list COLON type SEMICOLON
         | members ident_list COLON type SEMICOLON
         ;
-
-
-
-range : expression COLON expression
-      ;
 
 ident_list : IDENT { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
            | ident_list COMMA IDENT { $$ = $1; $$->push_back(*$3); }

@@ -27,9 +27,9 @@ namespace
   }
 
 
-  void AddVariable(std::string ident, std::string type)
+  void AddVariable(std::string ident, Type* type)
   {
-    Symbol::add_variable(confirm_not_defined(ident), find_type(type));
+    Symbol::add_variable(confirm_not_defined(ident), type);
   }
 
   void require_both_as(Expression* left, Expression* right, std::string type_name, std::string operation)
@@ -55,11 +55,11 @@ Block* ParseTree::block(std::vector<ProgramNode*>* statements)
   return new Block(statements);
 }
 
-void ParseTree::VarDecl(std::vector<std::string>* identList, std::string* type)
+void ParseTree::VarDecl(std::vector<std::string>* identList, Type* type)
 {
   for(auto &ident: *identList)
   {
-    AddVariable(ident,*type);
+    AddVariable(ident,type);
   }
 }
 
@@ -78,10 +78,9 @@ void ParseTree::ConstDecl(std::string* ident, Expression* expr)
   }
 }
 
-std::vector<FormalParameter*>* ParseTree::formal_parameter(bool is_var, std::vector<std::string>* argument_list, std::string* supposed_type)
+std::vector<FormalParameter*>* ParseTree::formal_parameter(bool is_var, std::vector<std::string>* argument_list, Type* type)
 {
   auto arguments = new std::vector<FormalParameter*>();
-  auto type = find_type(*supposed_type);
 
   for(auto &arg: *argument_list)
   {
@@ -130,6 +129,11 @@ std::string* ParseTree::function_decl(std::string* function_name, std::vector<Fo
 std::string* ParseTree::function_decl(std::string* function_name,std::vector<FormalParameter*>* parameters, std::string* type)
 {
   return function_decl(function_name, parameters, find_type(*type));
+}
+
+Type* ParseTree::simple_type(std::string* type_name)
+{
+  return find_type(*type_name);
 }
 
 
@@ -360,7 +364,7 @@ ForStatement* ParseTree::for_statement(LValue* var,
 
 LValue* ParseTree::for_head(std::string* ident)
 {
-  AddVariable(*ident, "integer");
+  AddVariable(*ident, new Integer());
   return l_value(ident);
 }
 
