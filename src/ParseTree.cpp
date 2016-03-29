@@ -63,6 +63,10 @@ void ParseTree::VarDecl(std::vector<std::string>* identList, Type* type)
   }
 }
 
+void ParseTree::TypeDecl(std::string* type_name, Type* type)
+{
+  Symbol::add_type(*type_name, type);
+}
 
 void ParseTree::ConstDecl(std::string* ident, Expression* expr)
 {
@@ -135,6 +139,20 @@ Type* ParseTree::simple_type(std::string* type_name)
 {
   return find_type(*type_name);
 }
+
+Type* ParseTree::array_type(Expression* lower_bound, Expression* upper_bound, Type* type)
+{
+  auto lower = lower_bound->flatten_int();
+  auto upper = upper_bound->flatten_int();
+
+  if (upper < lower)
+  {
+    throw std::runtime_error("An array can't have an upper bound less than its lower bound.");
+  }
+
+  return new Array(lower, upper - lower + 1, type);
+}
+
 
 
 

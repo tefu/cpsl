@@ -55,8 +55,8 @@ struct Null : Type {
 };
 
 struct Array : Type {
-  Array(Type* st, int io, int s)
-    : subtype(st), index_offset(io), size(s) {}
+  Array(int io, int s, Type* st)
+    : index_offset(io), size(s),subtype(st) {}
   virtual std::string write_out(int) const;
   virtual std::string read_in(int register) const;
   virtual std::string type() const;
@@ -65,8 +65,8 @@ struct Array : Type {
   virtual int word_size() const;
   virtual bool equals(const Array&) const;
   bool operator==(const Type&);
-  Type* subtype;
   int index_offset;
   int size;
+  Type* subtype;
 };
 #endif //CPSL_TYPE_HPP

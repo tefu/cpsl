@@ -271,13 +271,13 @@ block : BEGIN_KW statement_sequence END { $$ = PT::block($2); }
 type_decl : TYPE type_definitions
           ;
 
-type_definitions : IDENT EQUALITY type SEMICOLON
-                 | type_definitions IDENT EQUALITY type SEMICOLON
+type_definitions : IDENT EQUALITY type SEMICOLON { PT::TypeDecl($1,$3); }
+                 | type_definitions IDENT EQUALITY type SEMICOLON { PT::TypeDecl($2,$4); }
                  ;
 
 type : simple_type {$$=$1;}
      | record_type
-     | array_type
+     | array_type {$$=$1;}
      ;
 
 simple_type : IDENT { $$ = PT::simple_type($1); }
@@ -287,6 +287,7 @@ record_type : RECORD optional_members END
             ;
 
 array_type : ARRAY LEFT_BRACKET expression COLON expression RIGHT_BRACKET OF type
+           { $$=PT::array_type($3,$5,$8); }
            ;
 
 optional_members : members
