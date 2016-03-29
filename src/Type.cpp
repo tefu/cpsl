@@ -1,5 +1,6 @@
 #include "Type.hpp"
 #include "instructions.hpp"
+#include "Register.hpp"
 
 namespace
 {
@@ -137,7 +138,14 @@ std::string Array::type() const
 std::string Array::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
 {
   std::stringstream s;
-  // TODO: copy everything from start to end
+  int reg = Register::allocate_register();
+  auto upper_copy_limit = address_offset + word_size();
+  for(int offset = address_offset; offset < upper_copy_limit; offset += ADDRESS_SIZE)
+  {
+    s << MIPS::load_word(reg, offset, src_register, "Grab array value");
+    s << MIPS::store_word(reg, offset, dest_address, "Store array value");
+  }
+  Register::release_register(reg);
   return s.str();
 }
 
