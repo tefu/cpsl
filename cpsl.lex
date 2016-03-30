@@ -5,6 +5,7 @@
 #include "LValue.hpp"
 #include "Statement.hpp"
 #include "Function.hpp"
+#include "Type.hpp"
 #include "parser.hpp"
 #include <iostream>
 

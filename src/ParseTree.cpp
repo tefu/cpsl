@@ -154,8 +154,20 @@ Type* ParseTree::array_type(Expression* lower_bound, Expression* upper_bound, Ty
   return new Array(lower, upper - lower + 1, type);
 }
 
+Type* ParseTree::record_type(std::vector<RecordMember>* members)
+{
+  return new Record{*members};
+}
 
-
+std::vector<RecordMember>* ParseTree::record_members(std::vector<std::string>* names, Type* type)
+{
+  auto members = new std::vector<RecordMember>();
+  for(auto &&name: *names)
+  {
+    members->emplace_back(name,type);
+  }
+  return members;
+}
 
 LogicalOr* ParseTree::logical_or(Expression* left, Expression* right)
 {

@@ -189,3 +189,18 @@ Expression* Array::find_index(Expression* user_index)
   auto offset = new OperatorMinus{user_index, new IntLiteral{index_offset}};
   return new OperatorMult{offset,new IntLiteral{subtype()->word_size()}};
 }
+
+std::string Record::write_out(int) const
+{
+  return "";
+}
+
+std::string Record::read_in(int register) const
+{
+  return "";
+}
+
+std::string Record::type() const
+{
+  return record_type();
+}

@@ -20,6 +20,8 @@ namespace ParseTree {
   std::string* function_decl(std::string*,std::vector<FormalParameter*>*, std::string*);
   Type* simple_type(std::string*);
   Type* array_type(Expression*, Expression*, Type*);
+  Type* record_type(std::vector<RecordMember>*);
+  std::vector<RecordMember>* record_members(std::vector<std::string>*,Type*);
   LogicalOr* logical_or(Expression*, Expression*);
   LogicalAnd* logical_and(Expression*, Expression*);
   Equality* equality(Expression*, Expression*);

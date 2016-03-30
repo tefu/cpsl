@@ -52,7 +52,7 @@ void parsed(std::string term)
   FormalParameter* fparam;
   std::vector<FormalParameter*>* fparams;
   Type* cpsl_type;
-  std::vector<Type*>* cpsl_types;
+  std::vector<RecordMember>* members;
 }
 
 %start program
@@ -175,6 +175,10 @@ void parsed(std::string term)
 %type <cpsl_type> type
 %type <cpsl_type> simple_type
 %type <cpsl_type> array_type
+%type <cpsl_type> record_type
+
+%type <members> optional_members
+%type <members> members
 
 
 %%
@@ -189,7 +193,7 @@ program : symbol_table_init
           DOT
           {$$ = PT::program($5,$6);
            sout << $$->gen_asm();}
-		  ;
+          ;
 
 symbol_table_init : { Symbol::init(); }
 
@@ -276,26 +280,29 @@ type_definitions : IDENT EQUALITY type SEMICOLON { PT::TypeDecl($1,$3); }
                  ;
 
 type : simple_type {$$=$1;}
-     | record_type
+     | record_type {$$=$1;}
      | array_type {$$=$1;}
      ;
 
 simple_type : IDENT { $$ = PT::simple_type($1); }
             ;
 
-record_type : RECORD optional_members END
+record_type : RECORD optional_members END {$$=PT::record_type($2);}
             ;
 
 array_type : ARRAY LEFT_BRACKET expression COLON expression RIGHT_BRACKET OF type
            { $$=PT::array_type($3,$5,$8); }
            ;
 
-optional_members : members
-                 |
+optional_members : members {$$=$1;}
+                 | {$$=nullptr;}
                  ;
 
-members : ident_list COLON type SEMICOLON
+members : ident_list COLON type SEMICOLON {$$=PT::record_members($1,$3);}
         | members ident_list COLON type SEMICOLON
+          {$$=$1;
+           auto members = PT::record_members($2,$4);
+           $$->insert($$->end(), members->begin(), members->end());}
         ;
 
 ident_list : IDENT { $$ = new std::vector<std::string>(); $$->push_back(*$1); }
