@@ -22,6 +22,8 @@ struct Type {
   virtual int word_size() const;
   virtual bool operator==(const Type&);
   virtual bool equals(const Array&) const;
+  virtual Type* subtype();
+  virtual Expression* find_index(Expression*);
 };
 
 struct Integer : Type {
@@ -56,7 +58,7 @@ struct Null : Type {
 
 struct Array : Type {
   Array(int io, int s, Type* st)
-    : index_offset(io), size(s),subtype(st) {}
+    : index_offset(io), size(s),sub_type(st) {}
   virtual std::string write_out(int) const;
   virtual std::string read_in(int register) const;
   virtual std::string type() const;
@@ -65,8 +67,10 @@ struct Array : Type {
   virtual int word_size() const;
   virtual bool equals(const Array&) const;
   bool operator==(const Type&);
+  virtual Type* subtype();
+  virtual Expression* find_index(Expression*);
   int index_offset;
   int size;
-  Type* subtype;
+  Type* sub_type;
 };
 #endif //CPSL_TYPE_HPP

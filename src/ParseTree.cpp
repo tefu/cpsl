@@ -314,6 +314,16 @@ LValue* ParseTree::l_value(std::string* ident)
   return lval;
 }
 
+LValue* ParseTree::array_access(LValue* array, Expression* index)
+{
+  auto subtype = array->get_subtype();
+  if (subtype == nullptr)
+    throw std::runtime_error("Cannot access LValue like an array.");
+
+  return new ArrayAccess{array, index};
+}
+
+
 Assignment* ParseTree::assign(LValue* l_val, Expression* expr)
 {
   if (l_val->is_constant())

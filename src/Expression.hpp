@@ -278,30 +278,38 @@ struct BoolLiteral : Expression
 
 struct LoadExpression : Expression
 {
-  LoadExpression(Type* t, int a, int sa) : datatype(t), address_offset(a), starting_address(sa) {}
+  LoadExpression(Type* t, Expression* a) : datatype(t), address(a) {}
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
   bool can_be_referenced();
   std::string get_address();
-  const int address_offset;
-  const int starting_address;
+  Expression* address;
 private:
   Type* datatype;
 };
 
 struct RefExpression : Expression
 {
-  RefExpression(Type* t, int a, int sa) : datatype(t), address_offset(a), starting_address(sa) {}
+  RefExpression(Type* t, Expression* a) : datatype(t), address(a) {}
   std::string gen_asm();
   bool is_constant() const;
   Type* data_type() const;
   bool can_be_referenced();
   std::string get_address();
-  const int address_offset;
-  const int starting_address;
+  Expression* address;
 private:
   Type* datatype;
+};
+
+struct Address : Expression
+{
+  Address(Expression* o, int sr) : offset(o), starting_register(sr) {}
+  std::string gen_asm();
+  bool is_constant() const;
+  Type* data_type() const;
+  Expression* offset;
+  int starting_register;
 };
 
 #endif //CPSL_EXPRESSION_H

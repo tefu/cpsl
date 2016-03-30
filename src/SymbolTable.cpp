@@ -67,6 +67,9 @@ void Symbol::init()
     first_table.types->emplace(std::string("integer"), new Integer());
     first_table.types->emplace(std::string("char"), new Character());
     first_table.types->emplace(std::string("boolean"), new Boolean());
+    first_table.types->emplace(std::string("INTEGER"), new Integer());
+    first_table.types->emplace(std::string("CHAR"), new Character());
+    first_table.types->emplace(std::string("BOOLEAN"), new Boolean());
     tables.push_back(first_table);
   }
 }

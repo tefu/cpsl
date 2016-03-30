@@ -7,7 +7,10 @@ struct LValue
   virtual std::string assign(int result_register) = 0;
   virtual Type* get_type() = 0;
   virtual bool is_constant() = 0;
-  virtual Expression* read()=0;
+  virtual Expression* read(Expression*, Type*)=0;
+  virtual Expression* address()=0;
+  virtual Expression* read();
+  virtual Type* get_subtype();
   virtual int size_on_stack();
 };
 
@@ -19,7 +22,8 @@ struct GlobalVariable : LValue
   virtual std::string assign(int result_register);
   virtual Type* get_type();
   virtual bool is_constant();
-  virtual Expression* read();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
 };
 
 struct StackVariable : LValue
@@ -30,8 +34,9 @@ struct StackVariable : LValue
   virtual std::string assign(int result_register);
   virtual Type* get_type();
   virtual bool is_constant();
-  virtual Expression* read();
+  virtual Expression* read(Expression*, Type*);
   virtual int size_on_stack();
+  virtual Expression* address();
 };
 
 struct VarArgument : LValue
@@ -42,7 +47,8 @@ struct VarArgument : LValue
   virtual std::string assign(int result_register);
   virtual Type* get_type();
   virtual bool is_constant();
-  virtual Expression* read();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
 };
 
 struct RefArgument : LValue
@@ -53,7 +59,8 @@ struct RefArgument : LValue
   virtual std::string assign(int result_register);
   virtual Type* get_type();
   virtual bool is_constant();
-  virtual Expression* read();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
 };
 
 
@@ -64,8 +71,21 @@ struct Constant: LValue
   virtual std::string assign(int result_register);
   virtual Type* get_type();
   virtual bool is_constant();
-  virtual Expression* read();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
 };
 
+struct ArrayAccess : LValue
+{
+  ArrayAccess(LValue* lval, Expression* e)
+    : array(lval), index(e) {}
+  virtual std::string assign(int result_register);
+  virtual Type* get_type();
+  virtual bool is_constant();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
+  LValue* array;
+  Expression* index;
+};
 
 #endif //CPSL_LVALUE_HPP

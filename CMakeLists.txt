@@ -31,7 +31,11 @@ set(COMMON_SOURCES
         src/Register.cpp
         src/Register.hpp
         src/StringLabel.cpp
-        src/StringLabel.hpp src/Function.cpp src/Function.hpp src/FormalParameter.cpp src/FormalParameter.hpp)
+        src/StringLabel.hpp
+        src/Function.cpp
+        src/Function.hpp
+        src/FormalParameter.cpp
+        src/FormalParameter.hpp)
 
 set(COMPILER_SOURCES
         parser

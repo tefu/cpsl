@@ -44,6 +44,7 @@ namespace ParseTree {
   CharLiteral* char_literal(std::string*);
   IntLiteral* integer_literal(int);
   LValue* l_value(std::string*);
+  LValue* array_access(LValue*, Expression*);
   Assignment* assign(LValue*, Expression*);
   ReadStatement* read_statement(std::vector<LValue*>*);
   WriteStatement* write_statement(std::vector<Expression*>*);

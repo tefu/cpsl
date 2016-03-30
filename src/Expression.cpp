@@ -593,8 +593,12 @@ Type* BoolLiteral::data_type() const
 
 std::string LoadExpression::gen_asm()
 {
+  std::stringstream s;
+  s << address->gen_asm();
   allocate();
-  return datatype->load_into(result(), address_offset, starting_address, "variable");
+  s << datatype->load_into(result(), 0, address->result(), "variable");
+  address->release();
+  return s.str();
 }
 
 bool LoadExpression::is_constant() const
@@ -614,19 +618,23 @@ bool LoadExpression::can_be_referenced()
 
 std::string LoadExpression::get_address()
 {
+  std::stringstream s;
+  s << address->gen_asm();
   allocate();
-  return  MIPS::addi(result(), starting_address, address_offset, "Loading an address");
+  s << MIPS::move(result(), address->result(), "Loading an address");
+  address->release();
+  return s.str();
 }
-
 
 
 std::string RefExpression::gen_asm()
 {
   std::stringstream s;
+  s << address->gen_asm();
   allocate();
-
-  s << MIPS::load_word(result(), address_offset, starting_address, "Loading a reference address");
+  s << MIPS::load_word(result(), 0, address->result(), "Loading a reference address");
   s << datatype->load_into(result(), 0, result(), "reference variable");
+  address->release();
   return s.str();
 }
 
@@ -647,6 +655,30 @@ bool RefExpression::can_be_referenced()
 
 std::string RefExpression::get_address()
 {
+  std::stringstream s;
+  s << address->gen_asm();
   allocate();
-  return MIPS::load_word(result(), address_offset, starting_address, "Loading a referenced address");
+  s << MIPS::load_word(result(), 0, address->result(), "Loading a referenced address");
+  address->release();
+}
+
+
+std::string Address::gen_asm()
+{
+  std::stringstream s;
+  s << offset->gen_asm();
+  allocate();
+  s << MIPS::add(result(), starting_register, offset->result(), "Calculating an address");
+  offset->release();
+  return s.str();
+}
+
+bool Address::is_constant() const
+{
+  return false;
+}
+
+Type* Address::data_type() const
+{
+  return new Null();
 }

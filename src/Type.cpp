@@ -36,13 +36,23 @@ bool Type::equals(const Array& other) const
   return false;
 }
 
-
 std::string Type::assign_to(int result_register, int address_offset, int address, std::string var_type)
 {
   std::stringstream s;
   s << MIPS::store_word(result_register, address_offset, address, std::string("Assigning to a ") + var_type);
   return s.str();
 }
+
+Type* Type::subtype()
+{
+  return nullptr;
+}
+
+Expression* Type::find_index(Expression* user_index)
+{
+  return nullptr;
+}
+
 
 std::string Type::load_into(int target_register, int address_offset, int address, std::string var_type)
 {
@@ -139,11 +149,11 @@ std::string Array::assign_to(int src_register, int address_offset, int dest_addr
 {
   std::stringstream s;
   int reg = Register::allocate_register();
-  auto upper_copy_limit = address_offset + word_size();
-  for(int offset = address_offset; offset < upper_copy_limit; offset += ADDRESS_SIZE)
+  auto upper_copy_limit = word_size();
+  for(int offset = 0; offset < upper_copy_limit; offset += ADDRESS_SIZE)
   {
     s << MIPS::load_word(reg, offset, src_register, "Grab array value");
-    s << MIPS::store_word(reg, offset, dest_address, "Store array value");
+    s << MIPS::store_word(reg, offset + address_offset, dest_address, "Store array value");
   }
   Register::release_register(reg);
   return s.str();
@@ -156,7 +166,7 @@ std::string Array::load_into(int target_register, int address_offset, int addres
 
 int Array::word_size() const
 {
-  return subtype->word_size() * size;
+  return sub_type->word_size() * size;
 }
 
 bool Array::operator==(const Type& other)
@@ -166,5 +176,16 @@ bool Array::operator==(const Type& other)
 
 bool Array::equals(const Array &other) const
 {
-  return this->type() == other.type() && this->subtype == other.subtype;
+  return this->type() == other.type() && this->sub_type == other.sub_type;
+}
+
+Type* Array::subtype()
+{
+  return sub_type;
+}
+
+Expression* Array::find_index(Expression* user_index)
+{
+  auto offset = new OperatorMinus{user_index, new IntLiteral{index_offset}};
+  return new OperatorMult{offset,new IntLiteral{subtype()->word_size()}};
 }
