@@ -358,13 +358,14 @@ namespace
       {
         s << expr->gen_asm();
         argument_offset -= expr->data_type()->word_size();
+        s << expr->data_type()->assign_to(expr->result(), argument_offset, MIPS::SP, "function argument");
       }
       else
       {
         s << expr->get_address();
         argument_offset -= Type::ADDRESS_SIZE;
+        s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
       }
-      s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
       expr->release();
     }
 
@@ -625,43 +626,6 @@ std::string LoadExpression::get_address()
   address->release();
   return s.str();
 }
-
-
-std::string RefExpression::gen_asm()
-{
-  std::stringstream s;
-  s << address->gen_asm();
-  allocate();
-  s << MIPS::load_word(result(), 0, address->result(), "Loading a reference address");
-  s << datatype->load_into(result(), 0, result(), "reference variable");
-  address->release();
-  return s.str();
-}
-
-bool RefExpression::is_constant() const
-{
-  return false;
-}
-
-Type* RefExpression::data_type() const
-{
-  return datatype;
-}
-
-bool RefExpression::can_be_referenced()
-{
-  return true;
-}
-
-std::string RefExpression::get_address()
-{
-  std::stringstream s;
-  s << address->gen_asm();
-  allocate();
-  s << MIPS::load_word(result(), 0, address->result(), "Loading a referenced address");
-  address->release();
-}
-
 
 std::string Address::gen_asm()
 {

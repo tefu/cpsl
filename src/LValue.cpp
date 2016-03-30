@@ -130,12 +130,12 @@ bool RefArgument::is_constant()
 
 Expression* RefArgument::read(Expression* src_address, Type* expected_type)
 {
-  return new RefExpression{expected_type, src_address};
+  return new LoadExpression{expected_type, src_address};
 }
 
 Expression* RefArgument::address()
 {
-  return new Address{new IntLiteral{address_offset}, MIPS::FP};
+  return new LoadExpression{new Null{},new Address{new IntLiteral{address_offset}, MIPS::FP}};
 }
 
 
