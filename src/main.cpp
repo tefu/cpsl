@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <stdexcept>
 #include <vector>
 
 std::stringstream sout;

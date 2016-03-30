@@ -1,5 +1,6 @@
 #include "ParseTree.hpp"
 #include "SymbolTable.hpp"
+#include <stdexcept>
 #include <sstream>
 
 extern void yyerror(const char* message);
