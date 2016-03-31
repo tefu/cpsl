@@ -10,8 +10,6 @@ type
     matrix = array[1:5] of ntype;
 
 VAR table : atype;
-    i : integer;
-    j : integer;
     mat : matrix;
 
 procedure printname(n : ntype);
@@ -35,8 +33,7 @@ BEGIN
 END;
 
 procedure sortage();
-var i,j : integer;
-    x,y,z : matrix;
+var x,y,z : matrix;
 BEGIN
     for i:=1 to ALEN do
         for j:=i+1 to ALEN do;
@@ -48,8 +45,7 @@ BEGIN
 END;
 
 procedure rsortage();
-var i,j : integer;
-    t : rtype;
+var t : rtype;
 BEGIN
     for i:=1 to ALEN do
         for j:=i+1 to ALEN do;
@@ -64,7 +60,6 @@ BEGIN
 END;
 
 procedure printtable();
-var i : integer;
 BEGIN
     for i:=1 to ALEN do
         printrec(table[i]);
@@ -81,7 +76,7 @@ table[1].name[4] := 'd';
 table[1].name[5] := 'r';
 for j:=2 to ALEN do
     for i:=1 to ALEN do
-      table[j].name[i] := chr((table[j-1].name[(j+i%ALEN)+1]+1)%20+'a');
+      table[j].name[i] := chr((ord(table[j-1].name[(j+i%ALEN)+1])+1)%20+ord('a'));
     end;
     table[j].age := (j*j)%30;
 end;
@@ -94,10 +89,10 @@ write("reverse swapping!\n");
 rsortage();
 printtable();
 
-for i:=1 to 5 do
-    mat[i] := table[i].name;
-    write("mat[",i,"]=");
-    printname(mat[i]);
+for k:=1 to 5 do
+    mat[k] := table[k].name;
+    write("mat[",k,"]=");
+    printname(mat[k]);
     write('\n');
 end;
 

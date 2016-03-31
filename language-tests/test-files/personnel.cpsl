@@ -16,13 +16,11 @@ table : array[1:TABLEN] of ptype;
 persons : integer;
 
 function exchname (var a,b:ntype) : boolean;
-var
-i:integer;
 begin
 for i := 1 to NAMELEN do
-if a[i] > b[i]
+if ord(a[i]) > ord(b[i])
 then return true;
-elseif a[i] < b[i]
+elseif ord(a[i]) < ord(b[i])
 then return false;
 end;
 end;
@@ -37,15 +35,14 @@ end;
 function nameread(j : integer) : ntype;
 var
   a:ntype;
-  i:integer;
 begin
   for i:=1 to NAMELEN do
     a[i] := ' ';
   end;
 
-  for i:=1 to persons do
-    $write("setting ",i," to ",chr(j+i+'a'),'\n');
-    a[i] := chr(j+i+'a');
+  for k:=1 to persons do
+    $write("setting ",k," to ",chr(j+k+'a'),'\n');
+    a[i] := chr(j+k+ord('a'));
   end;
 
   write("returning '",a[1],a[2],a[3],"'...\n");
@@ -64,8 +61,6 @@ begin
 end;
 
 procedure tableread ();
-var
-n:integer;
 begin
 for n:=1 to persons do
 table[n] := personread(n);
@@ -83,8 +78,6 @@ begin
 end;
 
 procedure printtable();
-var
-i,n:integer;
 begin
 write("#\tage\tName\n");
 write("---------------------\n");
@@ -98,8 +91,6 @@ end;
 end;
 
 procedure agesort();
-var
-  n,m:integer;
 begin
   for m := persons downto 1 do
     for n:=1 to m-1 do
@@ -111,8 +102,6 @@ begin
 end;
 
 procedure namesort ();
-var
-  n,m:integer;
 begin
   for m := persons downto 1 do
     for n:=1 to m-1 do
