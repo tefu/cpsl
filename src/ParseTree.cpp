@@ -402,17 +402,20 @@ ForStatement* ParseTree::for_statement(LValue* var,
   auto assignment = assign(var, start);
   Expression* condition;
   ProgramNode* update;
+  ProgramNode* reverse_update;
   if (going_up)
   {
     condition = less_than_or_equal(var->read(), end);
     update = assign(var, SUCC(var->read()));
+    reverse_update = assign(var, PRED(var->read()));
   }
   else
   {
     condition = greater_than_or_equal(var->read(), end);
     update = assign(var, PRED(var->read()));
+    reverse_update = assign(var, SUCC(var->read()));
   }
-  return new ForStatement(assignment, condition, statements, update);
+  return new ForStatement(assignment, condition, statements, update, reverse_update);
 }
 
 LValue* ParseTree::for_head(std::string* ident)

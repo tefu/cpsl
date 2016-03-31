@@ -130,6 +130,7 @@ std::string ForStatement::gen_asm()
   s << update->gen_asm();
   s << MIPS::j(for_start, "Going back to start of for loop");
   s << MIPS::label(for_end, "");
+  s << reverse_update->gen_asm();
   return s.str();
 }
 

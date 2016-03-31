@@ -50,12 +50,13 @@ struct RepeatStatement : ProgramNode {
 };
 
 struct ForStatement : ProgramNode {
-  ForStatement(Assignment* a, Expression* c, std::vector<ProgramNode*>* s, ProgramNode* u) :
-          assignment(a), continue_condition(c), statements(s), update(u) {}
+  ForStatement(Assignment* a, Expression* c, std::vector<ProgramNode*>* s, ProgramNode* u, ProgramNode* ru) :
+          assignment(a), continue_condition(c), statements(s), update(u), reverse_update(ru) {}
   Assignment* assignment;
   Expression* continue_condition;
   std::vector<ProgramNode*>* statements;
   ProgramNode* update;
+  ProgramNode* reverse_update;
   std::string gen_asm();
 };
 
