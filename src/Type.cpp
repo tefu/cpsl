@@ -160,14 +160,14 @@ std::string Array::type() const
 
 namespace
 {
-  std::string memory_copy(int src_register, int address_offset, int dest_address, int upper_copy_limit)
+  std::string memory_copy(int src_register, int address_offset, int dest_address, int upper_copy_limit, std::string type_note)
   {
     std::stringstream s;
     int reg = Register::allocate_register();
     for(int offset = 0; offset < upper_copy_limit; offset += Type::ADDRESS_SIZE)
       {
-        s << MIPS::load_word(reg, offset, src_register, "Grab array value");
-        s << MIPS::store_word(reg, offset + address_offset, dest_address, "Store array value");
+        s << MIPS::load_word(reg, offset, src_register, std::string("Grab ") + type_note + " value");
+        s << MIPS::store_word(reg, offset + address_offset, dest_address, std::string("Store ") + type_note + " value");
       }
     Register::release_register(reg);
     return s.str();
@@ -176,7 +176,7 @@ namespace
 
 std::string Array::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
 {
-  return memory_copy(src_register, address_offset, dest_address, word_size());
+  return memory_copy(src_register, address_offset, dest_address, word_size(), "array");
 }
 
 std::string Array::load_into(int target_register, int address_offset, int address, std::string var_type)
@@ -234,7 +234,7 @@ std::string Record::type() const
 
 std::string Record::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
 {
-  return memory_copy(src_register, address_offset, dest_address, word_size());
+  return memory_copy(src_register, address_offset, dest_address, word_size(), "record");
 }
 
 std::string Record::load_into(int target_register, int address_offset, int address, std::string var_type)
