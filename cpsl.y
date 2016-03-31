@@ -449,7 +449,7 @@ l_value_list : l_value { $$ = new std::vector<LValue*>(); $$->push_back($1); }
              ;
 
 l_value : IDENT { $$ = PT::l_value($1); }
-        | l_value DOT IDENT
+        | l_value DOT IDENT { $$ = PT::record_field($1,$3); }
         | l_value LEFT_BRACKET expression RIGHT_BRACKET { $$ = PT::array_access($1,$3); }
         ;
 

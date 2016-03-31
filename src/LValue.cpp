@@ -18,6 +18,12 @@ Expression* LValue::read()
   return read(address(), get_type());
 }
 
+Record* LValue::get_record()
+{
+  return get_type()->get_record();
+}
+
+
 
 /* Variables on the global space
  * ------------------------------------------------------------------------- */
@@ -167,17 +173,27 @@ Expression* Constant::address()
   return nullptr;
 }
 
+
+namespace
+{
+  std::string assign_with_address(int result_register,
+                                  Expression* src_address,
+                                  Type* type,
+                                  std::string var_name)
+  {
+    std::stringstream s;
+    s << src_address->gen_asm();
+    s << type->assign_to(result_register, 0, src_address->result(), var_name);
+    src_address->release();
+    return s.str();
+  }
+}
+
 /* Array Access
  * ------------------------------------------------------------------------- */
 std::string ArrayAccess::assign(int result_register)
 {
-  std::stringstream s;
-  auto src_address = address();
-  s << src_address->gen_asm();
-  s << get_type()->assign_to(result_register, 0, src_address->result(), "array element");
-  src_address->release();
-
-  return s.str();
+  return assign_with_address(result_register, address(), get_type(), "array element");
 }
 
 Type* ArrayAccess::get_type()
@@ -199,4 +215,33 @@ Expression* ArrayAccess::address()
 {
   auto correct_index = array->get_type()->find_index(index);
   return new OperatorPlus{correct_index, array->address()};
+}
+
+
+/* Record Field
+ * ------------------------------------------------------------------------- */
+std::string RecordField::assign(int result_register)
+{
+  return assign_with_address(result_register, address(), get_type(), "record field");
+}
+
+Type* RecordField::get_type()
+{
+  return record_type->lookup(field);
+}
+
+bool RecordField::is_constant()
+{
+  return false;
+}
+
+Expression* RecordField::read(Expression* src_address, Type* expected_type)
+{
+  return record->read(src_address, expected_type);
+}
+
+Expression* RecordField::address()
+{
+  auto offset = record_type->calculate_offset(field);
+  auto actual_address = new OperatorPlus{record->address(), new IntLiteral{offset}};
 }

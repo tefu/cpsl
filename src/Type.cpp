@@ -36,6 +36,11 @@ bool Type::equals(const Array& other) const
   return false;
 }
 
+bool Type::equals(const Record& other) const
+{
+  return false;
+}
+
 std::string Type::assign_to(int result_register, int address_offset, int address, std::string var_type)
 {
   std::stringstream s;
@@ -49,6 +54,11 @@ Type* Type::subtype()
 }
 
 Expression* Type::find_index(Expression* user_index)
+{
+  return nullptr;
+}
+
+Record* Type::get_record()
 {
   return nullptr;
 }
@@ -130,6 +140,9 @@ std::string Null::type() const {
 }
 
 
+/* Arrays
+   -------------------------------------------------------------------------- */
+
 std::string Array::write_out(int) const
 {
   return MIPS::error("Cannot write out an array.");
@@ -145,23 +158,33 @@ std::string Array::type() const
   return array_type();
 }
 
+namespace
+{
+  std::string memory_copy(int src_register, int address_offset, int dest_address, int upper_copy_limit)
+  {
+    std::stringstream s;
+    int reg = Register::allocate_register();
+    for(int offset = 0; offset < upper_copy_limit; offset += Type::ADDRESS_SIZE)
+      {
+        s << MIPS::load_word(reg, offset, src_register, "Grab array value");
+        s << MIPS::store_word(reg, offset + address_offset, dest_address, "Store array value");
+      }
+    Register::release_register(reg);
+    return s.str();
+  }
+}
+
 std::string Array::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
 {
-  std::stringstream s;
-  int reg = Register::allocate_register();
-  auto upper_copy_limit = word_size();
-  for(int offset = 0; offset < upper_copy_limit; offset += ADDRESS_SIZE)
-  {
-    s << MIPS::load_word(reg, offset, src_register, "Grab array value");
-    s << MIPS::store_word(reg, offset + address_offset, dest_address, "Store array value");
-  }
-  Register::release_register(reg);
-  return s.str();
+  return memory_copy(src_register, address_offset, dest_address, word_size());
 }
 
 std::string Array::load_into(int target_register, int address_offset, int address, std::string var_type)
 {
-  return MIPS::addi(target_register, address, address_offset, std::string("Loading the address of a ") + var_type + " array.");
+  return MIPS::addi(target_register,
+                    address,
+                    address_offset,
+                    std::string("Loading the address of a ") + var_type + " array.");
 }
 
 int Array::word_size() const
@@ -190,17 +213,113 @@ Expression* Array::find_index(Expression* user_index)
   return new OperatorMult{offset,new IntLiteral{subtype()->word_size()}};
 }
 
+
+/* Records
+   -------------------------------------------------------------------------- */
+
 std::string Record::write_out(int) const
 {
-  return "";
+  return MIPS::error("Cannot write out a record.");
 }
 
 std::string Record::read_in(int register) const
 {
-  return "";
+  return MIPS::error("Cannot read in a record.");
 }
 
 std::string Record::type() const
 {
   return record_type();
+}
+
+std::string Record::assign_to(int src_register, int address_offset, int dest_address, std::string var_type)
+{
+  return memory_copy(src_register, address_offset, dest_address, word_size());
+}
+
+std::string Record::load_into(int target_register, int address_offset, int address, std::string var_type)
+{
+  std::string types = "";
+  for(auto &&member: *members)
+  {
+    types += member.name + ":";
+  }
+
+  return MIPS::addi(target_register,
+                    address,
+                    address_offset,
+                    std::string("Loading the address of a record of ") + types);
+}
+
+int Record::word_size() const
+{
+  int total_size = 0;
+  for(auto &&member: *members)
+  {
+    total_size += member.type->word_size();
+  }
+  return total_size;
+}
+
+bool Record::operator==(const Type& other)
+{
+  return other.equals(*this);
+}
+
+bool Record::equals(const Record &other) const
+{
+  bool equal_to = true;
+  if(members->size() != other.members->size())
+    equal_to = false;
+
+  for(int i = 0; i < members->size() && i < other.members->size(); i++)
+  {
+    if(!((*members)[i].type == (*other.members)[i].type))
+    {
+      equal_to = false;
+    }
+  }
+  return equal_to;
+}
+
+Record* Record::get_record()
+{
+  return this;
+}
+
+bool Record::is_field(std::string field_name)
+{
+  auto found = false;
+  for(auto &&member: *members)
+  {
+    if (field_name == member.name)
+    {
+      found = true;
+    }
+  }
+
+  return found;
+}
+
+Type* Record::lookup(std::string lookup_name)
+{
+  for(auto &&member: *members)
+  {
+    if (member.name == lookup_name)
+      return member.type;
+  }
+  return nullptr;
+}
+
+int Record::calculate_offset(std::string field_name)
+{
+  int offset = 0;
+  for(auto &&member: *members)
+  {
+    if (member.name == field_name)
+      return offset;
+
+    offset += member.type->word_size();
+  }
+  return 0;
 }

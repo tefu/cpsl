@@ -156,7 +156,7 @@ Type* ParseTree::array_type(Expression* lower_bound, Expression* upper_bound, Ty
 
 Type* ParseTree::record_type(std::vector<RecordMember>* members)
 {
-  return new Record{*members};
+  return new Record{members};
 }
 
 std::vector<RecordMember>* ParseTree::record_members(std::vector<std::string>* names, Type* type)
@@ -334,6 +334,18 @@ LValue* ParseTree::array_access(LValue* array, Expression* index)
     throw std::runtime_error("Cannot access LValue like an array.");
 
   return new ArrayAccess{array, index};
+}
+
+LValue* ParseTree::record_field(LValue* record, std::string* field)
+{
+  auto record_type = record->get_record();
+  if (record_type == nullptr)
+    throw std::runtime_error("Cannot access the field of a non-record.");
+
+  if (!(record_type->is_field(*field)))
+    throw std::runtime_error("Field does not exist in record.");
+
+  return new RecordField{record, record_type, *field};
 }
 
 

@@ -11,6 +11,7 @@ struct LValue
   virtual Expression* address()=0;
   virtual Expression* read();
   virtual Type* get_subtype();
+  virtual Record* get_record();
   virtual int size_on_stack();
 };
 
@@ -86,6 +87,20 @@ struct ArrayAccess : LValue
   virtual Expression* address();
   LValue* array;
   Expression* index;
+};
+
+struct RecordField : LValue
+{
+  RecordField(LValue* r,Record* rt, std::string f)
+    : record(r), record_type(rt), field(f) {}
+  virtual std::string assign(int result_register);
+  virtual Type* get_type();
+  virtual bool is_constant();
+  virtual Expression* read(Expression*, Type*);
+  virtual Expression* address();
+  LValue* record;
+  Record* record_type;
+  std::string field;
 };
 
 #endif //CPSL_LVALUE_HPP

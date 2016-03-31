@@ -5,6 +5,7 @@
 
 struct Expression;
 struct Array;
+struct Record;
 
 
 struct Type {
@@ -25,7 +26,9 @@ struct Type {
   virtual int word_size() const;
   virtual bool operator==(const Type&);
   virtual bool equals(const Array&) const;
+  virtual bool equals(const Record&) const;
   virtual Type* subtype();
+  virtual Record* get_record();
   virtual Expression* find_index(Expression*);
 };
 
@@ -69,7 +72,7 @@ struct Array : Type {
   virtual std::string load_into(int, int, int, std::string);
   virtual int word_size() const;
   virtual bool equals(const Array&) const;
-  bool operator==(const Type&);
+  virtual bool operator==(const Type&);
   virtual Type* subtype();
   virtual Expression* find_index(Expression*);
   int index_offset;
@@ -84,10 +87,19 @@ struct RecordMember {
 };
 
 struct Record : Type {
-  Record(std::vector<RecordMember> ms) : members(ms) {}
+  Record(std::vector<RecordMember>* ms) : members(ms) {}
   virtual std::string write_out(int) const;
   virtual std::string read_in(int register) const;
   virtual std::string type() const;
-  std::vector<RecordMember> members;
+  virtual std::string assign_to(int, int, int, std::string);
+  virtual std::string load_into(int, int, int, std::string);
+  virtual int word_size() const;
+  virtual bool equals(const Record&) const;
+  virtual bool operator==(const Type&);
+  virtual Record* get_record();
+  bool is_field(std::string);
+  Type* lookup(std::string);
+  int calculate_offset(std::string);
+  std::vector<RecordMember>* members;
 };
 #endif //CPSL_TYPE_HPP
