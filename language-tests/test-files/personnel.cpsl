@@ -42,7 +42,7 @@ begin
 
   for k:=1 to persons do
     $write("setting ",k," to ",chr(j+k+'a'),'\n');
-    a[i] := chr(j+k+ord('a'));
+    a[k] := chr(j+k+ord('a'));
   end;
 
   write("returning '",a[1],a[2],a[3],"'...\n");
