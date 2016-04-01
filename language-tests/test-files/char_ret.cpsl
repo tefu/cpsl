@@ -2,7 +2,7 @@ var x : char;
 
 function simpleRef(ref a:char) : char;
 BEGIN
-    a := CHR(succ(ORD(a)));
+    a := chr(succ(ord(a)));
     return a;
 END;
 
