@@ -33,9 +33,14 @@ namespace
     Symbol::add_variable(confirm_not_defined(ident), type);
   }
 
+  bool require_type(Expression* expr, std::string type_name)
+  {
+    return expr->data_type()->type() == type_name;
+  }
+
   void require_both_as(Expression* left, Expression* right, std::string type_name, std::string operation)
   {
-    if (left->data_type()->type() != type_name || right->data_type()->type() != type_name)
+    if (!(require_type(left,type_name)) || !(require_type(right,type_name)))
       throw std::runtime_error(std::string("Performing ") + operation + " requires both types be " + type_name);
   }
 
@@ -44,6 +49,22 @@ namespace
     if(left->data_type()->type() != right->data_type()->type())
       throw std::runtime_error(std::string("Performing ") + operation + " requires both types be the same.");
   }
+
+  void require_as(Expression* expr, std::string type_name, std::string operation)
+  {
+    if(expr->data_type()->type() != type_name)
+      throw std::runtime_error(std::string("Performing ") + operation + " requires type to be " + type_name);
+  }
+
+  void require_as_either(Expression* expr, std::string type_1, std::string type_2, std::string operation)
+  {
+    if(!(require_type(expr,type_1) || require_type(expr, type_2)))
+      throw std::runtime_error(std::string("Performing ") + operation +
+                                       " requires type to be either " +
+                                       type_1 + " or " + type_2);
+  }
+
+
 }
 
 ProgramNode* ParseTree::program(std::vector<ProgramNode*>* bodies, ProgramNode* main)
@@ -249,11 +270,13 @@ OperatorModulus* ParseTree::modulus(Expression* left, Expression* right)
 
 Negation* ParseTree::negation(Expression* expr)
 {
+  require_as(expr, Type::integer_type(), "negation: ~");
   return new Negation(expr);
 }
 
 UnaryMinus* ParseTree::unary_minus(Expression* expr)
 {
+  require_as(expr, Type::integer_type(), "unary minus: -");
   return new UnaryMinus(expr);
 }
 
@@ -295,11 +318,13 @@ ToInt* ParseTree::ORD(Expression* expr)
 
 Predecessor* ParseTree::PRED(Expression* expr)
 {
+  require_as_either(expr, Type::integer_type(), Type::boolean_type(), "PRED");
   return new Predecessor(expr);
 }
 
 Successor* ParseTree::SUCC(Expression* expr)
 {
+  require_as_either(expr, Type::integer_type(), Type::boolean_type(), "SUCC");
   return new Successor(expr);
 }
 

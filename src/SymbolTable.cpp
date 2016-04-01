@@ -95,8 +95,8 @@ void Symbol::add_argument(std::string ident, Type* type)
 {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
-  last_table.frame_offset -= type->word_size();
   auto arg = new VarArgument{type, last_table.frame_offset};
+  last_table.frame_offset += type->word_size();
   last_table.lvalues->emplace(std::string(ident), arg);
 }
 
@@ -104,8 +104,8 @@ void Symbol::add_reference(std::string ident, Type* type)
 {
   assert (type != nullptr);
   SymbolTable& last_table = tables.back();
-  last_table.frame_offset -= Type::ADDRESS_SIZE;
   auto arg = new RefArgument{type, last_table.frame_offset};
+  last_table.frame_offset += Type::ADDRESS_SIZE;
   last_table.lvalues->emplace(std::string(ident), arg);
 }
 

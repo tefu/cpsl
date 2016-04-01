@@ -318,6 +318,16 @@ int UnaryMinus::flatten_int() const
 
 namespace
 {
+  int register_size(std::vector<int> registers)
+  {
+    auto reg_offset = 0;
+    for(auto reg: registers)
+      {
+        reg_offset += Type::ADDRESS_SIZE;
+      }
+    return reg_offset;
+  }
+
   std::vector<int> get_registers()
   {
     auto spilled_registers = Register::clear_all_registers();
@@ -333,21 +343,20 @@ namespace
     Register::hog_some_registers(spilled_registers);
   }
 
-  int spill_registers(std::vector<int> registers, std::stringstream &s)
+  std::string spill_registers(std::vector<int> registers, int bottom_of_registers)
   {
-    auto reg_offset = 0;
-    auto reg_type = new Integer();
+    std::stringstream s;
+    auto reg_location = bottom_of_registers;
     for(auto reg: registers)
     {
-      reg_offset -= reg_type->word_size();
-      s << MIPS::store_word(reg, reg_offset, MIPS::SP, "Storing register under the frame before a function call");
+      reg_location -= Type::ADDRESS_SIZE;
+      s << MIPS::store_word(reg, reg_location, MIPS::SP, "Storing register under the frame before a function call");
     }
 
-    s << MIPS::addi(MIPS::SP, MIPS::SP, reg_offset, "Bringing the stack pointer above the stored registers");
-    return reg_offset;
+    return s.str();
   }
 
-  int store_function_args(std::vector<Expression*> exprList, std::vector<FormalParameter*> parameters, std::stringstream &s)
+  int function_args_size(std::vector<Expression*> exprList, std::vector<FormalParameter*> parameters)
   {
     auto argument_offset = 0;
     for(auto index = 0; index < exprList.size() && index < parameters.size(); index++)
@@ -356,43 +365,62 @@ namespace
       auto param = parameters[index];
       if (param->is_variable)
       {
+        argument_offset += expr->data_type()->word_size();
+      }
+      else
+      {
+        argument_offset += Type::ADDRESS_SIZE;
+      }
+    }
+    return argument_offset;
+  }
+
+  std::string store_function_args(std::vector<Expression*> exprList, std::vector<FormalParameter*> parameters, int top_of_arguments)
+  {
+    std::stringstream s;
+    auto argument_location = top_of_arguments;
+    for(auto index = 0; index < exprList.size() && index < parameters.size(); index++)
+    {
+      auto expr = exprList[index];
+      auto param = parameters[index];
+      if (param->is_variable)
+      {
         s << expr->gen_asm();
-        argument_offset -= expr->data_type()->word_size();
-        s << expr->data_type()->assign_to(expr->result(), argument_offset, MIPS::SP, "function argument");
+        s << expr->data_type()->assign_to(expr->result(), argument_location, MIPS::SP, "function argument");
+        argument_location += expr->data_type()->word_size();
       }
       else
       {
         s << expr->get_address();
-        argument_offset -= Type::ADDRESS_SIZE;
-        s << MIPS::store_word(expr->result(), argument_offset, MIPS::SP, "Storing function argument");
+        s << MIPS::store_word(expr->result(), argument_location, MIPS::SP, "Storing function argument");
+        argument_location += Type::ADDRESS_SIZE;
       }
       expr->release();
     }
 
-    return argument_offset;
+    return s.str();
   }
 
-  std::string restore_registers(std::vector<int> registers, int reg_offset)
+  std::string restore_registers(std::vector<int> registers, int bottom_of_registers)
   {
     std::stringstream s;
-    s << MIPS::addi(MIPS::SP, MIPS::SP, -reg_offset, "Bringing the stack pointer below the stored registers");
-    reg_offset = 0;
-    auto reg_type = new Integer();
+    auto reg_location = bottom_of_registers;
     for(auto reg: registers)
     {
-      reg_offset -= reg_type->word_size();
-      s << MIPS::load_word(reg, reg_offset, MIPS::SP, "Loading register that was active before function call");
+      reg_location -= Type::ADDRESS_SIZE;
+      s << MIPS::load_word(reg, reg_location, MIPS::SP, "Loading register that was active before function call");
     }
     return s.str();
   }
 
-  std::string jump_to_function_and_back(std::string function_label, int argument_offset)
+  std::string jump_to_function_and_back(std::string function_label, int total_offset)
   {
     std::stringstream s;
+    s << MIPS::addi(MIPS::SP, MIPS::SP, total_offset, "Bringing the stack pointer above the stored arguments");
     s << MIPS::move(MIPS::FP, MIPS::SP, "Placing the frame pointer");
-    s << MIPS::addi(MIPS::SP, MIPS::SP, argument_offset, "Bringing the stack pointer above the stored arguments");
     s << MIPS::jal(function_label, "Jumping to function");
-    s << MIPS::addi(MIPS::SP, MIPS::SP, -argument_offset, "Bringing the stack pointer below the stored arguments");
+    s << MIPS::addi(MIPS::SP, MIPS::SP, -total_offset, "Bringing the stack pointer below the stored arguments");
+    s << MIPS::move(MIPS::FP, MIPS::SP, "Placing the frame pointer");
     return s.str();
   }
 
@@ -401,16 +429,18 @@ namespace
 std::string FunctionCall::gen_asm()
 {
   std::stringstream s;
-  s << MIPS::addi(MIPS::SP, MIPS::SP, -size_of_vars, "Move stack pointer past variables");
 
   auto registers_under_the_frame = get_registers();
-  auto reg_offset = spill_registers(registers_under_the_frame, s);
-  auto argument_offset = store_function_args(exprList, parameters, s);
 
-  s << jump_to_function_and_back(jump_to, argument_offset);
-  s << restore_registers(registers_under_the_frame, reg_offset);
+  auto var_offset = -size_of_vars;
+  auto reg_offset = -register_size(registers_under_the_frame);
+  auto argument_offset = -function_args_size(exprList, parameters);
+  auto total_offset = var_offset + reg_offset + argument_offset;
 
-  s << MIPS::addi(MIPS::SP, MIPS::SP, size_of_vars, "Move stack pointer under variables from before function");
+  s << spill_registers(registers_under_the_frame, var_offset);
+  s << store_function_args(exprList, parameters, total_offset);
+  s << jump_to_function_and_back(jump_to, total_offset);
+  s << restore_registers(registers_under_the_frame, var_offset);
 
   return_registers(registers_under_the_frame);
 

@@ -58,7 +58,7 @@ Expression* GlobalVariable::address()
  * ------------------------------------------------------------------------- */
 std::string StackVariable::assign(int result_register)
 {
-  return get_type()->assign_to(result_register, address_offset, MIPS::SP, "stack variable");
+  return get_type()->assign_to(result_register, address_offset, MIPS::FP, "stack variable");
 }
 
 Type* StackVariable::get_type()
@@ -83,7 +83,7 @@ int StackVariable::size_on_stack()
 
 Expression* StackVariable::address()
 {
-  return new Address{new IntLiteral{address_offset}, MIPS::SP};
+  return new Address{new IntLiteral{address_offset}, MIPS::FP};
 }
 
 /* Arguments
