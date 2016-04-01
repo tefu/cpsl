@@ -2,6 +2,7 @@
 #include "SymbolTable.hpp"
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
 
 extern void yyerror(const char* message);
 extern std::stringstream sout;
@@ -115,24 +116,28 @@ std::vector<FormalParameter*>* ParseTree::formal_parameter(bool is_var, std::vec
   return arguments;
 }
 
-FunctionBlock* ParseTree::procedure_body(std::string* procedure_name, ProgramNode* body)
+FunctionBlock* ParseTree::procedure_body(std::string* function_address, ProgramNode* body)
 {
   Symbol::pop_table();
-  auto function = Symbol::lookup_function(*procedure_name);
-  return new FunctionBlock(function->address, body);
+  return new FunctionBlock(*function_address, body);
 }
 
 std::string* ParseTree::function_decl(std::string* function_name, std::vector<FormalParameter*>* parameters, Type* type)
 {
   auto new_function = std::make_shared<Function>(*parameters, type);
-  auto duplicate_function = Symbol::lookup_function(*function_name);
-  if (duplicate_function != nullptr && !(new_function->same_signature(*duplicate_function)))
+  std::vector<Type*> types;
+  for(auto &&param: *parameters)
   {
-    throw std::runtime_error(*function_name + " is already a function with a different signature.");
+    types.push_back(param->type);
+  }
+  auto duplicate_function = Symbol::lookup_function(*function_name, types);
+  if (duplicate_function == nullptr)
+  {
+    Symbol::add_function(*function_name, new_function);
   }
   else
   {
-    Symbol::add_function(*function_name, new_function);
+    new_function = duplicate_function;
   }
 
   Symbol::push_table();
@@ -149,7 +154,7 @@ std::string* ParseTree::function_decl(std::string* function_name, std::vector<Fo
     }
   }
 
-  return function_name;
+  return new std::string(new_function->address);
 }
 
 std::string* ParseTree::function_decl(std::string* function_name,std::vector<FormalParameter*>* parameters, std::string* type)
@@ -282,7 +287,12 @@ UnaryMinus* ParseTree::unary_minus(Expression* expr)
 
 FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expression*>* exprList)
 {
-  auto function = Symbol::lookup_function(*ident);
+  std::vector<Type*> types;
+  for(auto &&expr: *exprList)
+  {
+    types.push_back(expr->data_type());
+  }
+  auto function = Symbol::lookup_function(*ident, types);
   if (function == nullptr)
   {
     throw std::runtime_error(std::string("I don't know what the function ") + *ident + " is.");
@@ -291,11 +301,6 @@ FunctionCall* ParseTree::function_call(std::string* ident, std::vector<Expressio
   if(exprList->size() != function->parameters.size())
   {
     throw std::runtime_error(std::string("Incorrect number of arguments to function " + *ident));
-  }
-
-  if (!(function->correct_types(*exprList)))
-  {
-    throw std::runtime_error(std::string("Incorrect type in value of function call: ") + *ident);
   }
 
   if (!function->correct_references(*exprList))

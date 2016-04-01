@@ -24,21 +24,16 @@ namespace
               stack_offset(s_offset),
               frame_offset(f_offset),
               types(std::make_shared<std::map<std::string, Type*>>()),
-              functions(std::make_shared<std::map<std::string, std::shared_ptr<Function>>>()){}
+              functions(std::make_shared<std::multimap<std::string, std::shared_ptr<Function>>>()){}
     int stack_offset;
     int frame_offset;
     std::shared_ptr<std::map<std::string, Type*>> types;
-    std::shared_ptr<std::map<std::string, std::shared_ptr<Function>>> functions;
+    std::shared_ptr<std::multimap<std::string, std::shared_ptr<Function>>> functions;
     std::shared_ptr<std::map<std::string, LValue*>> lvalues;
 
     Type* parse_type(std::string raw_type)
     {
       return find_in_map(*types, raw_type);
-    }
-
-    std::shared_ptr<Function> find_function(std::string name)
-    {
-      return find_in_map(*functions, name);
     }
 
     LValue* find_lvalue(std::string ident)
@@ -153,14 +148,18 @@ Type* Symbol::lookup_type(std::string supposed_type)
   return nullptr;
 }
 
-std::shared_ptr<Function> Symbol::lookup_function(std::string function_name)
+std::shared_ptr<Function> Symbol::lookup_function(std::string function_name, std::vector<Type*> types)
 {
   for (size_t i = tables.size(); i-- > 0;)
   {
     auto table = tables[i];
-    auto function = table.find_function(function_name);
-    if (function != nullptr)
-      return function;
+    auto function_range  = table.functions->equal_range(function_name);
+    for(auto iter = function_range.first; iter != function_range.second; ++iter)
+    {
+      auto function = iter->second;
+      if(function->correct_types(types))
+        return function;
+    }
   }
   return nullptr;
 }
@@ -191,8 +190,6 @@ int Symbol::size_of_stack()
 bool Symbol::already_defined(std::string ident)
 {
   auto table = tables.back();
-  auto function = table.find_function(ident);
-  auto type = table.parse_type(ident);
   auto l_value = table.find_lvalue(ident);
-  return (function != nullptr || type != nullptr || l_value != nullptr);
+  return (l_value != nullptr);
 }

@@ -17,7 +17,7 @@ namespace Symbol
   void add_type(std::string, Type*);
   LValue* lookup(std::string);
   Type* lookup_type(std::string);
-  std::shared_ptr<Function> lookup_function(std::string);
+  std::shared_ptr<Function> lookup_function(std::string, std::vector<Type*>);
   void push_table();
   void pop_table();
   int size_of_stack();

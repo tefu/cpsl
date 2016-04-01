@@ -18,7 +18,7 @@ struct Function
   std::string address;
   Type* return_type;
   bool same_signature(const Function&);
-  bool correct_types(std::vector<Expression*>);
+  bool correct_types(std::vector<Type*>);
   bool correct_references(std::vector<Expression*>);
 
 };

@@ -32,11 +32,24 @@ bool Function::same_signature(const Function& other_func)
   return true;
 }
 
-bool Function::correct_types(std::vector<Expression*> exprList)
+bool Function::correct_types(std::vector<Type*> types)
 {
-  return all_correct([](FormalParameter* param, Expression* expr){
-      return param->type->type() == expr->data_type()->type();
-    }, *this, exprList);
+  if(parameters.size() != types.size())
+  {
+    return false;
+  }
+
+  for(auto i = 0; i < parameters.size() && i < types.size(); i++)
+  {
+    auto param = parameters[i];
+    auto type = types[i];
+    if(!(*(param->type) == *type))
+    {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool Function::correct_references(std::vector<Expression*> exprList)
